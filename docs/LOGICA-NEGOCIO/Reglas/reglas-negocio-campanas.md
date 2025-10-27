@@ -5,6 +5,18 @@
 
 ---
 
+## 📊 Origen de las Reglas
+
+Este documento contiene reglas de **3 orígenes**:
+
+- **📘 MANUAL**: Extraídas del Manual oficial Tiphone v6 (`ManualMD/`)
+- **💻 CÓDIGO**: Extraídas del código fuente (JavaScript, Web.config)
+- **🧠 INFERIDA**: Deducidas por lógica/mejores prácticas (requieren validación)
+
+Consulta `ORIGEN-REGLAS.md` para referencias detalladas.
+
+---
+
 ## 1. Definición
 
 Una **Campaña** es un conjunto de registros (contactos) que se marcan con un objetivo común. Cada campaña puede contener múltiples listas de registros.
@@ -38,7 +50,9 @@ stateDiagram-v2
     end note
 ```
 
-### Estados Permitidos
+### Estados Permitidos 🧠
+
+> **Origen**: 🧠 INFERIDA - Estados lógicos basados en ciclo de vida estándar
 
 | Estado | ID | Descripción | Se marca | Se edita |
 |--------|----|-----------  |----------|----------|
@@ -50,7 +64,9 @@ stateDiagram-v2
 
 ## 3. Reglas de Creación
 
-### REGLA: Campos Obligatorios
+### REGLA: Campos Obligatorios 🧠
+
+> **Origen**: 🧠 INFERIDA - Campos lógicamente necesarios
 
 **Descripción**: Al crear una campaña, ciertos campos son obligatorios.
 
@@ -76,7 +92,9 @@ FIN SI
 
 ---
 
-### REGLA: Alias Único
+### REGLA: Alias Único 🧠
+
+> **Origen**: 🧠 INFERIDA - Estándar para evitar confusión
 
 **Descripción**: El alias de una campaña debe ser único dentro de su cuenta.
 

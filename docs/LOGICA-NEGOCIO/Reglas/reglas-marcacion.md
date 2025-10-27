@@ -5,6 +5,18 @@
 
 ---
 
+## 📊 Origen de las Reglas
+
+Este documento contiene reglas de **3 orígenes**:
+
+- **📘 MANUAL**: Extraídas del Manual oficial Tiphone v6 (`ManualMD/`)
+- **💻 CÓDIGO**: Extraídas del código fuente (Asterisk integration, Web.config)
+- **🧠 INFERIDA**: Deducidas por lógica/mejores prácticas contact center (requieren validación)
+
+Consulta `ORIGEN-REGLAS.md` para referencias detalladas.
+
+---
+
 ## 1. Definición
 
 La **Marcación** es el proceso por el cual el sistema llama automáticamente a los registros de una campaña y los conecta con operadores disponibles.

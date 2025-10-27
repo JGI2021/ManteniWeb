@@ -5,6 +5,18 @@
 
 ---
 
+## 📊 Origen de las Reglas
+
+Este documento contiene reglas de **3 orígenes**:
+
+- **📘 MANUAL**: Extraídas del Manual oficial Tiphone v6 (`ManualMD/`)
+- **💻 CÓDIGO**: Extraídas del código fuente (JavaScript, Web.config)
+- **🧠 INFERIDA**: Deducidas por lógica/mejores prácticas (requieren validación)
+
+Consulta `ORIGEN-REGLAS.md` para referencias detalladas.
+
+---
+
 ## 1. Definición
 
 Un **Operador** es un agente que atiende llamadas en campañas. Los operadores se organizan en grupos según habilidades o funciones.
