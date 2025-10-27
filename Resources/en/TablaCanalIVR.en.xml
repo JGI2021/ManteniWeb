@@ -1,0 +1,119 @@
+﻿<table>
+
+<general
+ 	DisplayName="Canales de la IVR" 
+ 	Database="DBIVR"
+ 	TableName="IVR_CHANNELS"
+  TableName2="IVR_ACD_GROUPS"
+	CrossField2="IVR_ID">
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="General Data">
+</panel>
+</panels>
+
+<fields>
+<field>
+<fattr 
+	FieldName="ivr_id" 
+	Panel="panelgenerales"
+	DisplayName="VRU Id" 
+	IsKey="true"
+	EditionType="COPIA_ALTA" 
+  Visible="false"
+	ValidateAs="Integer"
+	TabOrder="1">
+</fattr>		
+</field>
+
+  <field>
+    <fattr
+      FieldName="channel#"
+      Panel="panelgenerales"
+      DisplayName="Channel"
+      EditionType="Edit"
+      IsKey="true"
+      Mandatory="true"
+      ValidateAs="Integer"
+      ToolTip="Channel"
+      UpdateNeeded="false"
+      TabOrder="2">
+    </fattr>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="Grupos"
+      Panel="panelgenerales"
+      DisplayName="Assigned ACD groups"
+      EditionType="Table"
+      Mandatory="false"
+      ToolTip="Assigned ACD groups"
+      External="true"
+      AuxTable="2"
+      UpdateNeeded="true"
+      TabOrder="3">
+    </fattr>
+    <external>
+      <type tipo="TABLEEDIT"/>
+      <additionalInfo
+       NewRegTitle="Assign ACD Group"
+       NewRegType="Combo"/>
+      <table
+        DatabaseName="DBIVR"
+        TableName="IVR_CHANNELS"
+        FilterValueLocal="ivr_id"
+        FilterValueExternal="ivr_id"
+        FilterValueLocal2="channel#"
+        FilterValueExternal2="channel#">
+      </table>
+      <fieldsTable>
+        <field2>
+          <fattr2
+            FieldName="acd_group"
+            DisplayName="ACD Group"
+            EditionType="Combo"
+            Mandatory="true"
+            ValidateAs="Integer"
+            ReadOnly="false"
+            Visible="true"
+            IsKey="true"
+            External="true"
+            KeyViolationMessage="Chnnel already assigned to ACD Group."
+            UpdateNeeded="true">
+          </fattr2>
+          <external2>
+            <type2 tipo="table"/>
+            <table2
+              DatabaseName="TIPHONE"
+              DatabaseNameFilterUsed="DBIVR"
+              DatabaseNameFilterUsed2="DBIVR"
+              DatabaseNameFilterNotUsed="DBIVR"
+              TableName="GRUPO_ACD"
+              TableNameFilterUsed="IVR_ACD_GROUPS"
+              TableNameFilterNotUsed="IVR_ACD_GROUPS"
+              CrossfieldNotUsed="GRUPO_ACD_ID"
+              CrossfieldNotUsed2="ACD_GROUP"
+              CrossfieldUsed="GRUPO_ACD_ID"
+              CrossfieldUsed2="ACD_GROUP"
+              CrossfieldUsed3="ACD_GROUP"
+              FilterValueLocalFilter="ivr_id"
+              FilterValueLocalFilter2="channel#"
+              FilterValueExternalFilter="ivr_id"
+              FilterValueExternalFilter2TableFilter2="channel#"
+              FieldKey="GRUPO_ACD_ID"
+              FieldValue="ALIAS"
+              DefaultKey="NULL"
+              DefaultValue="Ninguno">
+            </table2>
+          </external2>
+        </field2>
+      </fieldsTable>
+    </external>
+
+  </field>
+</fields>
+</table>

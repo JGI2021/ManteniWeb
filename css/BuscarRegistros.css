@@ -1,0 +1,276 @@
+﻿
+
+.sidebar {
+    position: fixed;
+    height: 100%;
+    width: 0;
+    top: 108px;
+    left: 0;
+    z-index: 100;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: 0.4s;
+    padding: 1rem 0;
+    box-sizing: border-box;
+    border: 1px solid #d2d2d2;
+}
+
+    .sidebar .boton-cerrar {
+        position: absolute;
+        top: 0.5rem;
+        right: 1rem;
+        font-size: 2rem;
+        display: block;
+        padding: 0;
+        line-height: 1.5rem;
+        margin: 0;
+        height: 32px;
+        width: 32px;
+        text-align: center;
+        vertical-align: top;
+    }
+
+    .sidebar ul, .sidebar li {
+        margin: 0;
+        padding: 0;
+        list-style: none inside;
+    }
+
+    .sidebar ul {
+        margin: 4rem auto;
+        display: block;
+        width: 80%;
+        min-width: 200px;
+    }
+
+    .sidebar a {
+        display: block;
+        font-size: 120%;
+        color: #eee;
+        text-decoration: none;
+    }
+
+        .sidebar a:hover {
+            color: #fff;
+            background-color: #f90;
+        }
+
+h1 {
+    color: #f90;
+    font-size: 180%;
+    font-weight: normal;
+}
+
+#contenido {
+    transition: margin-left .4s;
+    padding: 1rem;
+}
+
+.abrir-cerrar {
+    color: #2E88C7;
+    font-size: 14px;
+}
+
+#abrir {
+}
+
+#cerrar {
+    display: none;
+}
+
+.my-jumbotron {
+    padding: 0px !important;
+    margin-bottom: 0px !important;
+    margin-top: -20px !important;
+    background-color: inherit !important;
+    border-bottom: 1px solid #e2e2e2 !important;
+}
+
+.OptionSpinnerNoVisible {
+    display: none;
+    position: relative;
+    top: 30px;
+    color: #0275D8;
+    left: 15px;
+    font-size: x-large;
+}
+
+.option-visible {
+    display: block;
+    color: darkred;
+}
+
+.subindice {
+    font-size: 10px;
+    font-weight: 400;
+}
+
+.li-menu-columnas {
+    padding: 2px 5px 2px 15px;
+}
+
+input[type="search"] {
+    height: 20px !important;
+}
+
+    div.dt-buttons {
+        position: relative;
+        top: -4px;
+        left: 30px;
+    }
+
+    div.dataTables_length {
+        display: inline-block;
+        float: left;
+        margin-right: 45px;
+        position: relative;
+        top: 0px;
+    }
+
+    .panel-menu {
+        padding: 20px 50px;
+        margin-bottom: 75px;
+    }
+
+    .list-group-item {
+        user-select: none;
+    }
+
+    .list-group input[type="checkbox"] {
+        display: none;
+    }
+
+    .list-group input[type="checkbox"] + .list-group-item {
+        cursor: pointer;
+    }
+
+    .list-group input[type="checkbox"] + .list-group-item:before {
+        content: "\2713";
+        color: transparent;
+        margin-right: 1em;
+    }
+
+    .list-group input[type="checkbox"]:checked + .list-group-item {
+        background-color: #0275D8;
+        color: #FFF;
+    }
+
+    .list-group input[type="checkbox"]:checked + .list-group-item:before {
+        color: inherit;
+    }
+
+.posiciona-boton {
+    top: 25px;
+    position: relative;
+}
+
+
+.posiciona-check {
+    top: 33px;
+    position: relative;
+}
+
+.separador-div {    
+    border-top: 1px solid #e2e2e2;
+    padding: 31px 0px 10px 0px;
+}
+
+.ListaInactiva {
+    color: darkred !important;
+}
+
+.CampanaInactiva {
+    color: darkred !important;
+}
+
+
+.dataTables_paginate {
+    float: right;
+    margin-right: 20px !important;
+}
+
+/*.spinner-pos {
+    top: 30px;
+    left: 10px;
+    position: relative;
+    font-size: 20px;
+    color: #0275D8;
+}*/
+
+.margin-right-1 {
+    margin-right: 20px;
+}
+
+.margin-right-0 {
+    margin-right: 10px;
+}
+
+.margin-right-3 {
+    margin-right: 30px;
+} 
+
+.item-center {
+    align-items: center;
+}
+
+.ancho-valor-filtrar {
+    width: 100% !important;
+}
+
+.panel-filtros {
+    margin-top: 0px;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    max-height: 25%;
+/*    overflow-y: scroll;  hace que los desplegables de los combos no se vean*/
+}
+
+.no-display {
+    display: none;
+}
+
+.btn-inout-primary {
+    color: #0275D8;
+    border: 1px solid;
+}
+
+.btn-inout-primary:hover {
+    background-color: #a7c1d8 !important;
+    color: white !important;
+}
+
+.panel-buscar {
+    padding-left: 70px !important;
+    border-top: 2px solid #c2c2c2;
+    margin-left: 45px;
+    background-color: #f2f2f2;
+    padding-top: 20px !important;
+    margin-right: 217px;
+    width: 95%;
+    margin-top: 30px;
+}
+
+.panel-registros {
+    padding: 35px 27px !important;
+    border-top: 2px solid #c2c2c2 !important;
+    margin-left: 45px;
+    background-color: #ffffff;
+    max-width: 95%;
+    border-top: 0px solid #5A7677;
+    margin-bottom: 25px;
+}
+
+
+
+.solo-cliente {
+    position: relative;
+    top: 25px;
+    left: 93px;
+}
+
+.checkTodosLosRegistros {
+    top: 60px;
+    right: 142px;
+    position: relative;
+}
+

@@ -1,0 +1,163 @@
+﻿@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code.MantPersuaderApi
+
+@model TDatosCampaign
+
+@{
+    DCPersDatosObjetivo objetivo = new DCPersDatosObjetivo();
+    string titulo = "Crear objetivo para la campaña " + Model.Alias;
+}
+
+<style>
+    .dark-red-color {
+        color: darkred;
+        font-weight: 600;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@titulo  </span>
+        </h2>
+    </div>
+</div>
+
+<div class="row rowSeparacion20">
+    <div class="col-lg-2 col-md-2">
+
+        <div class="visible-lg visible-md rowSeparacion15">
+            <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked">
+                <li></li>
+                <li class="RowAccionesSiempreVisibles" style="">
+                    <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                        <div class="row" style="display:inline-flex;">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">Volver</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+    </div>
+    <div class="col-lg-8 col-md-8">
+        @Html.Partial("_MensajesError")
+
+        <div class="row rowSeparacion20">
+            <div class="col-lg-8 col-md-8 col-sm-12">
+                <label for="descripcion">Descripción <span class="dark-red-color"> *</span></label>
+                <input type="text" id="descripcion" class="form-control" value="" maxlength="200" />
+            </div>
+        </div>
+
+        <div class="row rowSeparacion20">
+            <div class="col-lg-5 col-md-5 col-sm-12">
+                <label for="etiqueta">etiqueta <span class="dark-red-color"> *</span></label>
+                <input type="text" id="etiqueta" class="form-control" value="" maxlength="10" />
+            </div>
+        </div>
+
+        <div class="row rowSeparacion20">
+            <div class="col-lg-5 col-md-5 col-sm-12">
+                <label for="color">Color <span class="dark-red-color"> *</span></label>
+                <input type="text" id="color" class="form-control input-sm" value="" maxlength="20" />
+            </div>
+        </div>
+
+        <div class="row rowSeparacion20">
+            <div class="col-lg-5 col-md-5 col-sm-12">
+                <label for="periodo">Periodo <span class="dark-red-color"> *</span></label>
+                <select id="periodo" class="form-control input-sm" value="">
+                    <option value="0">Hora</option>
+                    <option value="1">Día</option>
+                    <option value="2">Mes</option>
+                    <option value="3">Campaña</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row rowSeparacion20">
+            <div class="col-lg-5 col-md-5 col-sm-12">
+                <label for="valor">Valor objetivo <span class="dark-red-color"> *</span></label>
+                <input type="number" id="valor" class="form-control input-sm" value="" maxlength="10" />
+            </div>
+        </div>
+
+        <div class="row rowSeparacion20">
+            <div class="col-lg-6 col-sm-6">
+                <div class="floatRight">
+                    <button type="button" class="btn btn-default botonFicha" id="BotonAceptar" onclick="GuardarDatos(0)">Guardar</button>
+                    <button type="button" class="btn btn-default botonFicha" id="BotonAceptarSalir" onclick="GuardarDatos(1)">Guardar y salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts {
+
+    <script>
+        let g_objetivo = null;
+        let g_datosCampana = null;
+
+        $(document).ready(function () {
+            g_objetivo = @Html.Raw(Json.Encode(objetivo));
+            g_datosCampana = @Html.Raw(Json.Encode(Model));
+
+            $('input#color').ColorPickerSliders({
+                size: 'sm',
+                placement: 'bottom',
+                swatches: false,
+                sliders: false,
+                hsvpanel: true
+            });
+        });
+
+        function GuardarDatos(salir) {
+
+            console.log("Se llama a guardar los datos de objetivos de la campaña " + g_datosCampana.Alias + ' (' + g_datosCampana.Codigo + ')');
+            let url = '/Objetivos/Crear/Campana/' + g_datosCampana.Codigo + '/'
+
+            $.ajax({
+                type: "POST",
+                url: getRutaAbsolutaMVC() + url,
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (data) {
+                    console.log("Respuesta Post GuardarDatos de objetivos");
+                    if (data == null) {
+                        alert('Se ha producido un error al guardar los datos');
+                    }
+                    if (respuesta.Error == 'N') {
+                        $('#MensajeAlertSuccess').text(respuesta.Mensaje);
+                        $('#alertsuccess').css('display', 'block');
+
+                        window.setTimeout(function () {
+                            $('#alertsuccess').fadeTo(500, 0).slideUp(500, function () {
+                                $(this).remove();
+                                $('#alertsuccess').css('display', 'none');
+                            });
+                        }, 3500);
+
+                    }
+                    else {
+                        $('#MensajeAlertError').text(respuesta.Mensaje);
+                        $('#alerterror').css('display', 'block');
+                    }
+                    if (salir === 1) {
+                        RetrocederPaginaMVC();
+                    }
+                },
+                error: function (e) { console.log(e);  }
+            });
+        }
+
+    </script>
+}

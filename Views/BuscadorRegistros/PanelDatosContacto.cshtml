@@ -1,0 +1,160 @@
+﻿
+@using ManteniWeb.DatosTablas
+
+@model DatosContacto
+
+@{
+    List<TDatosRdoNegocio> lsResultados = (List<TDatosRdoNegocio>)ViewBag.ResultadosNegocio;
+    List<TDatosOperador> operadores = ViewBag.Operadores as List<TDatosOperador>;
+}
+
+
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="nombre">Nombre</label>
+        <input type="text" class="form-control" id="nombre" value="@Model.Nombre" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="direccion">Direccion</label>
+        <input type="text" class="form-control" id="direccion" value="@Model.Direccion" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="codigoPostal">Código postal</label>
+        <input type="text" class="form-control" id="codigopostal" value="@Model.CodigoPostal" onchange="CambiaCampo(this.id)" />
+    </div>
+</div>
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="poblacion">Población</label>
+        <input type="text" class="form-control" id="poblacion" value="@Model.Ciudad" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="provincia">Provincia</label>
+        <input type="text" class="form-control" id="provincia" value="@Model.Provincia" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="pais">País</label>
+        <input type="text" class="form-control" id="pais" value="@Model.Pais" onchange="CambiaCampo(this.id)" />
+    </div>
+</div>
+
+
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="estado">Estado regitro</label>
+        <select class="form-control" id="estado" onchange="CambiaCampo(this.id)">
+            @Html.Raw(RellenaComboEstado())
+        </select>
+    </div>
+
+    <div class="col-lg-2 col-md-2">
+        <label for="prioridad">Prioridad</label>
+        <input type="number" class="form-control" id="prioridad" value="@Model.Prioridad" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="peso">Peso</label>
+        <input type="number" class="form-control" id="peso" value="@Model.Peso" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="valor1">Valor 1</label>
+        <input type="number" class="form-control" id="valor1" value="@Model.Valor1" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="valor2">Valor 2</label>
+        <input type="number" class="form-control" id="valor2" value="@Model.Valor2" onchange="CambiaCampo(this.id)" />
+    </div>
+</div>
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-6 col-md-6">
+        <label for="literal1">Literal 1</label>
+        <input type="text" class="form-control" id="literal1" value="@Model.Literal1" onchange="CambiaCampo(this.id)" />
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <label for="literal2">Literal 2</label>
+        <input type="text" class="form-control" id="literal2" value="@Model.Literal2" onchange="CambiaCampo(this.id)" />
+    </div>
+</div>
+
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="resultados">Resultados de negocio</label>
+        <select class="form-control" id="resultados" value="" onchange="CambiaCampo(this.id)">
+            <option value="0"></option>
+            @foreach (TDatosRdoNegocio resultado in lsResultados)
+            {
+                if (resultado.Codigo == Model.ResultadoNegocio)
+                {
+                    <option value="@resultado.Codigo" selected="selected">@resultado.Descripcion</option>
+                }
+                else
+                {
+                    <option value="@resultado.Codigo" >@resultado.Descripcion</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-lg-4 col-md-4">
+        <label for="resultados">Operador preferido</label>
+        <select class="form-control" id="operadorPreferido" value="" onchange="CambiaCampo(this.id)">
+            <option value="0"></option>
+            @foreach (TDatosOperador operador in operadores)
+            {
+                <option value="@operador.Codigo">@operador.Nombre</option>
+            }
+        </select>
+    </div>
+</div>
+
+
+
+@functions {
+    public string RellenaComboEstado()
+    {
+        string html = string.Empty;
+
+        if (Model.Estado == "N")
+            html = "<option value='N' selected='selected'>No tocado</option> ";
+        else
+            html = "<option value='N'>No tocado</option> ";
+
+        if (Model.Estado == "R")
+            html += "<option value='R' selected='selected' >Reprogramado </option> ";
+        else
+            html += "<option value='R' >Reprogramado </option> ";
+
+        if (Model.Estado == "C")
+            html += "<option value='C' selected='selected' >Cancelado </option> ";
+        else
+            html += "<option value='C' >Cancelado </option> ";
+
+        if (Model.Estado == "F")
+            html += "<option value='F' selected='selected' >Finaizado </option> ";
+        else
+            html += "<option value='F' >Finaizado </option> ";
+
+        if (Model.Estado == "S")
+            html += "<option value='S' selected='selected'>Supervisión </option> ";
+        else
+            html += "<option value='S' >Supervisión </option> ";
+
+        if (Model.Estado == "A")
+            html += "<option value='A' selected='selected' >Anulado </option> ";
+        else
+            html += "<option value='A' >Anulado </option> ";
+
+        if (Model.Estado == "I")
+            html += "<option value='I' selected='selected'>Inconsistente </option> ";
+        else
+            html += "<option value='I' >Inconsistente </option> ";
+
+        return html;
+
+    }
+
+}

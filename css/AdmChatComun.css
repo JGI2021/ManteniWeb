@@ -1,0 +1,20 @@
+﻿
+th {
+    background: #778899 !important;
+    color: white !important;
+    font-weight: 300 !important;
+}
+
+.caja-estado-activo {
+    border-radius: 8px;
+    border: 1px solid green;
+    color: green;
+    padding: 2px 8px;
+}
+
+.caja-estado-inactivo {
+    border-radius: 8px;
+    border: 1px solid red;
+    color: red;
+    padding: 2px 10px;
+}

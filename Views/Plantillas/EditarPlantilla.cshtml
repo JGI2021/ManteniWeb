@@ -1,0 +1,585 @@
+﻿
+
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+@using ManteniWeb.Code
+
+
+@model DatosPlantillasGrupos
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css" />
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/AdmChatComun.css" rel="stylesheet" />
+
+<style>
+    .disabled-field {
+        pointer-events: none;
+        background-color: rgb(0,0,0,0.1);
+    }
+
+    .disable-panel {
+        pointer-events: none;
+    }
+</style>
+
+@{
+    string title = ChatResources.plantillasChat;
+
+    List<IdiomaOperador> listadoIdiomas = ViewBag.ListadoIdiomas as List<IdiomaOperador>;
+    List<RegistroNombreId> lsGruposACD = ViewBag.LsGruposACD as List<RegistroNombreId>;
+    List<ServiciosExternos> serviciosExternos = ViewBag.LsServiciosExternos as List<ServiciosExternos>;
+
+    string disabledField = string.Empty;
+    string disabledByStatus = string.Empty;
+
+    if (!string.IsNullOrEmpty(Model.Identificador) && Model.Identificador != "0")
+    {
+        disabledField = "disabled-field";
+
+        if (Model.CurrentStatus.ToUpper() == "REJECTED" || Model.CurrentStatus.ToUpper() == "PENDING_DELETION" || string.IsNullOrEmpty(Model.ServicioExternoId))
+        {
+            disabledByStatus = "disable-panel";
+        }
+    }
+
+}
+
+<link href="~/css/PlantillasMensajes.css" rel="stylesheet" />
+
+<input type="hidden" id="idsSeleccionados" value="" />
+<input type="hidden" id="identificadorPlantilla" value="@Model.Identificador" />
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-hashtag'></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25 @disabledByStatus">
+
+        <div class="col-lg-2 col-md-2">
+            <div class="visible-lg visible-md rowSeparacion15">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa @EstaticosImagenes.ImagenVolver visible-lg visible-md visible-xs"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">@ComunResources.btn_volver</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-8">
+            <form id="formDataPlantilla" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div class='row rowSeparacion15'>
+                    <div class='col-lg-6 col-md-6'>
+                        <div id="alerta" class="alert" style="display:none">
+                            <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                            <p id="alert-mensaje"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-7 col-md-7 caja-datos @disabledByStatus">
+                        <div class="row rowSeparacion25">
+                            @* ALIAS *@
+                            <div class="col-lg-6 col-md-6">
+                                <label for="aliasMensaje">@ComunResources.alias <span class="red-text"> * </span></label>
+                                <input type="text" id="aliasMensaje" class="form-control  datosMensaje @disabledField" name="Alias" value="@Model.Alias" maxlength="49" />
+                            </div>
+
+                            @* COMANDO *@
+                            <div class="col-lg-6 col-md-6">
+                                <label for="operadorId">@ConfigResources.comandoMensajeria <span class="red-text"> * </span></label>
+                                <input type="text" id="comando" class="form-control  datosMensaje" name="Comando" value="@Model.Comando" maxlength="50" />
+                            </div>
+                        </div>
+
+                        <div class="row rowSeparacion25">
+                            @* ESTADO *@
+                            <div class="col-lg-3 col-md-3">
+                                <label for="mensajeActivo">@ComunResources.estado</label>
+                                <select id="mensajeActivo" class="form-control datosMensaje" name="Activo">
+                                    <option disabled readonly value="" selected>@ComunResources.SeleccionesUnOpcion ...</option>
+                                    @if (Model.Identificador == "0")
+                                    {
+                                        <option value="0" selected="selected">@ComunResources.chk_inactivo</option>
+                                    }
+                                    else if (Model.Identificador != "0")
+                                    {
+                                        if (Model.Activo == 1)
+                                        {
+                                            <option value="1" selected="selected"> @ComunResources.chk_activo </option>
+                                            <option value="0"> @ComunResources.chk_inactivo </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="1"> @ComunResources.chk_activo </option>
+                                            <option value="0" selected="selected"> @ComunResources.chk_inactivo </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            @* IDIOMA *@
+                            <div class="col-lg-3 col-md-3">
+                                <label for="mensajeIdioma">@ComunResources.lenguaje</label>
+                                <select id="mensajeIdioma" class="form-control datosMensaje @disabledField" name="Language">
+                                    <option disabled value="" selected>@ComunResources.seleccionIdioma...</option>
+                                    @foreach (IdiomaOperador idioma in listadoIdiomas)
+                                    {
+                                        if (idioma.ISOIdioma.ToLower() == Model.Language.ToLower())
+                                        {
+                                            <option value="@idioma.ISOIdioma" selected="selected"> @idioma.Idioma </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@idioma.ISOIdioma"> @idioma.Idioma </option>
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            @* CATEGORIA *@
+                            <div class="col-lg-6 col-md-6">
+                                <label for="Categoria">@ChatResources.Categoria<span class="red-text"> * </span></label>
+                                <select type="text" id="Categoria" class="form-control datosMensaje @disabledField" name="Categoria">
+                                    @Html.Raw(ObtenerCategoria(Model.Categoria))
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="row rowSeparacion25">
+                            @* PLATAFORMA *@
+                            <div class="col-lg-6 col-md-6">
+                                <label for="proveedor">@CampanaResources.cmp_plataforma</label>
+                                <select id="proveedor" name="ProviderId" class="form-control datosMensaje @disabledField">
+                                    <option value="0" disabled readonly selected>@ComunResources.SeleccioneProveedor... </option>
+                                    @if (Model.Proveedor.ToLower() == "meta" && Model.Identificador != "0")
+                                    {
+                                        <option value="meta" selected> Meta </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="meta"> Meta </option>
+                                    }
+
+                                    @if (Model.Proveedor.ToLower() == "twilio" && Model.Identificador != "0")
+                                    {
+                                        <option value="twilio" selected> Twilio </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="twilio"> Twilio </option>
+                                    }
+
+                                </select>
+                            </div>
+
+                            @* EXTERNAL SERVICES *@
+                            <div class="col-lg-6 col-md-6">
+                                <label for="servicioExterno"> @ConfigResources.ServiciosExternos </label>
+
+                                @if (Model.Identificador != "0")
+                                {
+                                    disabledField = "disabled-field";
+                                }
+                                <select id="servicioExterno" name="ServicioExterno" class="form-control datosMensaje @disabledField">
+                                    <option disabled readonly value="0" selected> @ComunResources.SeleccionarServicio...</option>
+                                    @foreach (ServiciosExternos servicio in serviciosExternos)
+                                    {
+                                        if (Model.Proveedor.ToLower() == servicio.Provider.ToLower() || Model.Identificador == "0")
+                                        {
+                                            if (Model.ServicioExternoId == servicio.IdServicio)
+                                            {
+                                                <option value="@servicio.IdServicio" selected> @servicio.NombreServicio </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@servicio.IdServicio"> @servicio.NombreServicio </option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        @if (Model.Identificador != "0")
+                        {
+                            <div class="row rowSeparacion25">
+                                <div class="col-lg-6 col-md-6">
+                                    <label for="estadoPlantilla"> @ComunResources.estado </label>
+                                    <input type="text" readonly class="form-control @disabledField" id="estadoPlantilla" value="@Model.CurrentStatus" />
+                                </div>
+                            </div>
+                        }
+                    <div class="row rowSeparacion25">
+                        <div class="col-lg-12 col-md-12">
+                            <label for="mensajePlantilla"> @ChatResources.plantilla <span class="red-text"> * </span></label>
+                            @if (Model.Proveedor.ToLower() == "meta")
+                            {
+                                <textarea id="mensajePlantilla" class="form-control datosMensaje" name="Mensaje" maxlength="1900" rows="7" displayCampo> @Model.Mensaje </textarea>
+                            }
+                            else
+                            {
+                                <textarea id="mensajePlantilla" class="form-control datosMensaje @disabledField" name="Mensaje" maxlength="1900" rows="7" displayCampo> @Model.Mensaje </textarea>
+                            }
+                        </div>
+
+                        @if ((Model.Proveedor.ToLower() == "meta") || (Model.Proveedor.ToLower() == "twilio" && (string.IsNullOrEmpty(Model.Identificador) || Model.Identificador == "0")))
+                        {
+                            <a onclick="AddParameter()" style="margin-left:20px;margin-top:3px;"><span class="fa fa-plus"></span> Add parameter </a>
+                        }
+                    </div>
+                    </div>
+
+                    @* Panel con los grupos asociados *@
+                    <div class="col-lg-4 col-md-4 caja-datos @disabledByStatus" style="margin-left:30px;">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12">
+                                <h4>
+                                    <strong>@ComunResources.pr_grupos ACD</strong>
+                                    <button type="button" class="my-btn-small btn-primary" onclick="AltaGruposACD()" style="float: right; border-radius: 5px;"><span class="fa fa-plus"></span></button>
+                                </h4>
+                                <hr />
+                                <ul class="gruposACD" id="listaGruposACD">
+                                    @foreach (RegistroNombreId item in Model.GruposACD)
+                                    {
+                                        <li id="gr_@item.Id" class="liGrupo">
+                                            <a onclick="AvanzarPagina('Plantillas/EditarPlantilla?identificador=@Model.Identificador','GrupoAtencion.aspx?id=@item.Id');" class="hipervinculoAzul" style="margin-right: 20px;cursor: pointer;">@item.Nombre</a>
+                                            <button type="button" style="padding: 4px 5px; border: none; background-color: inherit; cursor: pointer;" onclick="EliminaGrupoACD(@item.Id);">
+                                                <span class="fa fa-trash-o" style="color:darkred;"></span>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row rowSeparacion20 main" id="botonera" style="display: none">
+                    <div class="col-lg-7 col-sm-7">
+                        <div class="floatRight">
+                            <button type="button" class="btn btn-default botonFicha" id="BotonAceptar" onclick="GuardarDatos(0)">Guardar</button>
+                            <button type="button" class="btn btn-default botonFicha" id="BotonAceptarSalir" onclick="GuardarDatos(1)">Guardar y salir</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+    </div>
+</div>
+
+
+@functions {
+    public string ObtenerCategoria(string categoria)
+    {
+        string options = "";
+
+        if (string.IsNullOrEmpty(categoria))
+            options = "<option value='0' readonly selected disabled> " + ComunResources.Seleccioncategoria + " ...</option> ";
+
+
+        if (categoria == "MARKETING")
+            options += "<option value='MARKETING' selected>Marketing</option> ";
+        else
+            options += "<option value='MARKETING' >Marketing</option> ";
+
+
+        if (categoria == "AUTHENTICATION")
+            options += "<option value='AUTHENTICATION' selected > Autenticación</option> ";
+        else
+            options += "<option value='AUTHENTICATION' > Autenticación</option> ";
+
+        if (categoria == "UTILITY")
+            options += "<option value='UTILITY' selected >Utilidad</option> ";
+        else
+            options += "<option value='UTILITY' >Utilidad</option> ";
+
+        return options;
+    }
+}
+
+
+@Html.Partial("AgregarGruposDialog")
+
+
+
+
+@section scripts {
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/js/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/Plantillas.js"></script>
+
+    <script>
+        //const { default: i18next } = require("../../node_modules/i18next/index");
+
+        let g_datosPlantilla = null;
+        let g_gruposACD = [];
+
+        $(function () {
+            g_datosPlantilla = @Html.Raw(Json.Encode(Model));
+
+            g_gruposACD = @Html.Raw(Json.Encode(lsGruposACD));
+
+            g_serviciosExternos = @Html.Raw(Json.Encode(serviciosExternos));
+
+            $('#tablaGrupos').DataTable({
+                "order": [[2,'asc']],
+                "autoWidth": false,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "@ComunResources.cargando ...",
+                    "lengthMenu": "Registros _MENU_ @ComunResources.porPagina",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "@ComunResources.pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "@ComunResources.btn_buscar",
+                    "paginate": {
+                        "first": "@ComunResources.primer",
+                        "next": "@ComunResources.siguiente",
+                        "previous": "@ComunResources.previo",
+                        "last": "@ComunResources.ultima"
+                    }
+                },
+                "lengthMenu": [[5, 10, 15, 25, 50, 100, -1], [5, 10, 15, 25, 50, 100, "@ComunResources.todos"]],
+                "pageLength": 15
+            });
+
+            $(".datosMensaje").on("change", function () {
+                const id = this.id;
+
+                switch (id) {
+                    case "aliasMensaje":
+                        g_datosPlantilla.Alias = $("#" + id).val();
+
+                        if (g_datosPlantilla.Alias.includes(" ")) {
+                            g_datosPlantilla.Alias = g_datosPlantilla.Alias.replace(/ /g, "");
+                            $("#" + id).val(g_datosPlantilla.Alias);
+                        }
+
+
+                        if ($("#comando").val() === '') {
+                            let comando = $('#aliasMensaje').val();
+                            $("#comando").val($("#" + id).val());
+                        }
+                        break;
+                    case "comando":
+                        g_datosPlantilla.Comando = $("#" + id).val();
+                        if (g_datosPlantilla.Comando.includes(" ")) {
+                            g_datosPlantilla.Comando = g_datosPlantilla.Comando.replace(/ /g, "");
+                            $("#" + id).val(g_datosPlantilla.Alias);
+                        }
+                        break;
+                    case "mensajeActivo":
+                         g_datosPlantilla.Activo = $("#" + id).val();
+                        break;
+                    case "mensajeIdioma":
+                        g_datosPlantilla.Language = $("#" + id).val();
+                        break;
+                    case "mensajePlantilla":
+                        g_datosPlantilla.Mensaje = $("#" + id).val();
+                        g_datosPlantilla.SeHaCambiadoElMensaje = true;
+                        break;
+                    case "Categoria":
+                        g_datosPlantilla.Categoria = $("#" + id).val();
+                        break;
+                    case "proveedor":
+                        g_datosPlantilla.Proveedor = $("#" + id).val();
+                        ServicioSegunProveedor(g_datosPlantilla.Proveedor);
+                        $("#servicioExterno").css('display', 'block');
+                        break;
+                    case "servicioExterno":
+                        g_datosPlantilla.ServicioExternoId = $("#" + id).val();
+                        MostrarOcultarGruposServicio();
+                        break;
+                }
+
+                $("#botonera").css('display', 'block');
+
+            });
+        });
+
+
+        function ServicioSegunProveedor(proveedor) {
+
+            let options = "<option disabled readonly value='0' selected>@ComunResources.SeleccionarServicio ...</option>";
+            for (let i = 0; i < g_serviciosExternos.length; i++) {
+                let servicio = g_serviciosExternos[i];
+
+                if (proveedor.toLowerCase() === servicio.Provider.toLowerCase())
+                    options += "<option value='" + servicio.IdServicio + "'>" + servicio.NombreServicio + "</option>";
+            }
+
+            document.getElementById("servicioExterno").disabled = false;
+            $("#servicioExterno").html(options);
+        }
+
+
+        function EliminaGrupoACD(idGrupo) {
+            Swal.fire({
+                title: "@ComunResources.btn_eliminar",
+                text: "@ComunResources.msg_eliminarRegistroMasContinuar",
+                icon: "warning",
+                heightAuto: false,
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '@ComunResources.btn_eliminar',
+                cancelButtonText: '@ComunResources.btn_cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        '@ComunResources.msgeliminado'
+                    );
+
+                    const pos = g_datosPlantilla.GruposACD.findIndex(gr => gr.Id === idGrupo);
+                    if (pos > -1) {
+                        g_datosPlantilla.GruposACD.splice(pos, 1);
+                        $("#gr_" + idGrupo).remove();
+                    }
+
+                }
+            });
+        }
+
+        function ValidaDatos() {
+            const aliasMensaje = $('#aliasMensaje').val();
+            if (aliasMensaje === undefined || aliasMensaje === null || aliasMensaje.trim() === '') {
+                Swal.fire({
+                    title: "@ComunResources.atencion",
+                    text: "@ComunResources.campoObligatorio: @ComunResources.alias",
+                    heightAuto: false,
+                    icon: "info"
+                });
+                return false;
+            }
+
+            const comando = $('#comando').val();
+            if (comando === undefined || comando === null && comando.trim() === '') {
+                Swal.fire({
+                    title: "@ComunResources.atencion",
+                    text: "@ComunResources.campoObligatorio: @ConfigResources.comandoMensajeria",
+                    heightAuto: false,
+                    icon: "info"
+                });
+                return false;
+            }
+
+            const servicioExterno = $("#servicioExterno").val();
+            if (servicioExterno == "0") {
+                Swal.fire({
+                    title: "@ComunResources.atencion",
+                    text: "@ComunResources.campoObligatorio: Servicio externo",
+                    heightAuto: false,
+                    icon: "info"
+                });
+                return false;
+            }
+
+
+            if (!ValidaCaracteresCadena(g_datosPlantilla.Alias)) {
+                Swal.fire({
+                    title: "@ComunResources.atencion",
+                    text: "El alias debe empezar por letra. Solo acepta letras (minúscula), números y el caracter separador _",
+                    heightAuto: false,
+                    icon: "info"
+                });
+                return false;
+            }
+
+            let totparams = ValidaParametrosMensaje(g_datosPlantilla.Mensaje);
+            if (totparams === -1) {
+                Swal.fire({
+                    title: "@ComunResources.atencion",
+                    text: "El formato de los parámetros es erróneo, debe ser {{numero}}",
+                    heightAuto: false,
+                    icon: "info"
+                });
+                return false;
+            }
+            else
+                g_datosPlantilla.CantParametros = totparams;
+
+            return true;
+        }
+
+        function ValidaCaracteresCadena(cadena) {
+            for (let j = 0; j < cadena.length; j++) {
+                letra = cadena.charAt(j);
+                if (j === 0 && (letra < 'a' || letra > 'z')) {
+                    return false;
+                }
+
+                if (!((letra >= 'a' && letra <= 'z') || (letra >= '0' && letra <= '9') || (letra === '_')))
+                    return false;
+            }
+
+            return true;
+        }
+
+
+        function ValidaParametrosMensaje(cadena) {
+            let salir = false;
+            let totalParams = 0;
+
+            while (salir) {
+                const pos1 = cadena.indexOf("{{");
+                const pos2 = cadena.indexOf("}}");
+
+                if (pos1 != -1 && pos2 != -1) {
+                    let totcaracteres = pos2 - (pos1 + 2);
+                    if (totcaracteres == 0) {
+                        return -1;
+                    }
+
+                    let valor = datosPlantilla.Mensaje.substring(pos1 + 2, totcaracteres);
+
+                    if (valor === null || valor === "")
+                        valor = "varParam" + (totalParams + 1);
+
+                    if (g_datosPlantilla.Parametros === null || g_datosPlantilla.Parametros === "")
+                        g_datosPlantilla.Parametros = valor;
+                    else
+                        g_datosPlantilla.Parametros = "&" + valor;
+                    //const isNumeric = n => !isNaN(n)
+                    //if (!isNumeric(valor)) {
+                        //return -1;
+                    //}
+
+                    totalParams++;
+
+                    cadena = cadena.Substring(pos2 + 1);
+                }
+                else
+                    salir = true;
+            }
+            return totalParams;
+        }
+    </script>
+}
+
+

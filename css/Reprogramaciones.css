@@ -1,0 +1,157 @@
+﻿
+.th {
+    background: #778899 !important;
+    color: white !important;
+    font-weight: 300 !important;
+}
+
+
+
+.texto-negrita {
+    font-weight: 600;
+}
+
+.dark-red-text {
+    color: darkred;
+}
+
+.red-text {
+    color: red;
+}
+
+
+.blue-text {
+    color: blue;
+}
+
+.primary-color-text {
+    color: #0d47a1;
+}
+
+.texto-negrita {
+    font-weight: 600;
+}
+
+.darkgreen-text {
+    color: darkgreen;
+}
+
+.borde-inferior {
+    border-bottom: 1px solid black;
+}
+
+.cajaInput {
+    width: 40px !important;
+    border: none !important;
+    cursor: pointer;
+    background-color: inherit !important;
+    text-align: right;
+}
+
+.cajaInput-time {
+    width: 95px !important;
+    border: none !important;
+    cursor: pointer;
+    background-color: inherit !important;
+}
+
+
+.pos-dcha {
+    float: right;
+    margin-left: 15px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.ml-15 {
+    margin-left: 15px;
+}
+
+.mtop-25 {
+    margin-top: 25px;
+}
+
+.mb-0 {
+    margin-bottom: 0px;
+}
+
+.my-list-group {
+    margin-bottom: 5px !important;
+    border-bottom: 1px solid #c2c2c2;
+    margin-top: -5px !important;
+    padding-left: 0px;
+}
+
+.ancho-40 {
+    width: 40px;
+}
+
+.my-button-def {
+    border: none;
+    background-color: inherit;
+    margin-top: 10px;
+}
+
+.myli-item {
+    position: relative;
+    display: block;
+    padding: 7px 15px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    background-color: inherit;
+    display: flex;
+}
+
+.floatRight {
+    float: right;
+}
+
+.no-display {
+    display: none;
+}
+
+
+
+.margen-inferior-25 {
+    margin-bottom: 25px;
+}
+
+
+.td-click {
+    cursor: pointer;
+}
+
+
+.panel-cambio-grupo {
+    top: 145px;
+    position: relative;
+    left: 8%;
+    width: 87%;
+}
+
+
+.posiciona-trash-o {
+    position: absolute;
+    left: 92%;
+    top: 8px;
+}
+
+.con-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+
+.my-form-control {
+    display: block;
+    width: 100%;
+    height: 22px;
+    padding: 2px 5px;
+    font-size: 14px;
+    background-color: inherit;
+    line-height: 1.42857143;
+    color: #555;
+    border: none !important;
+}

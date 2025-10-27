@@ -1,0 +1,365 @@
+﻿@using ManteniWeb.ClasesDeDatos
+
+@model List<DatosPrefijo>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css" />
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/ReglaLlamadaSaliente.css" rel="stylesheet" />
+
+
+
+@{
+    string title = "Prefijos de marcación";
+
+}
+
+<style>
+    .no-pointer-events {
+        pointer-events: none;
+    }
+</style>
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+<!-- Para guardar los registros seleccionados en la tabla -->
+<input type="hidden" id="idsSeleccionados" value="" />
+<input type="hidden" id="esNuevo" value="false" />
+
+<div class="container-fluid">
+
+    <div class="row rowSeparacion25">
+        <div id="panelIzquierdo" class="col-lg-2 col-md-2">
+            @Html.Partial("MenuPrefijos")
+        </div>
+
+        <div id="panelCentro" class="col-lg-5 col-md-5">
+            @using (Html.BeginForm("Prefijos", "LlamadaSaliente", FormMethod.Get, new { id = "ASPForm", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.Partial("_MensajesError")
+
+                <table id="PrefijosTabla" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="no-sort"></th>
+                            <th>Prefijo</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr id="tr_@item.prefijo">
+                            <td id="td_@item.prefijo">
+                                <input type="checkbox" id="chk_@item.prefijo" />
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.prefijo)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.descripcionPrefijo)
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            }
+        </div>
+
+        <div id="panelDerecho" class="col-lg-3 col-md-3 col-sm-12 caja-datos" style="margin-left: 30px;display:none;">
+            <div style="height:35px;">
+                <h4>
+                    <strong>PREFIJO</strong>
+                </h4>
+            </div>
+            <div class="row rowSeparacion10">
+                <div class="col-md-9">
+                    <label from="prefijoMarcacion">Prefijo</label>
+                    <input id="prefijoMarcacion" type="text" class="form-control" value="" />
+                </div>
+            </div>
+            <div class="row rowSeparacion20">
+                <div class="col-md-12">
+                    <label from="descripcionPrefijo">Descripción</label>
+                    <input id="descripcionPrefijo" type="text" class="form-control" value="" />
+                </div>
+            </div>
+            <div class="row rowSeparacion20 main">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="floatRight">
+                        <button type="button" class="btn btn-default botonFicha" id="BotonAceptar" onclick="GuardarPrefijo()">Guardar</button>
+                        <button type="button" class="btn btn-default botonFicha" id="BotonSalir" onclick="SalirEdicion()">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script src="~/Content/DataTables/datatables.min.js" type="text/javascript"></script>
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/js/sweetalert2/dist/sweetalert2.all.min.js" type="text/javascript"></script>
+
+
+    <script>
+
+        let arrPrefijos = @Html.Raw(Json.Encode(Model));
+
+        class DatosPrefijo {
+            constructor(prefijo, descripcion, esAlta) {
+                this.prefijo = prefijo;
+                this.descripcionPrefijo = descripcion;
+                this.esAlta = esAlta;
+            }
+        }
+
+        $(function () {
+            tableop = $('#PrefijosTabla').DataTable({
+                "order": [[1, "asc"]],
+                "processing": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "Sin registros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Sin registros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "Todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#PrefijosTabla').css('display', 'table');
+
+            $("#PrefijosTabla").on("click", "td:not(:first-child)", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+
+               EditaPrefijo(id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#PrefijosTabla").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+        function EliminarPrefijos() {
+            Swal.fire({
+                title: 'Eliminar prefijo',
+                text: "Se eliminarán los prefijos seleccionados. ¿Desear continuar?",
+                icon: 'warning',
+                heightAuto: false,
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    const idsSeleccionados = $('#idsSeleccionados').val();
+                    const params = { "idprefijo": idsSeleccionados };
+
+                    $.ajax({
+                        url: getRutaAbsoluta() + "/LlamadaSaliente/EliminarPrefijo",
+                        type: 'DELETE',
+                        data: params,
+                        success: function (resultado) {
+                            if (resultado !== null) {
+                                $('#idsSeleccionados').val("");
+                                let respuesta = JSON.parse(resultado);
+                                MostrarMensajeRespuesta(respuesta);
+                                if (respuesta.Error === "N") {
+                                    EliminaFilasTabla();
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+        }
+
+        function EliminaFilasTabla() {
+            let idsSeleccionados = $("#idsSeleccionados").val();
+            let arrIds = idsSeleccionados.split(",");
+
+            for (let i = 0; i < arrIds.length; i++) {
+                let id = arrIds[i];
+                $("#tr_" + id).remove();
+            }
+        }
+
+
+        function EditaPrefijo(idPrefijo) {
+            if (idPrefijo === undefined || idPrefijo === null) {
+                idPrefijo = $('#idsSeleccionados').val();
+            }
+            $("#panelIzquierdo").addClass("no-pointer-events");
+            $("#panelCentro").addClass("no-pointer-events");
+            $("#panelDerecho").css("display","block");
+            arrPrefijos.forEach(prf => {
+                if (prf.prefijo === idPrefijo) {
+                    $("#prefijoMarcacion").val(idPrefijo);
+                    $("#descripcionPrefijo").val(prf.descripcionPrefijo);
+                    return;
+                }
+            })
+        }
+
+        function NuevoPrefijo(idPrefijo) {
+            $("#panelIzquierdo").addClass("no-pointer-events");
+            $("#panelCentro").addClass("no-pointer-events");
+            $("#panelDerecho").css("display", "block");
+            $("#prefijoMarcacion").val("");
+            $("#descripcionPrefijo").val("");
+            $("#esNuevo").val("true");
+        }
+
+        function SalirEdicion() {
+            $("#panelIzquierdo").removeClass("no-pointer-events");
+            $("#panelCentro").removeClass("no-pointer-events");
+            $("#panelDerecho").css("display", "none");
+            $("#prefijoMarcacion").val("");
+            $("#descripcionPrefijo").val("");
+            let idsSeleccionados = $("#idsSeleccionados").val();
+            let arrIds = idsSeleccionados.split(",");
+
+            for (let i = 0; i < arrIds.length; i++) {
+                let id = arrIds[i];
+                document.getElementById("chk_"+id).checked = false;
+            }
+
+            $('#idsSeleccionados').val("");
+            $('.EdicionMultiple').css('display', 'none');
+            $('.EdicionSimple').css('display', 'none');
+        }
+
+        function GuardarPrefijo() {
+            const esNuevo = $("#esNuevo").val();
+            const prefijo = $("#prefijoMarcacion").val();
+            const descrip = $("#descripcionPrefijo").val()
+            let strPrefijo;
+            if (esNuevo.toLowerCase() === 'true')
+            {
+                strPrefijo  = new DatosPrefijo(prefijo, descrip, true);
+            }
+            else {
+                strPrefijo = new DatosPrefijo(prefijo, descrip, false);
+            }
+
+            const url = getRutaAbsoluta() + "/LlamadaSaliente/GuardarPrefijo";
+            const param = { "datosPrefijo": strPrefijo };
+            $.post(url, param, function (resultado) {
+                const respuesta = JSON.parse(resultado);
+                MostrarMensajeRespuesta(respuesta);
+
+            });
+
+
+        }
+
+        function MostrarMensajeRespuesta(respuesta) {
+            console.log("Respuesta guardar datos: " + respuesta.Mensaje);
+            let pnlMessage = "";
+
+            if (respuesta) {
+                if (respuesta.Error === "S") {
+                    $('#MensajeAlertError').html(respuesta.Mensaje);
+                    pnlMessage = "alerterror";
+                }
+                else if (respuesta.Error === "N") {
+                    /// Mostramos mensaje de que todo se ha actualizado perfectamente
+                    $('#MensajeAlertSuccess').html(respuesta.Mensaje);
+                    pnlMessage = "alertsuccess";
+                }
+            }
+            else {
+                console.log("No se puede hacer un parse de la respuesta de errores al actualizar los datos, llega vacío.")
+            }
+
+            $('#' + pnlMessage).css('display', 'block');
+            // Se mantien por 6 segundos, luego se quita
+            setTimeout(function () {
+                $('#' + pnlMessage).css('display', 'none');
+            }, 4000);
+        }
+
+        function timeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function sleep() {
+            await timeout(3000);
+        }
+
+    </script>
+
+}

@@ -1,0 +1,335 @@
+﻿@model  ManteniWeb.Models.Chat
+
+@using ManteniWeb.Code;
+
+@{
+    Layout = null;
+}
+
+<style>
+    .borderCrimson {
+        border-color: crimson;
+    }
+
+    .borderJumbotron {
+        border-style: groove;
+        margin-top: 10px;
+    }
+
+    .panel-operador {
+        padding: 4px 12px;
+        border-left: 1px solid cadetblue;
+        border-right: 1px solid cadetblue;
+        border-radius: 5px;
+    }
+
+    .panel-usuario {
+        padding: 4px 12px;
+        border-right: 1px solid cornflowerblue;
+        border-left: 1px solid cornflowerblue;
+        border-radius: 5px;
+    }
+
+    .panel-servidor {
+        padding: 4px 12px;
+        border-right: 1px solid indianred;
+        border-left: 1px solid indianred;
+        border-radius: 5px;
+    }
+
+    .marginTopNegativo10 {
+        margin-top: -10px;
+    }
+
+    .operador {
+        color: cadetblue;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .usuario {
+        color: cornflowerblue;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .servidor {
+        color: indianred;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .borderless td, .borderless th {
+        border: none !important;
+    }
+
+    .desbordar {
+        max-height: 65%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+
+<script src="~/js/jquery-3.7.1.min.js"></script>
+<script src="~/js/Grabaciones.js"></script>
+
+@Styles.Render("~/FicherosCss")
+@Styles.Render("~/FicherosCssPropios")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/FuncionesJS")
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Mostrar</title>
+</head>
+<body>
+    <div class='container'>
+        @if (Model == null)
+        {
+            <div class="jumbotron borderJumbotron" style="margin-bottom: 30px !important;">
+                <div class='container'>
+                    <h3 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+                        <i class='fa fa-comments-o' aria-hidden="true"></i>
+                        <span style='margin-left: 1em;color:crimson;'>Visor de chat</span>
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12 col-lg-12">
+                            <div class="form-inline">
+                                <h4>No se ha encontrado el chat seleccionado</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+        else
+        {
+            <div class="jumbotron borderJumbotron" style="margin-bottom: 30px !important;background-color: #f7f9fa !important;">
+                <div class='container'>
+                    <h3 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+                        <i class='fa fa-comments-o' aria-hidden="true"></i>
+                        <span style='margin-left: 1em;'>Visor de chat</span>
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12 col-lg-12">
+                            <div class="form-inline">
+                                <table class="table borderless" style="font-size:15px;">
+                                    <tr>
+                                        <td><b>Identificador de chat:</b> &nbsp;&nbsp; @Model.TiphoneChatId</td>
+                                        <td><b>Operador:</b> <span class="operador">&nbsp;&nbsp; @Model.AliasOperador </span></td>
+                                        <td><b>Inicio:</b> &nbsp;&nbsp; @Model.TimestampInicio.ToString(WebConfigParams.FormatDateTime) </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Usuario:</b><span class="usuario"> &nbsp;&nbsp; @Model.Usuario_Nombre</span></td>
+                                        <td><b>Email:</b> &nbsp;&nbsp; @Model.Usuario_Email</td>
+                                        <td><b>Fin:</b> &nbsp;&nbsp; @Model.TimestampFin.ToString(WebConfigParams.FormatDateTime) </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"><b>Url origen:</b> &nbsp;&nbsp; @Model.UrlOrigen</td>
+                                        <td><b>IP:</b> &nbsp;&nbsp; @Model.IP</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="desbordar">
+                @{ string origenAnt = "";
+                    string origen = "";
+                    string clase = "";
+                    string bordepanel = "";
+                }
+                @foreach (ManteniWeb.Models.TextoChat texto in Model.TextosChat)
+                {
+                    if (texto.TipoMensaje == "FORMULARIO")
+                    {
+                        if (texto.TipoOrigen == "USUARIO")
+                        {
+                            origen = "Usuario";
+                            clase = "usuario";
+                            bordepanel = "panel-usuario";
+                        }
+                        else
+                        {
+                            origen = "Operador";
+                            clase = "operador";
+                            bordepanel = "panel-operador";
+                        }
+                    }
+                    else if (texto.TipoMensaje == "SISTEMA")
+                    {
+                        if (texto.TipoOrigen == "ACD" || texto.TipoOrigen == "SERVIDOR")
+                        {
+                            origen = "Sistema";
+                            clase = "servidor";
+                            bordepanel = "panel-servidor";
+                        }
+                        else if (texto.TipoOrigen == "USUARIO")
+                        {
+                            origen = "Usuario";
+                            clase = "usuario";
+                            bordepanel = "panel-usuario";
+                        }
+                        else
+                        {
+                            origen = "Operador";
+                        }
+                    }
+                    else if (texto.TipoMensaje == "CHAT" || texto.TipoMensaje == "PLANTILLA")
+                    {
+                        if (texto.TipoOrigen == "OPERADOR")
+                        {
+                            origen = "Operador";
+                            clase = "operador";
+                            bordepanel = "panel-operador";
+                        }
+                        else if (texto.TipoOrigen == "ACD")
+                        {
+                            origen = "Sistema";
+                            clase = "servidor";
+                            bordepanel = "panel-servidor";
+                        }
+                        else
+                        {
+                            origen = "Usuario";
+                            clase = "usuario";
+                            bordepanel = "panel-usuario";
+                        }
+                    }
+
+                    <div class="row">
+                        <!--div class="col-lg-1 col-md-1 col-sm-1"></div-->
+                        @if (origen != origenAnt)
+                        {
+                            <div class="col-lg-1 col-md-1 col-sm-1"><span class="@clase">@origen</span> </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-1 col-md-1 col-sm-1"><span class="@clase"></span> </div>
+                        }
+
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+
+                        @{
+                            string url = WebConfigParams.URLTiphoneRecords + "/QueryVoiceRecord.aspx?type=Video&ref=" + Model.TiphoneChatId + "_" + texto.TimestampCreacion.ToString("yyyyMMddHHmmss");
+
+                            if (origen == origenAnt)
+                            {
+                                bordepanel += " marginTopNegativo10";
+                            }
+                            else
+                            {
+                                origenAnt = origen;
+                            }
+                        }
+
+                        @if (texto.TextoMensaje.Contains("[INICIO_VIDEO_BIDIRECCIONAL]"))
+                        {
+                            <p class="@bordepanel">
+                                Inicio Vídeo (bidireccional) &nbsp;&nbsp;
+                                <span class='fa fa-video-camera' tooltip='Ver conversación' onclick="ObtenerVideo('@url')" style="cursor:pointer;"></span>
+                            </p>
+                        }
+                        else if (texto.TextoMensaje.Contains("[INICIO_VIDEO_UNIDIRECCIONAL]"))
+                        {
+                            <p class="@bordepanel">
+                                Inicio Vídeo (unidireccional)
+                                &nbsp;&nbsp; <span class='fa fa-video-camera' tooltip='Ver conversación' onclick="ObtenerVideo('@url')" style="cursor:pointer;"></span>
+                            </p>
+                        }
+                        else if (texto.TextoMensaje.Contains("[END_VIDEO]"))
+                        {
+                            <p class="@bordepanel"> Finaliza Vídeo  </p>;
+                        }
+                        else
+                        {
+                            if (texto.TipoMensaje == "FORMULARIO")
+                            {
+                                <p class="@bordepanel">
+
+                                    <pre class="@bordepanel" style="background-color: #f7f9fa;font-family:'Roboto',sans-serif !important;border-top:none;border-bottom: none;">@texto.TextoMensaje</pre>
+                                </p>
+                            }
+                            else if (texto.TipoMensaje == "MENSAJE_IMAGE")
+                            {
+                                <p class="@bordepanel">
+                                    <a href="@texto.UrlFichero"><span class="fa fa-2x fa-image" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                </p>
+                            }
+                            else if (texto.TipoMensaje == "MENSAJE_PDF")
+                            {
+                                <p class="@bordepanel">
+                                    <a href="@texto.UrlFichero"><span class="fa fa-2x fa-file-pdf-o" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                </p>
+                            }
+                            else if (texto.TipoMensaje == "MENSAJE_FILE")
+                            {
+                                <p class="@bordepanel">
+                                    <a href="@texto.UrlFichero"><span class="fa fa-2x fa-file-o" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                </p>
+                            }
+                            else if (texto.TipoMensaje == "MENSAJE_VOZ")
+                            {
+                                <p class="@bordepanel">
+                                    <a href="@texto.UrlFichero"><span class="fa fa-2x fa-file-audio-o" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                </p>
+                            }
+                            else if (texto.TipoMensaje == "MULTIMEDIA")
+                            {
+                                <p class="@bordepanel">
+                                    <a href="@texto.UrlFichero"><span class="fa fa-2x fa-download" style="margin-right: 5px;"> </span> @texto.NombreFichero</a>
+                                </p>
+                            }
+                            else
+                            {
+
+                                if (!string.IsNullOrEmpty(texto.MimeTypeFichero))
+                                {
+                                    switch (texto.MimeTypeFichero.ToLower())
+                                    {
+                                        case "imagen":
+                                            <p class="@bordepanel">
+                                                <a href="@texto.UrlFichero"><span class="fa fa-2x fa-image" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                            </p>
+                                            break;
+                                        case "pdf":
+                                            <p class="@bordepanel">
+                                                <a href="@texto.UrlFichero"><span class="fa fa-2x fa-file-pdf-o" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                            </p>
+                                            break;
+                                        case "texto":
+                                            <p class="@bordepanel">@texto.TextoMensaje</p>
+                                            break;
+                                        default:
+                                                <p class="@bordepanel">
+                                                    <a href="@texto.UrlFichero"><span class="fa fa-2x fa-file-o" style="margin-right: 5px;"></span> @texto.NombreFichero</a>
+                                                </p>
+                                                break;
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="@bordepanel">@texto.TextoMensaje</p>
+                                    }
+                                }
+
+                            }
+                    </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 small">@texto.TimestampCreacion.ToString("HH:mm:ss") </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</body>
+</html>

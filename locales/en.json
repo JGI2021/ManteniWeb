@@ -1,0 +1,55 @@
+﻿{
+  "Buscador": {
+    "Buscar": "Search",
+    "NoTocados": "Not touched",
+    "Reprogramado": "Rescheduled",
+    "Finalizados": "Finished",
+    "Cancelados": "Cenceled",
+    "Anulados": "Discarded",
+    "Supervisión": "Supervision",
+    "Inconsistente": "Inconsistent",
+    "SeleccCampo": "Select field",
+    "Activo": "Acvtive",
+    "Eliminado": "Deleted",
+    "Cancelado": "Canceled",
+    "ErrObtenerPrefijo": "An error occurred while retrieving the prefix name from the telemarketer table",
+    "ErrComboListas": "An error occurred while loading campaign lists",
+    "Todos": "All",
+    "ErrResultados": "An error occurred while loading campaign business results",
+    "EdicionRegistro": "Edit record",
+    "EdicionMultiple": "Edit mulitple records",
+    "ErrFomMultipleEdit": "Failed to open multiple record edit form",
+    "DatosSalvadosOk": "The data has been copied successfully",
+    "DatosSalvadosKO": "Data copy failed",
+    "CopiaPortapapelesOK": "Records have been successfully copied to the clipboard",
+    "CopiaPortapapelesKO": "Copy records to clipboard have failed"
+  },
+  "RegistrosMarcador": {
+    "fecha": "Date",
+    "fechaDesde": "Date from"
+  },
+  "Comun": {
+    "sinRegistros": "No records"
+  },
+  "Operadores": {
+    "procesando": "Loading...",
+    "lengthMenu": "_MENU_ records per page",
+    "resteContrasenaOk": "New password is <strong>NewPwdUser@1</strong>",
+    "errResetContrasena": "Password could not be reset. Error in security server",
+    "msgDesactivaAgentes": "Selected will be marked as disabled and will not be selectable in groups, campaigns or lists. Do you wish to continue?",
+    "msgEliminarAgentes": "Selected users marked as disabled will be deleted. They will be deleted from the tables and cannot be recovered. Do you wish to continue? ",
+    "msgActivarAgentes": "Users marked as disabled will be enabled. Do you wish to continue?",
+    "msgErrorConexionRest": "Password could not be reset. Error in the request to the server",
+    "msgActivarOperador": "User is going to be enabled. Do you wish to continue?",
+    "tipoDeAsesor": "Type of user",
+    "msgErrorComunicacion": "Connection problem with the server",
+    "fechaMayorQue": "Date ''from'' can not be greater than date ''to''",
+    "seleccionarPeriodoFecha": "You must select a period of dates"
+  },
+  "Grabaciones": {
+    "CopiaGrabacionesClipboardOK": "Records have been successfully copied to the clipboard",
+    "CopiaGrabacionesClipboardKO": "Copy records to clipboard have failed",
+    "BusquedaPorId": "Recordings search by Id",
+    "BusquedaAvanzada": "Recordings advanced search"
+  }
+}

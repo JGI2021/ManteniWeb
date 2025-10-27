@@ -1,0 +1,148 @@
+﻿@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources
+
+@model TDatosOperador
+
+@{
+    TUsuario usuario = ManteniWeb.Code.EstaticosUsuario.GetUsuario(HttpContext.Current);
+    bool esAlta = true;
+    if (!string.IsNullOrEmpty(Model.Codigo) && Model.Codigo != "0")
+    {
+        esAlta = false;
+    }
+}
+
+<div class="col-sm-2 col-md-2 col-lg-2" style="text-align:left;font-size: 14px !important;" id="LeftPanel" >
+    <div class="visible-lg visible-md ">
+        @{
+            string mostrarEdicion;
+            if (!esAlta)
+            {
+                if (Model.Activo == "0")
+                {
+                    mostrarEdicion = "display:none;";
+                }
+                else
+                {
+                    mostrarEdicion = "display:block;";
+                }
+            }
+            else
+            {
+                mostrarEdicion = "display:none;";
+            }
+        }
+
+
+        @if (usuario.PermisosUsuario.AdminOperadores || usuario.UserId == Model.Codigo)
+        {
+            <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                <li class="BEdicionSimple" style="">
+                    <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="ResetearContrasena();">
+                        <div class="row" style="display: inline-flex;">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa fa-unlock-alt ratonEncima  visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-11">@ComunResources.op_cambiarContrasena</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="BEdicionSimple" style="">
+                    <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="FPermisos();">
+                        <div class="row" style="display: inline-flex;">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa fa-key ratonEncima  visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-11">@ComunResources.op_permisos</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <div id="MenuEdicion" style="@mostrarEdicion">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    @if (usuario.PermisosUsuario.SupervisaoAdministraGrupos())
+                    {
+                        <li class="BEdicionSimple" style="">
+                            <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="FGrupos();">
+                                <div class="row" style="display: inline-flex;">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-users ratonEncima  visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-11">@ComunResources.pr_grupos</div>
+                                </div>
+                            </a>
+                        </li>
+                    }
+
+
+                    @if (usuario.PermisosUsuario.SupervisaoAdministraListas())
+                    {
+                        <li class="BEdicionSimple" style="">
+                            <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="FListas();">
+                                <div class="row" style="display: inline-flex;">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-bookmark-o ratonEncima  visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-11">@ComunResources.listas</div>
+                                </div>
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+
+            </div>
+        }
+
+
+    <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+
+        @if (Model.Activo == "1" || Model.Activo == "2")
+        {
+            <li class="BEdicionSimple" style="">
+                <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="ElimiminacionFilas();">
+                    <div class="row" style="display: inline-flex;">
+                        <div class="col-lg-2 col-sm-2">
+                            <span class="fa fa-circle ratonEncima  BotonRed visible-lg  visible-md  visible-xs " id="MenuActivaDesactiva" aria-hidden="true"></span>
+                        </div>
+                        <div id="NombreActivaDesactiva" class="col-lg-10 col-sm-11">@ComunResources.desactivar</div>
+                    </div>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="BEdicionSimple" style="">
+                <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="ElimiminacionFilas();">
+                    <div class="row" style="display: inline-flex;">
+                        <div class="col-lg-2 col-sm-2">
+                            <span class="fa fa-circle ratonEncima  BotonGreen visible-lg  visible-md  visible-xs " id="MenuActivaDesactiva" aria-hidden="true"></span>
+                        </div>
+                        <div id="NombreActivaDesactiva" class="col-lg-10 col-sm-11">@ComunResources.activar</div>
+                    </div>
+                </a>
+            </li>
+        }
+
+        <li class="RowAccionesSiempreVisibles">
+            <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                <div class="row" style="display: inline-flex;">
+                    <div class="col-lg-2 col-sm-2">
+                        <span class="fa fa-arrow-left ratonEncima  visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                    </div>
+                    <div class="col-lg-10 col-sm-11">@ComunResources.btn_volver</div>
+                </div>
+            </a>
+        </li>
+
+        <li></li>
+    </ul>
+    </div>
+</div>
+
+
+
+

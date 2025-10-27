@@ -1,0 +1,200 @@
+﻿
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources;
+
+@{
+    TUsuario usuario = ViewBag.Usuario as TUsuario;
+    string title = ComunResources.pr_campanas;
+
+    string tipoCabecera = "cabecera1";
+    switch (Comun.ColorSuperiorConf.ToUpper())
+    {
+        case "00796B":
+            tipoCabecera = "cabecera1";
+            break;
+        case "0D77B6":
+            tipoCabecera = "cabecera2";
+            break;
+        case "D32F2F":
+            tipoCabecera = "cabecera3";
+            break;
+        case "455A64":
+            tipoCabecera = "cabecera4";
+            break;
+        case "303F9F":
+            tipoCabecera = "cabecera5";
+            break;
+        case "388E3C":
+            tipoCabecera = "cabecera6";
+            break;
+
+    }
+}
+
+    <div class="sidebar @tipoCabecera" id="panel-menu">
+
+        <div class="rowSeparacion15" >
+            <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked ">
+                @if (usuario.PermisosUsuario.AdministraCampanas == TTipoConjunto.TC_TODOS)
+                {
+                    <li class="RowAccionesSiempreVisibles">
+                        <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="NuevaCampana();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa @EstaticosImagenes.ImagenNuevoRegistro visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">@ComunResources.btn_nuevo</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li class="BEdicionSimple BEdicionMultiple" style="visibility: hidden; display: none;">
+                        <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="EliminarCampana();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa @EstaticosImagenes.ImagenEliminacionRegistro visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">@ComunResources.btn_eliminar</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li class="RowAccionesSiempreVisibles">
+                        <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="CopiarCampana();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa @EstaticosImagenes.ImagenCopia visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_copiarCampana</div>
+                            </div>
+                        </a>
+                    </li>
+                }
+
+                <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="EditarCampana();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenConceptoListas visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.ls_lista</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="ListasCampana();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenEdicionRegistro visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@ComunResources.btn_editar</div>
+                        </div>
+                    </a>
+                </li>
+
+                @if (usuario.PermisosUsuario.AdministraCampanas == TTipoConjunto.TC_TODOS)
+                {
+                    <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                        <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="OperadoresDefecto();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa @EstaticosImagenes.ImagenConceptoOperadores visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_operadorePorDefecto</div>
+                            </div>
+                        </a>
+                    </li>
+                }
+
+                <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="ResultadosNegocioCampana();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenConceptoRdoNegocio visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_filtros</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="FiltrosCampana();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenConceptoFiltro visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_resultadosNegocio</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="FSupervision();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenConceptoSupervision visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_supervision</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="BEdicionSimple" style="visibility: hidden; display: none;">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="ImportarRegistrosCampana();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenUpload visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_importarRegistros</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="RowAccionesSiempreVisibles">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="BuscarRegistros();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenBusqueda visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_buscarRegistros</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="RowAccionesSiempreVisibles">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="HistoricoRegistros();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenRegistrosMarcador visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_resultadosMarcador</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="RowAccionesSiempreVisibles">
+                    <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="HistoricoRegistros();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-2">
+                                <span class="fa @EstaticosImagenes.ImagenBusqueda visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-10">@CampanaResources.cmp_historicoRegistros</div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="RowAccionesSiempreVisibles" style="">
+                    <a href="#" role="button" id="OptionButtonVP_15" onclick="RetrocederPaginaMVC();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-1">
+                                <span class="fa @EstaticosImagenes.ImagenVolver visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-11">@ComunResources.btn_volver</div>
+                        </div>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>

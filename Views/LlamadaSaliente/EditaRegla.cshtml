@@ -1,0 +1,312 @@
+﻿@using ManteniWeb.ClasesDeDatos
+@using ManteniWeb.Models
+
+
+@model DatosRegla
+
+@*<script src="~/Scripts/bootstrap-select.min.js"></script>*@
+<link href="~/css/ReglaLlamadaSaliente.css" rel="stylesheet" />
+
+
+<style>
+    .boton-cancelar-edicion {
+        float: right;
+        top: 9px;
+        color: darkred;
+        cursor: pointer;
+        /* display: none; */
+        margin-right: 5px;
+        font-size: 18px;
+        position: relative;
+    }
+
+    .boton-guardar-edicion {
+        float: right;
+        top: 9px;
+        color: #0074d9;
+        cursor: pointer;
+        /* display: none; */
+        margin-right: 5px;
+        font-size: 18px;
+        position: relative;
+    }
+
+    .boton-add-group {
+        float: right;
+        top: -36px;
+        position: relative;
+        left: -1px;
+    }
+
+    a {
+        color: blue !important;
+    }
+
+    .delete-btn-phone-grp {
+        color: darkred;
+        float: right;
+        border-color: #f5f5f5;
+        cursor: pointer;
+        border-radius: 4px;
+        background-color: inherit;
+        top: -5px;
+        position: relative;
+    }
+</style>
+
+@{
+    string title = "Editar regla de marcación ";
+    List<MarcacionesGrupoANI> gruposANIs = ViewBag.GruposAnis as List<MarcacionesGrupoANI>;
+    string strGruposANIs = ManteniWeb.Code.Comun.Serializa(gruposANIs);
+    ManteniWeb.Code.DCRespuestaGeneral respuesta = ViewBag.Respuesta as ManteniWeb.Code.DCRespuestaGeneral;
+}
+<link href="~/css/ReglaLlamadaSaliente.css" rel="stylesheet" />
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+<input type="hidden" id="hidGruposANIs" name="hidGruposANIs" value="@strGruposANIs" />
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-2 col-md-2">
+            <div class="visible-lg visible-md rowSeparacion15">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-gl-8 col-sm-8 col-md-8">
+            @using (Html.BeginForm("GuardaRegla", "LlamadaSaliente", FormMethod.Post, new { id = "ASPForm", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.Partial("_MensajesError")
+
+                <div class="row">
+                    <div class="col-lg-7 caja-datos">
+                        <h4>Regla <b>@Model.nombreRegla</b></h4>
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4">
+                                @Html.LabelFor(model => model.regla, htmlAttributes: new { @class = "control-label col-md-12" })                                                               
+                                @Html.EditorFor(model => model.regla, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.regla, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-lg-8 col-md-8">
+                                @Html.LabelFor(model => model.nombreRegla, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.nombreRegla, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.nombreRegla, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div class="row rowSeparacion20">
+                            <div class="col-lg-12 col-md-12">
+                                @Html.LabelFor(model => model.descripcionRegla, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.descripcionRegla, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.descripcionRegla, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row rowSeparacion20">
+                            <div class="col-lg-6 col-md-6">
+                                @Html.LabelFor(model => model.capability, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.capability, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.capability, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                @Html.LabelFor(model => model.digitosAQuitar, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.digitosAQuitar, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.digitosAQuitar, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+
+                        <div class="row rowSeparacion20">
+                            <div class="col-lg-6 col-md-6">
+                                @Html.LabelFor(model => model.prefijoOP, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                                @Html.EditorFor(model => model.prefijoOP, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.prefijoOP, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                @Html.LabelFor(model => model.prefijoPBX, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.prefijoPBX, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.prefijoPBX, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="row rowSeparacion20">
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.sufijoANI, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.sufijoANI, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.sufijoANI, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.sufijoDNIS, htmlAttributes: new { @class = "control-label col-md-12" })
+                                @Html.EditorFor(model => model.sufijoDNIS, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.sufijoDNIS, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row rowSeparacion20">
+                            <div class="col-md-6">
+                                @{
+                                    string aniGroupNombre = string.Empty;
+
+                                    var aniGroup = gruposANIs.Find(gr => gr.aniGroupId == Model.currentAniGroupId);
+                                    if (aniGroup != null)
+                                    {
+                                        aniGroupNombre = aniGroup.descripcion;
+                                    }
+
+                                }
+                                <label for="GruposANI">Grupo de Teléfonos actual</label>
+                                <input type="text" class="form-control" id="GruposANI" name="GruposANI" value="@aniGroupNombre" readonly />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fechaGrupoActual" class="control-label col-md-12">Fecha de activación del grupo</label>
+                                <input id="fechaGrupoActual" type="datetime" class="form-control" value="@Model.currentAnigrouStatDate" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4" style="margin-left: 30px;">
+
+                        <div class="row">
+                            <div id="panelGruposAni" class="col-lg-12 col-md-12 caja-datos">
+                                <h4>
+                                    Grupos de teléfonos
+                                </h4>
+                                <button type="button" class="btn btn-info boton-add-group" onclick="AltaGrupoANIs()">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+
+                                <hr />
+                                @foreach (MarcacionesGrupoANI group in Model.GrupoANis)
+                                {
+                                    <div class="panel-group panelDraggable" id="panel_@group.aniGroupId" draggable="true">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title" style="padding: 20px 25px;">
+                                                    @if (Model.currentAniGroupId == group.aniGroupId)
+                                                    {
+                                                        <input type="radio" id="rdActivo.@group.aniGroupId" name="radioActivo" checked onclick="CambiaGrupoActivo(this.id)" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="radio" id="rdActivo.@group.aniGroupId" name="radioActivo" onclick="CambiaGrupoActivo(this.id)" />
+                                                    }
+                                                    <a data-toggle="collapse" href="#collapse_@group.aniGroupId">
+                                                        <span style="margin-right: 25px;"><b><span id="orden_@group.aniGroupId">@group.orden</span></b> - @group.descripcion</span>
+                                                        <span>días: @group.maxDiasTrabajo</span>
+                                                    </a>
+                                                    <button type="button" class="btn btn-default delete-btn-phone-grp">
+                                                        <span class="fa fa-trash-o" onclick="EliminarGrupo('@group.aniGroupId')"></span>
+                                                    </button>
+                                                </h4>
+                                                @if (Model.currentAniGroupId == group.aniGroupId)
+                                                {
+                                                    <label id="lbl_@group.aniGroupId"><b>Grupo activo</b></label>
+                                                    <input type="hidden" id="lblActivo" value="@group.aniGroupId" />
+                                                }
+                                                else
+                                                {
+                                                    <label id="lbl_@group.aniGroupId" style="display:none;"><b>Grupo activo</b></label>
+                                                }
+                                            </div>
+                                            <div id="collapse_@group.aniGroupId" class="panel-collapse collapse">
+                                                <label style="padding: 15px 10px 10px 35px;">Teléfonos:</label>
+                                                <label style="padding: 15px 15px 10px 5px; font-weight: 300;">@group.StrANIs</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row rowSeparacion20 main">
+                        <div class="col-lg-7 col-md-7 col-sm-12" style="margin-top: 20px;">
+                            <div class="floatRight">
+                                <button type="button" class="btn btn-default botonFicha" id="BotonAceptar" onclick="GuardarRegla(0)">Guardar</button>
+                                <button type="button" class="btn btn-default botonFicha" id="BotonAceptarSalir" onclick="GuardarRegla(1)">Guardar y salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @Html.Partial("_MiModal", new MiModelDlg())
+        </div>
+    </div>
+
+
+
+</div>
+
+
+@section scripts {
+    
+    <script src="~/js/sweetalert2/dist/sweetalert2.all.min.js" type="text/javascript"></script>
+    <script src="~/js/ReglasLLamadaSaliente.js"></script>
+
+    <script>
+        let datosRegla = @Html.Raw(ManteniWeb.Code.Comun.Serializa(Model));
+        let g_gruposDeANI = @Html.Raw(Json.Encode(gruposANIs));
+        let g_respuesta = @Html.Raw(ManteniWeb.Code.Comun.Serializa(respuesta));
+
+            if (g_respuesta !== null) {
+                MostrarMensajeRespuesta(g_respuesta);
+                if (g_respuesta.Error == "N") {
+                    datosRegla.nuevaRegla = false;
+                }
+            }
+
+        function CambiaGrupoActivo(idRadio) {
+            let fecha = new Date();
+            let idGrupo = idRadio.split(".")[1];
+            let grupo = g_gruposDeANI.find(gr => gr.aniGroupId == idGrupo);
+            if (grupo != null) {
+                $("#GruposANI").val(grupo.descripcion);
+                $("#fechaGrupoActual").val(fecha.toLocaleDateString());
+                datosRegla.currentAniGroupId = grupo.descripcion;
+                let radioActivo = document.getElementById(idRadio);
+                if (radioActivo != null) {
+                    radioActivo.checked = true;
+                    $("#lbl_" + idGrupo).css("display", "block")
+                    const lblactivo = "lbl_" + $("#lblActivo").val();
+                    $("#" + lblactivo).css("display", "none");
+                    $("#lblActivo").val("#lbl_" + idGrupo);
+                }
+            }
+        }
+
+    </script>
+}

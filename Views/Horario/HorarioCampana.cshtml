@@ -1,0 +1,364 @@
+﻿
+
+@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.App_GlobalResources;
+
+@model HorarioSemanal
+
+
+@{
+    ViewBag.Title = "Horario " + Model.NombreEntidad;
+}
+
+<style>
+    .marginBottom10 {
+        margin-bottom: 10px;
+    }
+
+    .marginTop20 {
+        margin-top: 20px;
+    }
+
+    .marginLeftRight15 {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .marginLeft50 {
+        margin-left: 50px;
+    }
+
+    .noMostrarPanel {
+        display: none;
+    }
+
+    .floatRight {
+        float: right;
+    }
+
+    .marginRight5 {
+        margin-right: 5px;
+    }
+
+    .panelSeleccionHorario {
+        position: absolute;
+        width: 400px;
+        left: 50%;
+        max-height: 80%;
+        min-height: 15%;
+        margin-top: 89px;
+    }
+
+    .marginTop22 {
+        margin-top: 22px;
+    }
+
+    .miHr {
+        border-top: 1px solid #333937;
+        margin-top: 10px;
+        margin-left: 60px
+    }
+</style>
+
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL *@
+
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        @* FIN MENU LATERAL *@
+
+        @*  FORMULARIO PRINCIPAL *@
+
+        <div class="col-lg-5 col-md-5 marginLeft50">
+
+            @* Mensaje de alerta *@
+            <div id="alerta" class="alert" style="display:none">
+                <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                <p id="alert-mensaje"></p>
+            </div>
+
+            <div>
+                <div style="margin-top: 50px;font-size:16px; ">
+
+                    <div class="row rowSeparacion20">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            <input id="H_T" class="DiaCheck" type="checkbox" onclick="MarcarDesmarcarTodosChecks()" style="margin-right: 15px;" />
+                            <label>Día de la semana</label>
+                        </div>
+                        <div class="col-sm-6"><span class="fa fa-clock-o marginRight5"></span><label>Horario de atención</label></div>
+                    </div>
+
+                    <hr class="miHr" />
+
+                    @{
+                        int idia = 0;
+
+                        for (int i = 1; i <= 7; i++)
+                        {
+                            ///string color = "#0c482a";
+                            string color = "#000";
+
+                            idia = i;
+                            /// Como el 0 es el domingo y quiero que aparezca al final
+                            if (idia == 7)
+                            {
+                                idia = 0;
+                            }
+
+                            var dia = Model.Horario.Find(d => d.IdDiaSemana == idia);
+
+                            // Si es sin servicio se muestra en rojo
+                            if (dia.TextoHorario.ToUpper().Contains("SIN SERVICIO"))
+                            {
+                                color = "red";
+                            }
+
+
+                            <div class="row rowSeparacion20">
+                                <div class="col-sm-1"></div>
+
+                                <div class="col-sm-3">
+                                    <input id="H_@idia" class="DiaCheck" type="checkbox" onclick="MostrarHorario()" style="margin-right: 15px;" />
+                                    <b>@HorarioDiario.DevuelveNombreDiaSemana(idia)</b>
+                                </div>
+                                <div class="col-sm-6">
+                                    <span id="lbl_@idia" style="color: @color">@dia.TextoHorario</span>
+                                </div>
+                            </div>
+                        }
+                    }
+
+
+                    @* Botones de guardar y salir*@
+                    <div class="row rowSeparacion20">
+                        <div class="col-sm-12">
+                            <div class="floatRight">
+                                <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarF" onclick="GuardarDatos(0)">@ComunResources.btn_guardar</button>
+                                <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarGS" onclick="GuardarDatos(1)">@ComunResources.btn_guardarSalir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        @* Panel de horas*@
+        <div id="PanelHoras" class="panel panel-primary noMostrarPanel panelSeleccionHorario">
+            <div class="panel-heading">
+                <h4><span class="fa fa-clock-o marginRight5"></span> Asignar tramo horario</h4>
+            </div>
+            <div class="panel-body">
+                <div class="marginLeftRight15 ">
+                    <div class="row marginBottom10">
+                        <div class="col-sm-12">
+                            <label>
+                                <input id="ChkSinServicio" type="radio" name="opciones" value="0" onclick="SinServicio()" /> Sin servicio
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row marginBottom10">
+                        <div class="col-sm-12">
+                            <label>
+                                <input id="ChkHorarioSubsistema" type="radio" name="opciones" value="1" onclick="HorarioSubsistema()" />
+                                @if (Model.TipoHorarioSemanal == TipoHorario.horarioCampana)
+                                {
+                                    <span>Horario del subsistema</span>
+                                }
+                                else
+                                {
+                                    <span> Horario de la campaña </span>
+                                }
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row marginBottom10">
+                        <div class="col-sm-12">
+                            <label>
+                                <input id="chkFechas" type="radio" name="opciones" value="2" onclick="ActivaDesactivaSeleccionFechas()" checked="checked" /> Horas
+                            </label>
+                        </div>
+                    </div>
+                    <div id="SeleccionHorario" class="row marginBottom10">
+                        <div class="col-sm-5 form-group">
+                            <label>Hora desde: </label>
+                            <select id="HoraDesde" class="form-control">
+                                <option value="0">00:00</option>
+                                <option value="1">00:30</option>
+                                <option value="2">01:00</option>
+                                <option value="3">01:30</option>
+                                <option value="4">02:00</option>
+                                <option value="5">02:30</option>
+                                <option value="6">03:00</option>
+                                <option value="7">03:30</option>
+                                <option value="8">04:00</option>
+                                <option value="9">04:30</option>
+                                <option value="10">05:00</option>
+                                <option value="11">05:30</option>
+                                <option value="12">06:00</option>
+                                <option value="13">06:30</option>
+                                <option value="14">07:00</option>
+                                <option value="15">07:30</option>
+                                <option value="16">08:00</option>
+                                <option value="17">08:30</option>
+                                <option value="18">09:00</option>
+                                <option value="19">09:30</option>
+                                <option value="20">10:00</option>
+                                <option value="21">10:30</option>
+                                <option value="22">11:00</option>
+                                <option value="23">11:30</option>
+                                <option value="24">12:00</option>
+                                <option value="25">12:30</option>
+                                <option value="26">13:00</option>
+                                <option value="27">13:30</option>
+                                <option value="28">14:00</option>
+                                <option value="29">14:30</option>
+                                <option value="30">15:00</option>
+                                <option value="31">15:30</option>
+                                <option value="32">16:00</option>
+                                <option value="33">16:30</option>
+                                <option value="34">17:00</option>
+                                <option value="35">17:30</option>
+                                <option value="36">18:00</option>
+                                <option value="37">18:30</option>
+                                <option value="38">19:00</option>
+                                <option value="39">19:30</option>
+                                <option value="40">20:00</option>
+                                <option value="41">20:30</option>
+                                <option value="42">21:00</option>
+                                <option value="43">21:30</option>
+                                <option value="44">22:00</option>
+                                <option value="45">22:30</option>
+                                <option value="46">23:00</option>
+                                <option value="47">23:30</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-5">
+                            <label>Hora hasta:</label>
+                            <select id="HoraHasta" class="form-control">
+                                <option value="1">00:30</option>
+                                <option value="2">01:00</option>
+                                <option value="3">01:30</option>
+                                <option value="4">02:00</option>
+                                <option value="5">02:30</option>
+                                <option value="6">03:00</option>
+                                <option value="7">03:30</option>
+                                <option value="8">04:00</option>
+                                <option value="9">04:30</option>
+                                <option value="10">05:00</option>
+                                <option value="11">05:30</option>
+                                <option value="12">06:00</option>
+                                <option value="13">06:30</option>
+                                <option value="14">07:00</option>
+                                <option value="15">07:30</option>
+                                <option value="16">08:00</option>
+                                <option value="17">08:30</option>
+                                <option value="18">09:00</option>
+                                <option value="19">09:30</option>
+                                <option value="20">10:00</option>
+                                <option value="21">10:30</option>
+                                <option value="22">11:00</option>
+                                <option value="23">11:30</option>
+                                <option value="24">12:00</option>
+                                <option value="25">12:30</option>
+                                <option value="26">13:00</option>
+                                <option value="27">13:30</option>
+                                <option value="28">14:00</option>
+                                <option value="29">14:30</option>
+                                <option value="30">15:00</option>
+                                <option value="31">15:30</option>
+                                <option value="32">16:00</option>
+                                <option value="33">16:30</option>
+                                <option value="34">17:00</option>
+                                <option value="35">17:30</option>
+                                <option value="36">18:00</option>
+                                <option value="37">18:30</option>
+                                <option value="38">19:00</option>
+                                <option value="39">19:30</option>
+                                <option value="40">20:00</option>
+                                <option value="41">20:30</option>
+                                <option value="42">21:00</option>
+                                <option value="43">21:30</option>
+                                <option value="44">22:00</option>
+                                <option value="45">22:30</option>
+                                <option value="46">23:00</option>
+                                <option value="47">23:30</option>
+                                <option value="48">24:00</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 form-group marginTop22">
+                            <button" class="btn btn-primary" onclick="AddHorario()">
+                                <span class="fa fa-arrow-right"></span>
+                            </button">
+                        </div>
+                    </div>
+
+                    <div id="HorarioSeleccionado" class="row">
+                        <div class="col-sm-12">
+                            <ul class="list-group" id="ListHorarioSeleccionado">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="floatRight">
+                                <button class="btn btn-default" type="button" onclick="CerrarFormulario()">Salir</button>
+                                <button class="btn btn-default" type="button" onclick="AplicarHorario()">Aplicar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section scripts {
+    <script src="~/js/HorarioControler.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            semana = @Html.Raw(Json.Encode(Model));
+        });
+    </script>
+
+
+}

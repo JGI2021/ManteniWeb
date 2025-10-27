@@ -1,0 +1,97 @@
+﻿@using ManteniWeb.Models
+
+@{ 
+    List<NivelesOrganizacion> niveles = (List<NivelesOrganizacion>)ViewBag.NivelesOrganizacion;
+}
+
+<style>
+
+    #entradaCoordinadores {
+        background-image: url('/images/search-icon-32.png'); /* Add a search icon to input */
+        background-position: 5px; /* Position the search icon */
+        background-repeat: no-repeat; /* Do not repeat the icon image */
+        width: 100%; /* Full-width */
+        font-size: 14px; /* Increase font-size */
+        padding: 10px 20px 10px 40px; /* Add some padding */
+        border: 1px solid #ddd; /* Add a grey border */
+        margin-bottom: 12px; /* Add some space below the input */
+    }
+
+    table {
+        margin-top: 15px;
+    }
+
+    thead {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+
+    .panel500px {
+        max-height: 600px;
+        overflow-y: auto;
+        margin-bottom: 15px;
+    }
+
+    .cabeceraPanel {
+        font-weight: 400;
+        font-size: 20px;
+        font-family: 'Roboto';
+        margin-top: 0px;
+        margin-bottom: auto;
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .inputSearch {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        margin-bottom: 0px !important;
+    }
+
+    .bodyCoordinadores {
+        overflow-y: auto;
+        max-height: 67vh;
+    }
+
+</style>
+
+<div class="panelOperadores">
+    <div class="row cabeceraPanel bakground-color-green">
+        <div class="col-md-6" id="panel-title" style="color:white">
+            <b>Coordinadores</b>
+        </div>
+        <div class="col-md-5">
+            <input type="text" class="inputSearch" id="entradaCoordinadores" onkeyup="SearchCoordinadores()" placeholder="Buscar por nombre...">
+        </div>
+        <div class="col-md-1">
+            <a class="close" onclick="CerrarPanel('panelDeCoordinadores');"><span class="fa fa-close"></span></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 bodyCoordinadores" id="panel-body-cooridnadores">
+            <table class="table table-striped" id="tabla-coordinadores">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Coordinador </th>
+                        <th>Nivel</th>
+                        <th>Asignado</th>
+                    </tr>
+                </thead>
+                <tbody id='tbody-table'>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row rowSeparacion25" style="text-align:right ;margin-right: 35px !important;" id="btnCoordinadores">
+        <button type="button" id="btn-guardar-coordinador" class="btn boton-green " onclick="GuardarCoordinadoresAsignados();">Guardar</button>
+        <button type="button" class="btn btn-default" onclick="CerrarPanel('panelDeCoordinadores');">Salir</button>
+    </div>
+</div>
+
+
+

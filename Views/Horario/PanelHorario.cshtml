@@ -1,0 +1,80 @@
+﻿
+@using ManteniWeb.Code
+
+@model Horario
+
+
+
+<div style="margin-top: 25px;font-size:16px; ">
+
+    <div class="row rowSeparacion20">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-2">
+            <label for="NombreHorario">Nombre horario</label>
+        </div>
+        <div class="col-sm-5">
+            <input type="text" value="@Model.Descripcion" id="NombreHorario" class="form-control" onchange="GuardaDescripcion()" />
+        </div>
+    </div>
+
+    <div class="row rowSeparacion25">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+            <input id="H_T" class="DiaCheck" type="checkbox" onclick="MarcarDesmarcarTodosChecks()" style="margin-right: 15px;" />
+            <label>Día de la semana</label>
+        </div>
+        <div class="col-sm-6"><span class="fa fa-clock-o marginRight5"></span><label>Horario de atención</label></div>
+    </div>
+
+    <hr class="miHr" />
+
+    @{
+        int idia = 0;
+
+        for (int i = 1; i <= 7; i++)
+        {
+            ///string color = "#0c482a";
+            string color = "#000";
+
+            idia = i;
+            /// Como el 0 es el domingo y quiero que aparezca al final
+            if (idia == 7)
+            {
+                idia = 0;
+            }
+
+            var dia = Model.Horariodias.Find(d => d.IdDiaSemana == idia);
+
+            // Si es sin servicio se muestra en rojo
+            if (dia.DameHorarioStr().ToUpper().Contains("SIN SERVICIO"))
+            {
+                color = "red";
+            }
+
+
+            <div class="row rowSeparacion20">
+                <div class="col-sm-1"></div>
+
+                <div class="col-sm-3">
+                    <input id="H_@idia" class="DiaCheck" type="checkbox" onclick="MostrarHorario()" style="margin-right: 15px;" />
+                    <b>@Model.DameNombreDia(idia.ToString())</b>
+                </div>
+                <div class="col-sm-6">
+                    <span id="lbl_@idia" style="color: @color">@dia.DameHorarioStr()</span>
+                </div>
+            </div>
+        }
+    }
+
+
+</div>
+
+@* Botones de guardar y salir*@
+<div class="row rowSeparacion20">
+    <div class="col-sm-12">
+        <div class="floatRight">
+            <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarF" onclick="GuardarDatos(0)">Guardar</button>
+            <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarGS" onclick="GuardarDatos(1)">Guardar y salir</button>
+        </div>
+    </div>
+</div>

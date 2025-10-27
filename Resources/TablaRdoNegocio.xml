@@ -1,0 +1,243 @@
+﻿<table>
+
+<general
+ 	DisplayName="Listas de la campaña" 
+ 	Database="TELEMARKETER"
+ 	TableName="*PREFIJOTABLA*_RESULTADO_NEGOCIO"
+  RelationType="1-N"
+>
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="Datos Generales">
+</panel>
+</panels>
+
+<fields>
+
+<field>
+<fattr 
+	FieldName="resultado_negocio" 
+	Panel="panelgenerales"
+	DisplayName="Identificador" 
+	IsKey="true"
+	 
+	ReadOnly="false"
+	EditionType="Edit" 
+	Mandatory="true" 
+	ValidateAs="Integer"
+	ToolTip="Identificador del resultado de negocio."
+	External="false"
+	  
+  MaxLen="4"
+	TabOrder="1">
+</fattr>		
+</field>
+
+<field>
+<fattr 
+	FieldName="descripcion" 
+	Panel="panelgenerales"
+	DisplayName="Descripción" 
+	 
+	EditionType="Edit"	
+	MaxLen="200"
+	Mandatory="true" 
+	ValidateAs="Alpha"
+	ToolTip="Teclee una descripción."
+	External="false"
+	  
+  UpdateNeeded="true"
+	TabOrder="2">
+</fattr>		
+</field>
+
+<field>
+<fattr 
+	FieldName="etiqueta" 
+	Panel="panelgenerales"
+	DisplayName="Etiqueta" 	 
+	EditionType="Edit" 	
+	MaxLen="10"
+	Mandatory="true" 
+	ValidateAs="Alpha"
+	ToolTip="Introduzca una etiqueta."
+	External="false"
+	  
+  UpdateNeeded="true"
+	TabOrder="3">
+</fattr>	
+</field>
+
+<field>
+<fattr 
+	FieldName="color" 
+	Panel="panelgenerales"
+	DisplayName="Color" 
+	 
+	EditionType="Color" 
+	Mandatory="true" 
+	ValidateAs="Color"
+	ToolTip="Color."
+	External="false"
+	  
+	UpdateNeeded="true"
+  DefaultValue="140140137"
+	TabOrder="4">
+</fattr>	
+</field>
+
+<field>
+<fattr 
+	FieldName="accion_marcador" 
+	Panel="panelgenerales"
+	DisplayName="Acción del marcador" 
+	 
+	EditionType="Combo" 
+	Mandatory="true" 
+	ValidateAs="integer"
+	ToolTip="Acción del marcador"
+	External="true"
+	  
+	UpdateNeeded="true"
+    DefaultValue="NULL"
+	TabOrder="5">
+</fattr>
+  <external>
+    <type tipo="table"/>
+    <table
+      DatabaseName="TELEMARKETER"
+      TableName="ACCIONMARCADOR"
+      FieldKey="ACCION_MARCADOR"
+      FieldValue="DESCACCIONMARCADOR"
+      DefaultKey="NULL"
+      DefaultValue=""
+        >
+    </table>
+  </external>
+</field>
+
+
+  <field>
+    <fattr
+      FieldName="grupo_logico"
+      Panel="panelgenerales"
+      DisplayName="Grupo lógico"
+      EditionType="ComboPlus"
+      Mandatory="false"
+      ReadOnly="false"
+      ValidateAs="Alpha"
+      ToolTip="Grupo lógico"
+      External="true"
+      UpdateNeeded="true"
+	  DefaultValue="NULL"
+      MaxLen="20"
+      TabOrder="6">
+    </fattr>
+    <external>
+      <type tipo="table"/>
+      <table
+        DatabaseName="TELEMARKETER"
+        TableName="*PREFIJOTABLA*_RESULTADO_NEGOCIO"
+        FieldKey="grupo_logico"
+        FieldValue="grupo_logico"
+        DefaultKey="NULL"
+		    DefaultValue="Sin grupo lógico asignado"
+        >
+      </table>
+    </external>
+  </field>
+  
+  <field>
+    <fattr
+      FieldName="tipo_grupo_logico"
+      Panel="panelgenerales"
+      DisplayName="Tipo"
+       
+      EditionType="Combo"
+      Mandatory="false"
+      ValidateAs="integer"
+      ToolTip="Tipo"
+      External="true"
+        
+      UpdateNeeded="true"
+      DefaultValue="NULL"
+      MaxLen="100"
+      TabOrder="7">
+    </fattr>
+    <external>
+      <type tipo="collection"/>
+      <collection>
+        <collectionitem
+         key="NULL"
+         value="">
+        </collectionitem>
+        <collectionitem
+           key="0"
+           value="Positivo">
+        </collectionitem>
+        <collectionitem
+           key="1"
+           value="Negativo">
+        </collectionitem>
+        <collectionitem
+           key="2"
+           value="Anulado">
+        </collectionitem>
+      </collection>
+    </external>
+  </field>
+
+<field>
+    <fattr
+      FieldName="resultado_llamada_id"
+      Panel="panelgenerales"
+      DisplayName="Resultado de llamada"
+       
+      EditionType="Combo"
+      Mandatory="false"
+      ValidateAs="integer"
+      ToolTip="Seleccione el resultado de la llamada."
+      External="true"
+        
+      UpdateNeeded="true"
+      DefaultValue="NULL"
+      TabOrder="8">
+    </fattr>
+     <external>
+      <type tipo="table"/>
+      <table
+        DatabaseName="TIPHONE"
+        TableName="MOTIVO_RESULTADO_TELEFONICO"
+        FieldKey="resultado_telefonico_id"
+        FieldValue="motivo"
+        DefaultKey="NULL"
+		    DefaultValue="No tiene"
+        > 
+     </table>
+   </external>
+  </field>
+
+<field>
+    <fattr
+      FieldName="te_flag"
+      Panel="panelgenerales"
+      DisplayName="Tiene tiempo de descanso"
+       
+      Visible="true"
+      EditionType="Check"
+      Mandatory="false" 
+      ValidateAs="Boolean"
+      ToolTip="Indica si el resultado tiene o no un tiempo de descanso"
+      External="false"
+        
+      UpdateNeeded="true"
+      DefaultValue="false"
+      TabOrder="9">
+    </fattr>
+  </field>
+
+</fields>
+</table>

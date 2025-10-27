@@ -1,0 +1,87 @@
+﻿<table>
+
+<general
+ 	DisplayName="Network Address" 
+ 	Database="GENERAL"
+ 	TableName="NETWORK_ADDRESS"
+  RelationType="1-N"
+>
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="Datos Generales">
+</panel>
+</panels>
+
+  
+  
+<fields>
+<field>
+<fattr 
+	FieldName="MODULE_NAME" 
+	Panel="panelgenerales"
+	DisplayName="Módulo" 
+	IsKey="true"
+	ReadOnly="true"
+	EditionType="Edit" 
+	Mandatory="true" 
+	ValidateAs="Alpha"
+	ToolTip="Módulo"
+  MaxLen="20"
+	External="false"
+	TabOrder="1">
+</fattr>		
+</field>
+
+<field>
+<fattr 
+	FieldName="IP_ADDRESS" 
+	Panel="panelgenerales"
+	DisplayName="Dirección IP" 
+	EditionType="Edit"	
+	MaxLen="15"
+	Mandatory="true" 
+	ValidateAs="Alpha"
+	ToolTip="Dirección IP"
+	External="false"
+  UpdateNeeded="true"
+	TabOrder="2">
+</fattr>		
+</field>
+
+  <field>
+    <fattr
+      FieldName="IP_PORT"
+      Panel="panelgenerales"
+      DisplayName="Puerto"
+      EditionType="Edit"
+      Mandatory="true"
+      ValidateAs="Integer"
+      ToolTip="Dirección IP"
+      External="false"
+      UpdateNeeded="true"
+      TabOrder="3">
+    </fattr>
+  </field>
+
+ 
+
+  <field>
+    <fattr
+      FieldName="TIME_OUT"
+      Panel="panelgenerales"
+      DisplayName="Time out"
+      EditionType="Edit"
+      Mandatory="true"
+      ValidateAs="Integer"
+      ToolTip="Time out"
+      External="false"
+      UpdateNeeded="true"
+      TabOrder="4">
+    </fattr>
+  </field>
+  
+</fields>
+</table>

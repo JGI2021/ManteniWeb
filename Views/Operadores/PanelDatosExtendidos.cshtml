@@ -1,0 +1,197 @@
+﻿@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.ClasesDeDatos
+@using ManteniWeb.App_GlobalResources
+
+@model TDatosOperador
+
+
+@{
+    List<TipoAsesorEmpresa> tiposAsesorEmpresas = ViewBag.TipoAsesorEmpresa as List<TipoAsesorEmpresa>;
+    List<MotivoContrato> motivosContrato = ViewBag.TipoMotivoContrato as List<MotivoContrato>;
+    List<ObjetoContrato> objetosContratos = ViewBag.ObjetoContrato as List<ObjetoContrato>;
+
+    string selectedAs = "";
+}
+
+
+<div id="extendidos" class="tab-pane">
+    <div class="row rowSeparacion20">
+        <div class="col-lg-4 col-md-4">
+            <label for="CosteHora">@ComunResources.costehora</label>
+            <input type="text" class="form-control" id="CosteHora" name="DatosOperadorExtendidos.CosteHora"
+                   value="@Model.DatosOperadorExtendidos.CosteHora" maxlength="10" />
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label for="fechaInicioOp">@ComunResources.op_fechainicioContrato</label>
+            <input type="date" id="fechaInicioOp" class="form-control" value="@Model.DatosOperadorExtendidos.FechaContratoInicio"
+                   name="DatosOperadorExtendidos.FechaContratoInicio" />
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label for="fechaFinOp">@ComunResources.op_fechafinContrato</label>
+            <input type="date" id="fechaFinOp" class="form-control" value="@Model.DatosOperadorExtendidos.FechaContratoFin"
+                   name="DatosOperadorExtendidos.FechaContratoFin" />
+        </div>
+    </div>
+
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-4 col-md-4">
+            <label for="tipoAsesorEmpresa">Tipo Asesor <span class="red-text"> * </span></label>
+            <div style="display:flex">
+                <select id="tipoAsesorEmpresa" class="form-control" name="DatosOperadorExtendidos.TipoAsesorEmpresaId">
+                    @foreach (TipoAsesorEmpresa item in tiposAsesorEmpresas)
+                    {
+                        if (Model.DatosOperadorExtendidos.TipoAsesorEmpresaId == item.TipoAsesosEmpresaId.ToString())
+                        {
+                            selectedAs = "selected";
+                        }
+                        else
+                        {
+                            selectedAs = "";
+                        }
+                        <option value="@item.TipoAsesosEmpresaId" @selectedAs>@item.TipoAsesorEmpresaDesc</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-default btn-backcolor-edit" onclick="EditartTablasAuxiliares('tablatipoAsesor')">
+                    <span class="fa fa-edit fa-color-ico-edit"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label for="motivoContrato">Tipo contrato <span class="red-text"> * </span></label>
+            <div style="display:flex">
+                <select id="motivoContrato" class="form-control" name="DatosOperadorExtendidos.MotivoContratoId">
+                    @foreach (MotivoContrato item in motivosContrato)
+                    {
+                        if (Model.DatosOperadorExtendidos.MotivoContratoId == item.MotivoContratoId.ToString())
+                        {
+                            selectedAs = "selected";
+                        }
+                        else
+                        {
+                            selectedAs = "";
+                        }
+                        <option value="@item.MotivoContratoId" @selectedAs>@item.MotivoContratoDesc</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-default btn-backcolor-edit" onclick="EditartTablasAuxiliares('tablamotivoContrato')">
+                    <span class="fa fa-edit fa-color-ico-edit"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label for="objetoContrato">@ComunResources.op_objetoContrato <span class="red-text"> * </span></label>
+            <div style="display:flex">
+                <select id="objetoContrato" class="form-control" name="DatosOperadorExtendidos.ObjetoContratoId">
+                    @foreach (ObjetoContrato item in objetosContratos)
+                    {
+                        if (Model.DatosOperadorExtendidos.ObjetoContratoId == item.ObjetoContratoId.ToString())
+                        {
+                            selectedAs = "selected";
+                        }
+                        else
+                        {
+                            selectedAs = "";
+                        }
+                        <option value="@item.ObjetoContratoId" @selectedAs>@item.ObjetoContratoDesc</option>
+                    }
+                </select>
+                <button type="button" class="btn btn-default btn-backcolor-edit" onclick="EditartTablasAuxiliares('tablaobjetoContrato')">
+                    <span class="fa fa-edit fa-color-ico-edit"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-4 col-md-4">
+            <label for="extensioncorporativa">@ComunResources.op_telefonoExtension</label>
+            <input type="text" class='form-control' id="extensioncorporativa" name="DatosOperadorExtendidos.ExtensionCorporativa"
+                   value="@Model.DatosOperadorExtendidos.ExtensionCorporativa" maxlength="20" />
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label for="posicionOp">@ComunResources.op_posicionOperador</label>
+            <input type="text" id="posicionOp" class="form-control" name="DatosOperadorExtendidos.Posicion"
+                   value="@Model.DatosOperadorExtendidos.Posicion" maxlength="6" />
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label for="tipoPosicion">@ComunResources.op_posicionOperador</label>
+            <select class='form-control' id='tipoPosicion' name="DatosOperadorExtendidos.TipoPosicionId">
+
+                @if (Model.DatosOperadorExtendidos.TipoPosicionId == "2")
+                {
+                    <option value="2" selected="selected">WebRTC</option>
+                }
+                else
+                {
+                    <option value="2">WebRTC</option>
+                }
+                @if (Model.DatosOperadorExtendidos.TipoPosicionId == "1")
+                {
+                    <option value="1" selected="selected">SIP</option>
+                }
+                else
+                {
+                    <option value="1">SIP</option>
+                }
+
+
+                @if (Model.DatosOperadorExtendidos.TipoPosicionId == "3")
+                {
+                    <option value="3" selected="selected">@ComunResources.op_telefonoExterno</option>
+                }
+                else
+                {
+                    <option value="3">@ComunResources.op_telefonoExterno</option>
+                }
+            </select>
+        </div>
+
+    </div>
+
+    <div class="row rowSeparacion20 form-horizontal">
+        <div class="col-lg-8 col-md-8">
+            <label for="correoElectronico">@ComunResources.email</label>
+            <input type="email" class='form-control' title='Introducir cuenta de correo'
+                   id='correoElectronico' name="DatosOperadorExtendidos.CorreoElectronicoContacto"
+                   value="@Model.DatosOperadorExtendidos.CorreoElectronicoContacto" maxlength="200" />
+        </div>
+    </div>
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-8 col-md-8">
+            <label for="campoGrupo">Grupo</label>
+            <input type="text" class='form-control' id="campoGrupo" name="DatosOperadorExtendidos.Grupo"
+                   value="@Model.DatosOperadorExtendidos.Grupo" maxlength="100" />
+        </div>
+    </div>
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-8 col-md-8">
+            <label for="Ett">Ett</label>
+            <input type="text" id="ett" class="form-control" name="DatosOperadorExtendidos.Ett"
+                   value="@Model.DatosOperadorExtendidos.Ett" maxlength="100" />
+        </div>
+    </div>
+
+
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-8 col-md-8">
+            <label for="comboIdiomas">@ComunResources.idiomas</label>
+            <select class='form-control selectpicker' title='Seleccionar idioma' multiple id='comboIdiomas'
+                    name="DatosOperadorExtendidos.IdiomasOperador"
+                    data-val='true' data-val-requiered='Seleccione un idioma'>
+            </select>
+        </div>
+    </div>
+</div>
+
+

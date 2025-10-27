@@ -1,0 +1,178 @@
+﻿@using ManteniWeb.Models;
+@using ManteniWeb.App_GlobalResources
+
+@model List<ResultadosLlamadasMarcador>
+
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/FicherosCss")
+@Styles.Render("~/FicherosCssPropios")
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/FuncionesJS")
+
+<!--link href="~/footable/css/footable.core.bootstrap.min.css" rel="stylesheet" /-->
+<link href="~/footable/css/footable.core.standalone.min.css" rel="stylesheet" />
+<link href="~/footable/css/footable.paging.min.css" rel="stylesheet" />
+<link href="~/footable/css/footable.sorting.min.css" rel="stylesheet" />
+<link href="~/footable/css/footable.filtering.min.css" rel="stylesheet" />
+<link href="~/css/footableManteniWeb.metro.css" rel="stylesheet" />
+<link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+<link href="~/css/jquery-ui.css" rel="stylesheet" />
+
+<style>
+    body {
+        font-family: 'Roboto',sans-serif !important;
+    }
+
+    input, select, textarea {
+        max-width: 100%;
+    }
+
+    .rowSeparacion25 {
+        margin-top: 25px;
+    }
+
+    .NoLateralPadding {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+</style>
+
+<script src="~/Scripts/jquery-ui-1.13.3.min.js" type="text/javascript"></script>
+<script src="~/footable/js/footable.core.min.js"></script>
+<script src="~/footable/js/footable.sorting.min.js"></script>
+<script src="~/footable/js/footable.paging.min.js"></script>
+<script src="~/footable/js/footable.filtering.min.js"></script>
+
+
+
+@* Inicio form *@
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken();
+    <div class='row NoLateralPadding'>
+        @* Lateral izquierdo. Menú *@
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-10 col-md-10 NoLateralPadding">
+            <div class='row'>
+                <div class="col-lg-12 col-md-12 NoLateralPadding">
+                    <table class="footable table-striped" data-sorting='true' data-filtering="true" data-paging-limit="5" data-filter-placeholder="@CampanaResources.bs_buscar..." data-paging="true" data-paging-size="12" style="font-size: 14px !important;">
+                        <thead>
+                            <tr>
+                                <th data-type="date" data-format-string="DD-MM-YYYY"> @CampanaResources.cmp_fecha</th>
+                                <th> @CampanaResources.bs_resultadoLlamada</th>
+                                <th> @CampanaResources.cmp_telefono</th>
+                                <th> @CampanaResources.ls_lista</th>
+                                <th> @CampanaResources.cmp_resultadosNegocio</th>
+                                <th> @CampanaResources.bs_estadoRegistro</th>
+                                @{ bool muestraOperador = false; }
+                                @if (Model.Find(a => a.IdResultado == "0") != null)
+                                {
+                                    muestraOperador = true;
+                                    <th> Operador</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (ResultadosLlamadasMarcador llamadas in Model)
+                                {
+                                    <tr>
+                                        <td>@llamadas.Fecha</td>
+                                        <td>@llamadas.ResultadoNombre</td>
+                                        <td>@llamadas.Telefono</td>
+                                        @if (llamadas.ListaId != "" && llamadas.ListaId != "0")
+                                        {
+                                            <td>@llamadas.ListaNombre</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        @if (llamadas.ResultadoNegocio != "")
+                                        {
+                                            <td>@llamadas.ResultadoNegocio</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+
+                                        @switch (llamadas.Resultadoregistro)
+                                        {
+                                            case "R":
+                                                <td>Reprogramado</td>
+                                                break;
+                                            case "F":
+                                                <td>Finalizado</td>
+                                                break;
+                                            case "Z":
+                                                <td>Rechazado</td>
+                                                break;
+                                            case "D":
+                                                <td>Devuelto</td>
+                                                break;
+                                            default:
+                                                if (llamadas.Resultadoregistro != "")
+                                                {
+                                                    <td>@llamadas.Resultadoregistro</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+                                                break;
+                                        }
+                                        @if (muestraOperador)
+                                        {
+                                            if (llamadas.IdResultado == "0")
+                                            {
+                                                <td>@llamadas.OperadorName</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                            }
+                                        }
+                                    </tr>
+                                }
+                            }
+
+
+                        </tbody>
+                    </table>
+                    <div id="pagination1" class="pagination hide-if-no-paging"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(".footable").footable({ 'empty': '@ComunResources.sinRegistros' })
+    </script>
+}
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            jQuery(function ($) {
+                $('.footable').footable({
+                    'empty': '@ComunResources.sinRegistros',
+                    "paging": {
+                        "limit": 10
+                    }
+                });
+
+                $('#ExportaResultadosLlamadas').click(function () {
+                    ExportarAFichero();
+                });
+            });
+    </script>
+}

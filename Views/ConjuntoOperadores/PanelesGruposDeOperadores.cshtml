@@ -1,0 +1,148 @@
+﻿@using ManteniWeb.ClasesDeDatos
+
+@model DCConjuntosOperadores
+
+@{
+    List<DatosGruposOperadores> gruposOper = ViewBag.GruposOperadores;
+}
+
+
+
+@if (Model.HayError)
+{
+    <!-- PANEL DE ERROR -->
+    <div class="row rowSeparacion15 errorpanel fijarPanelMensajes">
+        <div id="panelwarning" class="col col-lg-6">
+            <div class="panel panel-danger">
+                <div id="panelwarning-head" class="panel-heading">ERROR! --> @Model.Mensaje</div>
+            </div>
+        </div>
+    </div>
+}
+else if (Model.MostrarMensaje)
+{
+    <div class="row rowSeparacion15 errorpanel fijarPanelMensajes">
+        <div id="panelsuccess" class="col col-lg-6">
+            <div class="panel panel-success">
+                <div id="panelsuccess-head" class="panel-heading">OK! --> @Model.Mensaje</div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- DESASIGNADOS -->
+<div class='col-md-3 col-sm-3'>
+    <div class='row rowSeparacion20'>
+        <div class='col-lg-2 col-md-2 form-check'>
+            <input type='checkbox' value='' id='IdCheckNoAsignados' class='PosCheckBoxTodos' onclick='CheckTodosGrupos()' />
+
+        </div>
+        <div class='col-md-10 col-lg-10'>
+            <label class="etiqueta-caja"> Grupos de operadores </label>
+            @*<input type='text' id='myInputGroupNoAsociados' class='form-control' onkeyup='BuscaSeleccionadoEnGrupo("myInputGroupNoAsociados","ul_noasociados")' placeholder='Buscar...' title='Escribir un nombre ' />*@
+        </div>
+    </div>
+    <div class='row rowSeparacion10 CajaElementos'>
+        <ul id='ul_noasociados' class='list-group' style="margin-bottom: 0px;">
+
+            @foreach (DatosGruposOperadores grupoOper in gruposOper)
+            {
+                if (grupoOper.TotalListas != Model.DatConjuntoListas.Count)
+                {
+                    <li id='li_@grupoOper.IdConjuntoOperadores' class='list-group-item li-grupos grupo-seleccionable'
+                        style='cursor: pointer;' onclick="MarcarGrupoComoSeleccionado('ch_@grupoOper.IdConjuntoOperadores')">
+                        <input type='checkbox' class="conjuntos-sin-asignar" id='ch_@grupoOper.IdConjuntoOperadores' name='chk_@grupoOper.IdConjuntoOperadores' 
+                               onclick="MarcarGrupoComoSeleccionado('ch_@grupoOper.IdConjuntoOperadores')" />
+
+                        <span id='spn_@grupoOper.IdConjuntoOperadores' style="margin-left:10px;">@grupoOper.Nombre </span>
+                    </li>
+                }
+                else
+                {
+                    <li id='li_@grupoOper.IdConjuntoOperadores' class='list-group-item  li-grupos grupo-noseleccionable' style='cursor: pointer;'>
+                        <span id='spn_@grupoOper.IdConjuntoOperadores' style='margin-left: 10px;'>@grupoOper.Nombre </span>
+                    </li>
+                }
+
+            }
+        </ul>
+    </div>
+</div>
+
+<!--RA DE ASIGNACIÓN Y DESASIGNACIÓN  -->
+<div class='col-md-2 CajaElementosSinScroll'>
+
+    <div class='centrarVer'>
+        <div id="divSpinner" class="spinner" style="display:none;">
+            <h4 class="cargandoTxt" id="txtSpinner">Asignando grupos ...</h4>
+            <div id="preloader">
+                <div id="loader"></div>
+            </div>
+        </div>
+        <button type='button' class='btn btn-default buttonAsignar' onclick="AsignarRegistrosMarcados()">
+            Asignar
+            <span class='fa fa-angle-double-right' style="margin-left:5px;"> </span>
+        </button>
+        <button type='button' class='btn btn-default buttonDesasignar' onclick="DesasignarRegistrosMarcados()">
+            Desasignar
+            <span class='fa fa-angle-double-left' style="margin-left:5px;"> </span>
+        </button>
+    </div>
+</div>
+
+<!--  ASIGNADOS  -->
+<div class='col-md-7 col-sm-7'>
+    <div class='row rowSeparacion20'>
+        <div class='col-lg-1 col-md-1 form-check'>
+        </div>
+        <div class='col-md-10 col-lg-10'>
+            <label class="etiqueta-caja"> Listas - Grupos de operadores asignados </label>
+        </div>
+    </div>
+    <div class='row rowSeparacion10 CajaElementos'>
+        <table class="table table-borderless" style="margin-bottom:0px;">
+
+            <tbody>
+                @foreach (DatosConjuntoLista datosLista in Model.DatConjuntoListas)
+                {
+                    string estiloEstadoLista = "color: green;";
+                    if (datosLista.EstadoLista == "N")
+                    {
+                        estiloEstadoLista = "color: red;";
+                    }
+
+
+                    <tr class="tr-border-bottom">
+                        <td class="panel-lista" id="ls_@datosLista.IdLista" width="30%" onclick="SeleccionaGruposLista(this.id);">
+                            <span style="@estiloEstadoLista">&#8226;</span> @datosLista.AliasLista
+                            <span style="float:right;">&#10148;</span>
+                        </td>
+                        <td class="td-pt">
+
+                            @foreach (int id in datosLista.ConjuntoOperadores)
+                            {
+                                var conjunto = gruposOper.Find(cn => cn.IdConjuntoOperadores == id);
+
+                                if (conjunto != null)
+                                {
+                                    <label class="conjuntoOperadores" ondblclick="DesasignarConjuntoOperadores(@conjunto.IdConjuntoOperadores, @datosLista.IdLista)">
+                                        <input type="checkbox" value="@datosLista.IdLista" class="marcado-conjunto-desasignar" id="cnj_@id-@datosLista.IdLista" onclick="DesmarcaLista(this.id, @datosLista.IdLista)" />
+                                        <span style="margin-left: 5px;"> @conjunto.Nombre</span>
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label class="conjuntoOperadoresVacio">
+                                        Sin grupo asignado
+                                    </label>
+                                }
+                            }
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

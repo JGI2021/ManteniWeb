@@ -1,0 +1,348 @@
+﻿<table>
+  <general
+    DisplayName="Centros Leroy Merlin"
+    Database="TIPHONE"
+    TableName="RCO_CENTROS_LMES">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Datos tienda">
+    </panel>
+  </panels>
+
+  <fields>
+    <field>
+      <fattr
+        FieldName="codigocentro"
+        Panel="panelgenerales"
+        DisplayName="Código centro"
+        IsKey="true"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        MaxLen="5"
+        ToolTip="Identificador interno de la tienda"
+        External="false"
+	      Linea="primera"
+        UpdateNeeded="false"
+        InsertedNeeded="true"
+        Visible="true"
+        TabOrder="1">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="nombrecentro"
+        Panel="panelgenerales"
+        DisplayName="Nombre del centro"
+        EditionType="Edit"
+        MaxLen="200"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Nombre del centro"
+        External="false"
+        Linea="primera"
+        UpdateNeeded="true"
+        TabOrder="3">
+      </fattr>
+    </field>
+    
+    <field>
+      <fattr
+        FieldName="DDI"
+        Panel="panelgenerales"
+        DisplayName="DDI asignado"
+        EditionType="Edit"
+        MaxLen="15"
+        IsKey="true"
+        Mandatory="true"
+        ValidateAs="Phone"
+        ToolTip="Teléfono asignado al centro para el servicio de RCO"
+        External="false"
+        Linea="XXprimera"
+        UpdateNeeded="true"
+        TabOrder="3"
+        Visible="false">
+      </fattr>
+    </field>    
+
+    <field>
+      <fattr
+        FieldName="PROVINCIA"
+        Panel="panelgenerales"
+        DisplayName="Provincia"
+        EditionType="Combo"
+        MaxLen="200"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Provincia de ubicación del centro"
+        External="true"
+        Linea="segunda"
+        UpdateNeeded="true"
+        TabOrder="4">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="TIPHONE"
+          TableName="PROVINCIAS"
+          FieldKey="PROVINCIA"
+          FieldValue="PROVINCIA"
+          DefaultKey="NULL"
+          DefaultValue=""
+          OrderBy="Provincia">
+        </table>
+      </external>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="mallcentro"
+        Panel="panelgenerales"
+        DisplayName="Ubicación del centro"
+        EditionType="Edit"
+        MaxLen="500"
+        Mandatory="false"
+        ValidateAs="Alpha"
+        ToolTip="Nombre del centro"
+        External="false"
+        Linea="segunda"
+        UpdateNeeded="true"
+        TabOrder="5">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="url"
+        Panel="panelgenerales"
+        DisplayName="URL del centro"
+        EditionType="Edit"
+        MaxLen="1000"
+        Mandatory="false"
+        ValidateAs="Alpha"
+        ToolTip="Dirección electrónica del centro"
+        External="false"
+        Linea="tercera"
+        UpdateNeeded="true"
+        TabOrder="6">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="nommag"
+        Panel="panelgenerales"
+        DisplayName="Nombre corto del centro"
+        EditionType="Edit"
+        MaxLen="200"
+        Mandatory="false"
+        ValidateAs="Alpha"
+        ToolTip="Nombre corto del centro"
+        External="false"
+        Linea="tercera"
+        UpdateNeeded="true"
+        TabOrder="7">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="email"
+        Panel="panelgenerales"
+        DisplayName="Email"
+        EditionType="Edit"
+        MaxLen="200"
+        Mandatory="false"
+        ValidateAs="Alpha"
+        ToolTip="Dirección de correo electrónico"
+        External="false"
+        Linea="cuarta"
+        UpdateNeeded="true"
+        TabOrder="8">
+      </fattr>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="skill"
+        Panel="panelgenerales"
+        DisplayName="Skill"
+        EditionType="Combo"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Skill asociado al centro"
+        External="true"
+        Linea="cuarta"
+        UpdateNeeded="true"
+        TabOrder="9">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="TIPHONE"
+          TableName="SKILLSETS"
+          FieldKey="SKILLSET_ID"
+          FieldValue="NOMBRE"
+          DefaultKey="NULL"
+          DefaultValue="">
+        </table>
+      </external>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="redinteligente"
+        Panel="panelgenerales"
+        DisplayName="Número de red inteligente"
+        EditionType="Edit"
+        Mandatory="false"
+        MaxLen="15"
+        ValidateAs="Alpha"
+        ToolTip="Número de Red Inteligente (90X/80X) que tiene el centro"
+        External="false"
+        Linea="quinta"
+        UpdateNeeded="true"
+        PosColumna="6"
+        TabOrder="10">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="codigohorario"
+        Panel="panelgenerales"
+        DisplayName="Horario"
+        EditionType="Combo"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Horario asociado al centro"
+        External="true"
+        Linea="quinta"
+        UpdateNeeded="true"
+        PosColumna="6"
+        TabOrder="11">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="GENERAL"
+          TableName="CAL_CALENDARIO"
+          FieldKey="ID_CALENDARIO"
+          FieldValue="NOMBRE"
+          DefaultKey="NULL"
+          DefaultValue="">
+        </table>
+      </external>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="rco"
+        Panel="panelgenerales"
+        DisplayName="RCO"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Centro asociado al RCO"
+        External="false"
+        Linea="sexta"
+        PosColumna="2"
+        UpdateNeeded="true"
+        TabOrder="12">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="catalan"
+        Panel="panelgenerales"
+        DisplayName="Catalán"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Indica si el centro oferta el servicio en catalán"
+        External="false"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="2"
+        TabOrder="13">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="urban"
+        Panel="panelgenerales"
+        DisplayName="Urban"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Indica si se trata de un centro urbano"
+        External="false"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="2"
+        TabOrder="14">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="ServicioRCO"
+        Panel="panelgenerales"
+        DisplayName="Servicio"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Indica si se le da servicio al centro o no"
+        External="false"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="2"
+        TabOrder="15">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="FieldServices"
+        Panel="panelgenerales"
+        DisplayName="CIC"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip=""
+        External="false"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="2"
+        TabOrder="16">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="Avisos"
+        Panel="panelgenerales"
+        DisplayName="Avisos"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip=""
+        External="false"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="2"
+        TabOrder="16">
+      </fattr>
+    </field>    
+  </fields>
+
+</table>

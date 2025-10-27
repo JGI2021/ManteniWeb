@@ -1,0 +1,135 @@
+﻿@model ManteniWeb.DatosTablas.ReposReprogramacion
+@using ManteniWeb.DatosTablas
+
+<style>
+    .td-fijo-260 {
+        width: 260px;
+    }
+
+    .td-fijo-100 {
+        width: 100px;
+    }
+    .td-fijo-110 {
+        width: 110px;
+    }
+</style>
+
+
+@{
+ 
+    List<ReposFranjaHoraria> franjas = (List<ReposFranjaHoraria>)ViewBag.franjas;
+}
+<div class="row rowSeparacion10">
+    <div class="col-md-12 form-group">
+        <h5><b>Agrupación de resultados telefónicos</b></h5>
+        <table class='table table-condensed table-borderless' id="ResultadosTelefonicos">
+            <thead>
+                <tr>
+                    <th class="th">Id</th>
+                    <th class="th td-fijo-260">Resultado</th>
+                    <th class="th" colspan="2">Volver a llamar en</th>
+                    <th class="th">Peso</th>
+                    <th class="th">Prioridad</th>
+                    <th class="th">Intentos</th>
+                    <th class="th">Franja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var resultado in Model.LsRsTelefonicos)
+                {
+                    if (resultado.Id_grupo_resultado == null || resultado.Id_grupo_resultado == "")
+                    {
+                        int dias;
+                        string horas;
+                        resultado.GetDatosTiempoReprogramacion(resultado.Tiempo_rellamada, out dias, out horas);
+                        var asociados = Model.LsRsTelefonicos.FindAll(res => res.Id_grupo_resultado == resultado.Id_resultado_telefonico);
+
+                        <tr>
+                            <td>@resultado.Id_resultado_telefonico</td>
+                            <td>
+                                @if (asociados.Count > 0)
+                                {
+                                    <a href="#" onclick="MostrarOcultarResultados('asociados_@resultado.Id_resultado_telefonico')">
+                                        @resultado.NombreResultado
+                                    </a>
+                                }
+                                else
+                                {
+                                    @resultado.NombreResultado
+                                }
+                            </td>
+                            <td class="td-fijo-100">
+                                <input class="cajaInput changeColor" type="number" value="@dias" id="dias_@resultado.IdResultadoTelefonico"
+                                       min="0" />días
+                            </td>
+                            <td class="td-fijo-110">
+                                <input class="cajaInput-time changeColor" type="time" value="@horas" step="1" id="horas_@resultado.IdResultadoTelefonico" />
+                            </td>
+
+                            <td>
+                                <input class="cajaInput  changeColor" type="number" value="@resultado.Nuevo_peso_telefono" id="peso_@resultado.IdResultadoTelefonico" min="0" max="2100000" />
+                            </td>
+                            <td>
+                                <input class="cajaInput  changeColor" type="number" value="@resultado.Nueva_prioridad_contacto" id="prioridad_@resultado.IdResultadoTelefonico" min="-1" max="2100000"/>
+                            </td>
+
+                            <td>
+                                <input class="cajaInput  changeColor" type="number" value="@resultado.Max_llamadas" id="llamadas_@resultado.IdResultadoTelefonico" min="-1" max="2100000"/>
+                            </td>
+                            <td>
+
+                                <select id="idfranja_@resultado.IdResultadoTelefonico" class="selectpicker my-form-control changeColor" data-live-search="true"
+                                        title="Seleccionar franja horaria...">
+                                    @if (resultado.IdRepoFranjaHoraria == 0)
+                                    {
+                                        <option value="0" selected="selected"> - Sin franja - </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="0"> - Sin franja - </option>
+                                    }
+                                    @if (franjas != null && franjas.Count > 0)
+                                    {
+                                        foreach (ReposFranjaHoraria franja in franjas)
+                                        {
+                                            if (franja.IdRepositorio == resultado.IdRepoFranjaHoraria)
+                                            {
+                                                <option value="@franja.IdRepositorio" selected="selected">@franja.NombreFranja</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@franja.IdRepositorio">@franja.NombreFranja</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr id="asociados_@resultado.IdResultadoTelefonico" class="no-display">
+                            @if (asociados != null && asociados.Count > 0)
+                            {
+                                <td></td>
+                                <td colspan="4">
+                                    <ul class="my-list-group">
+                                        @foreach (DatosResultadoTelefonico restelefonico in asociados)
+                                        {
+                                            <li class="myli-item">
+                                                <input type="checkbox" class="resultcheck" id="rs_@restelefonico.IdResultadoTelefonico" />
+                                                <span class="ml-15"></span>
+                                                <div class="ancho-40">@restelefonico.Id_resultado_telefonico</div>
+                                                <div id="nombre_@restelefonico.IdResultadoTelefonico">@restelefonico.NombreResultado</div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

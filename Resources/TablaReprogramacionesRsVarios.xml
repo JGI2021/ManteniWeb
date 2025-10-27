@@ -1,0 +1,154 @@
+﻿<table>
+
+  <general
+    DisplayName="Reprogramación varios resultados"
+    Database="TIPHONE"
+    TableName="RT_RESULTADOS_TELEFONICO">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Datos Generales">
+    </panel>
+  </panels>
+
+  <fields>
+
+   
+    <field>
+      <fattr
+        FieldName="NUEVO_PESO_TELEFONO"
+        Panel="panelgenerales"
+        DisplayName="Peso"
+        EditionType="Edit"
+        ValidateAs="Integer"
+        ToolTip="Introduzca el peso."
+        MaxLen="6"
+        External="false"	  
+        UpdateNeeded="true"
+        InsertedNeeded="false"
+	      ExisteColumna="true"         
+        Visible="true"
+        TabOrder="1"
+        PosColumna="3"
+        MinValue="0"
+        Linea="uno">
+      </fattr>
+
+    </field>
+    <field>
+      <fattr
+        FieldName="MAX_LLAMADAS"
+        AuxTable="false"
+        Panel="panelgenerales"
+        DisplayName="Intentos para cancelar" 
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Intentos para cancelar"
+        External="false"	  
+        UpdateNeeded="true"
+        InsertedNeeded="false"
+	      ExisteColumna="true"         
+        Rango="-1-99"
+        MaxLen="2"
+        TabOrder="2"
+        PosColumna="3"
+        MinValue="-1"
+        Linea="uno">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="Dias"
+        Panel="panelgenerales"
+        DisplayName="Días"
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Días de reprogramación."
+        MaxLen="4"
+        External="false"
+        Visible="true"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false"         
+        Linea="dos"
+        PosColumna="3"
+        MinValue="0"
+        TabOrder="3">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="Horas"
+        Panel="panelgenerales"
+        DisplayName="Horas"
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Horas de reprogramación."
+        MaxLen="2"
+        External="false"
+        Visible="true"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false"
+        Linea="dos"
+        PosColumna="3"
+        MaxValue="23"
+        MinValue="0"
+        TabOrder="4">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="Minutos"
+        Panel="panelgenerales"
+        DisplayName="Minutos"
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Minutos de reprogramación."
+        MaxLen="2"
+        External="false"
+        Visible="true"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false"
+        Linea="dos"
+        PosColumna="3"
+        MaxValue="59"
+        MinValue="0"
+        TabOrder="5">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="Segundos"
+        Panel="panelgenerales"
+        DisplayName="Segundos"
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Segundos de reprogramación."
+        MaxLen="2"
+        External="false"
+        Visible="true"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false"
+        Linea="dos"
+        MaxValue="59"
+        MinValue="0"
+        PosColumna="3"
+        TabOrder="6">
+      </fattr>
+    </field>
+  </fields>
+</table>

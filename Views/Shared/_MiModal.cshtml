@@ -1,0 +1,27 @@
+﻿@using ManteniWeb.App_GlobalResources
+
+@model ManteniWeb.Models.MiModelDlg
+
+
+
+
+<!-- Modal -->
+<div class="modal fade modal-center" id="miModal" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="miModalHeader">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="miModalTitle">Modal title</h4>
+            </div>
+            <div class="modal-body" id="miModalBody">
+                ...
+            </div>
+            <div class="modal-footer" id="miModalFooter">
+                <button type="button" class="btn btn-info" id="MiModalBotonAceptar" onclick="MiModalAceptar()">@ComunResources.btn_aceptar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@ComunResources.btn_cancelar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<input type="hidden" id="miTipoModal" value="" />

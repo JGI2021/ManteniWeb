@@ -1,0 +1,243 @@
+﻿
+.cabeceraPanel {
+    font-weight: 400;
+    font-size: 20px;
+    font-family: 'Roboto';
+    margin-top: 0px;
+    margin-bottom: auto;
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.bakground-color-info {
+    background-color: #5bc0de !important;
+}
+
+.centrarVer {
+    height: 55vh;
+    position: relative;
+}
+
+    .centrarVer button {
+        margin: 0;
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%) !important;
+        transform: translate(-50%, -50%);
+    }
+
+.CajaElementos {
+    max-height: 55vh;
+    overflow-y: auto;
+    margin-top: 15px;
+    border-left: 6px solid #86a7a7;
+}
+
+.CajaElementosSinScroll {
+    vertical-align: central;
+    height: 55vh;
+    margin-top: 15px;
+}
+
+.etiqueta-caja {
+    font-size: 20px;
+    color: #586776;
+}
+
+.PosCheckBoxTodos {
+    /*margin-top: 45px !important;*/
+    margin-left: 15px !important;
+}
+
+.cargandoTxt {
+    position: relative;
+    top: -80px;
+    color: #778899;
+    left: 20px;
+}
+
+.buttonAsignar {
+    width: 80%;
+    font-weight: 600;
+    border: 1px solid lightsteelblue;
+}
+
+.buttonDesasignar {
+    width: 80%;
+    font-weight: 600;
+    border: 1px solid lightsteelblue;
+    top: 23% !important;
+}
+
+.th {
+    background: #778899 !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+td:first-child:hover {
+    background-color: #dddfe2;
+    font-weight: 600 !important;
+    color: black;
+    cursor: pointer;
+}
+
+.conjuntoOperadores {
+    border: 1px solid #c2c2c2;
+    padding: 5px 12px;
+    margin-right: 7px;
+    border-radius: 5px;
+    box-shadow: 2px 2px #d2d2d2;
+    font-weight: 400;
+    color: #778899;
+}
+
+.conjuntoOperadoresVacio {
+    color: #778899;
+    font-weight: 400;
+    padding: 5px 10px;
+    background-color: inherit;
+    /*        border: 1px solid #d2d2d2;
+        border-radius: 5px;
+        box-shadow: 2px 2px #e2e2e2;*/
+}
+
+
+.li-grupos {
+    font-size: 17px !important;
+    font-weight: 400 !important;
+    font-family: monospace !important;
+    color: #778899;
+}
+
+.grupo-seleccionable:hover {
+    background-color: #dddfe2;
+    font-weight: 600 !important;
+    color: black;
+}
+
+.grupo-noseleccionable {
+    cursor: default !important;
+    color: darkred;
+}
+
+.lista-seleccionada {
+    background-color: #e2e2e2;
+    color:black;
+}
+
+.errorpanel {
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.spinner {
+    top: 45%;
+    position: relative;
+}
+
+.panel-lista {
+    padding-left: 15px !important;
+    vertical-align: middle !important;
+    font-size: 18px;
+    font-weight: 100;
+    font-family: monospace;
+    color: #778899;
+}
+
+
+.tr-border-bottom {
+    border-bottom: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+    background-color: white;
+}
+
+    .tr-border-bottom:first-child {
+        border-top: 1px solid #d3d3d3;
+    }
+
+.td-pt {
+    padding-top: 12px !important;
+}
+
+#preloader {
+    position: relative;
+    top: 0px;
+    left: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+#loader {
+    display: block;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    width: 100px;
+    height: 100px;
+    margin: -75px 0 0 -75px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #778899;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+    #loader:before {
+        content: "";
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+        bottom: 5px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #809bb6;
+        -webkit-animation: spin 3s linear infinite;
+        animation: spin 3s linear infinite;
+    }
+
+    #loader:after {
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #87a9cb;
+        -webkit-animation: spin 1.5s linear infinite;
+        animation: spin 1.5s linear infinite;
+    }
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,38 @@
+﻿
+@using ManteniWeb.Models
+@using ManteniWeb.DatosTablas
+
+@model  List<DatosOrderBy>
+
+@{
+    ViewBag.Title = "Buscador de registros de campañas";
+    TDatosCampaign datosCampana = (TDatosCampaign)ViewBag.datosCampana;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href='~/Content/bootstrap-select.min.css' rel='stylesheet' />
+<link href="~/Content/Datatables/Select-1.4.0/css/select.bootstrap.min.css" rel="stylesheet" />
+
+<div>
+
+</div>
+
+@section scripts {
+    <script src="~/Content/Datatables/datatables.min.js"></script>
+    <script src='~/Scripts/bootstrap-select.js' type='text/javascript'></script>
+    <script src="~/Content/Datatables/Select-1.4.0/js/select.bootstrap.min.js"></script>
+
+    <script>
+        let g_lsRegistrosOrder;
+        let g_datosCampana;
+
+        $(document).ready(function () {
+            // Paso a javascript la lista de registros
+            g_lsRegistrosOrder = @Html.Raw(Model);
+            // También le paso los datos de la campaña
+            g_datosCampana = @Html.Raw(datosCampana);
+        }
+
+    </script>
+
+} 

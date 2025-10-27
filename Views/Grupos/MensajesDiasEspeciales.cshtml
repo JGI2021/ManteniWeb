@@ -1,0 +1,344 @@
+﻿
+@using ManteniWeb.ClasesDeDatos
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources;
+
+@model List<DatosDiasEspecialesGrupo>
+
+@{    
+    List<TDatosMensajeDc> datosMensaje = (List<TDatosMensajeDc>)ViewBag.lsdatosMensajesDC;
+    TDatosGrupo grupoACD = (TDatosGrupo)ViewBag.DatosGrupoACD;
+    ViewBag.Title = "Mensajes por días especiales Grupo " + grupoACD.Alias;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    .mypanel {
+        position: absolute;
+        top: 250px;
+        left: 400px;
+        width: 550px;
+        height: auto;
+        border-color: dodgerblue;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+
+    <input type="hidden" value="@grupoACD.Codigo" id="grupo-acd-id"/>
+
+    <div class="row rowSeparacion25">
+            @* MENU LATERAL *@
+            @Html.Partial("MenuLateralGrupo")
+            @* FIN MENU LATERAL *@
+
+        @* FORMULARIO  *@
+        <div class="col-lg-8 col-md-8">
+
+            @* Panel de errores *@
+            <div class='row rowSeparacion15' style="margin: 20px;">
+                <div class='col-lg-1 col-md-1'></div>
+                <div class='col-lg-6 col-md-6'>
+                    <div id="alerta" class="alert" role='alert' style="display:none">
+                        <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                        <strong><span id="spanAlert" class='fa fondoAlert'> &nbsp;Atención</span></strong>
+                        <span id='alert-mensaje' class='mensajeAlert'> </span>
+@*<p id="alert-mensaje"></p>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="tabla">
+                <table id="DiasEspecialesTable" class="display" style="width:100%; margin-bottom:20px;">
+                    <thead>
+                        <tr>
+                            <th class="th">Fecha</th>
+                            <th class="th">Periódico</th>
+                            <th class="th">Descripción</th>
+                            <th class="th">Mensaje fuera hora día</th>
+                            <th class="th">Horario</th>
+                            <th class="th">Mensaje fuera hora grupo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (DatosDiasEspecialesGrupo diaEspecial in Model)
+                        {
+                            string periodico = "Sí";
+                            if (diaEspecial.Dia.Anio != 0)
+                            {
+                                periodico = "No";
+                            }
+
+                            <tr id="tr_@diaEspecial.Dia.IdDiaEspecial" style="cursor: pointer;">
+                                <td style="padding-left:20px;">
+                                    @diaEspecial.Dia.Dia - @Html.Raw(DevuelveNombreMes(@diaEspecial.Dia.Mes))
+                                </td>
+                                <td>
+                                    @periodico
+                                </td>
+                                <td>
+                                    <b>@diaEspecial.Dia.Descripcion</b>
+                                </td>
+                                <td>
+                                    @diaEspecial.MensajeFueraHoraDia
+                                </td>
+                                <td>
+                                    @diaEspecial.HorarioDiaEspecial
+                                </td>
+                                <td style="padding-right: 20px;">
+                                    @{
+                                        var dato = datosMensaje.Find(x => x.Description == diaEspecial.MensajeFueraHoraDia);
+                                        string textoMensaje = "";
+                                        if (dato != null)
+                                        {
+                                            textoMensaje = dato.TextoMensaje;
+                                        }
+                                    }
+                                    <select class="form-control" id="sl_@diaEspecial.Dia.IdDiaEspecial" onchange="CambiaMensajeDia(this.id)">
+                                        <option value="">Por defecto: @diaEspecial.MensajeFueraHoraDia </option>
+                                        @foreach (TDatosMensajeDc mensaje in datosMensaje)
+                                        {
+                                            if (mensaje.Description == diaEspecial.MensajeFueraHorarioGrupo)
+                                            {
+                                                textoMensaje = mensaje.TextoMensaje;
+                                                <option value="@mensaje.Description" selected="selected">@mensaje.Description</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@mensaje.Description">@mensaje.Description</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row rowSeparacion25 panel-botones-guardar">
+                <div class="col-md-12 col-lg-12">
+                    <div class="floatRight">
+                        <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarF" onclick="GuardarDatos(0)">Guardar</button>
+                        <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarGS" onclick="GuardarDatos(1)">Guardar y salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+        @*Panel para mostrar los calendarios asociados al día especial *@
+    <div class='panel panel-default mypanel' id='GeneralPanel' style="display: none;width: 600px; position:absolute;">
+        <div class='panel-heading' id='CabeceraPanel'> Panel heading without title</div>
+        <div class='panel-body' id='CuerpoPanel'>Panel content</div>
+    </div>
+</div>
+
+@functions {
+    public string DevuelveNombreMes(int imes)
+    {
+        switch (imes)
+        {
+            case 1:
+                return "Enero";
+            case 2:
+                return "Febrero";
+            case 3:
+                return "Marzo";
+            case 4:
+                return "Abril";
+            case 5:
+                return "Mayo";
+            case 6:
+                return "Junio";
+            case 7:
+                return "Julio";
+            case 8:
+                return "Agosto";
+            case 9:
+                return "Septiembre";
+            case 10:
+                return "Octubre";
+            case 11:
+                return "Noviembre";
+            case 12:
+                return "Diciembre";
+            default:
+                break;
+        }
+        return "";
+    }
+}
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/bootbox.min.js" type="text/javascript"></script>
+
+    <script>
+        var tableDias;
+        var g_datosGrupoAcd;
+
+        $(function () {
+
+            g_datosGrupoAcd = @Html.Raw(Json.Encode(grupoACD));
+
+            tableDias = $('#DiasEspecialesTable').DataTable({
+                "order": [],
+                "autoWidth": false,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[5, 10, 15, 25, 50, 100, -1], [5, 10, 15, 25, 50, 100, "Todos"]],
+                "pageLength": 15
+            });
+
+            $('#DiasEspecialesTable').css('display', 'table');
+
+            $("table#DiasEspecialesTable tr td:not(:last-child)").on('click', function () {       
+                const tr = $(this).parent();
+                if (tr) {
+                    // obtengo el id
+                    const trid = tr[0].id;
+                    // elimino el prefijo tr_ del id del dia
+                    const idDia = trid.slice(3);
+                    const URLNext = 'DiaEspecialCalendario.aspx?idDiaEspecial=' + idDia;
+                    const URLActual = 'Grupos/MensajesDiasEspeciales?grupoId=' + g_datosGrupoAcd.Codigo;
+                    AvanzarPagina(URLActual, URLNext);
+                }
+            });
+        });
+
+        class MensajeDia {
+            constructor(diaId, mensajeId) {
+                this.diaId = diaId;
+                this.mensajeId = mensajeId;
+            }
+        }
+
+        g_arrMensajesDias = new Array();
+
+
+        function CambiaMensajeDia(id) {
+            // Como el id es sl_Identificador día , elimino el prefijo sl
+            const idDia = id.slice(3);
+            // obtengo el mnsaje seleccionado
+            const mensajeId = $("#" + id + " option:selected").val();
+            // miro si existe el dia
+            let dia = g_arrMensajesDias.find(x => x.diaId === idDia);
+
+            if (dia) {
+                dia.mensajeId = mensajeId;
+            }
+            else {
+                g_arrMensajesDias.push(new MensajeDia(idDia, mensajeId));
+            }
+        }
+
+
+        function GuardarDatos(salir) {
+            const idgrupoacd = $("#grupo-acd-id").val();
+
+            const params = { "idGrupoAcd": idgrupoacd, "MensajesDias": g_arrMensajesDias };
+
+            $.ajax({
+                type: "POST",
+                url: getRutaAbsolutaMVC() + "/Grupos/GuardaMensajePorDiaEspecial",
+                data: JSON.stringify(params),
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                cache: false,
+                timeout: 5000,
+                success: function (data) {
+                    console.log("Respuesta guardar datos mensaje por día especial");
+
+                    if (data === null) {
+                        alert('Se ha producido guardar los cambios ');
+                        return;
+                    }
+                    //g_arrDatosCanal = [];
+                    if (salir === 1) {
+                        RetrocederPaginaMVC();
+                    }
+
+                    MostrarMensajeRespuesta(data);
+
+                    g_arrMensajesDias = [];
+                }
+            });
+
+            // ---------------------------------------------------------------------
+            // Muestra el mensaje de alerta y el mensaje de respuesta del servidor
+            // ---------------------------------------------------------------------
+            function MostrarMensajeRespuesta(data) {
+                const respuesta = JSON.parse(data);
+                if (respuesta) {
+                    if (respuesta.Error === "S") {
+                        $('#alerta').removeClass('myAlertSuccess');
+                        $('#alerta').addClass('alert-danger');
+                        $('#spanAlert').removeClass('fa-check-square-o');
+                        $('#spanAlert').addClass('fa-exclamation-triangle');
+                        $('#alert-mensaje').html(respuesta.Mensaje);
+                    }
+                    else {
+                        /// Mostramos mensaje de que todo se ha actualizado perfectamente
+                        $('#alert-mensaje').html(respuesta.Mensaje);
+                        $('#alerta').removeClass('alert-danger');
+                        $('#alerta').addClass('myAlertSuccess');
+                        $('#spanAlert').removeClass('fa-exclamation-triangle');
+                        $('#spanAlert').addClass('fa-check-square-o');
+
+                    }
+                }
+                else {
+                    console.log("No se puede hacer un parse de la respuesta, llega vacío.")
+                }
+
+                // Se muestra el panel que indica si ha ido bien o si ha fallado
+                $('#alerta').css('display', 'block');
+                // Se mantiene por 6 segundos, luego se quita
+                setTimeout(function () {
+                    $('#alerta').css('display', 'none');
+                    // Si se ha pulsado guardar y salir
+                }, 4000);
+            }
+        }
+
+
+        function MuestraDiaEspecial(iddia) {
+            const URLNext = 'DiaEspecialCalendario.aspx?idDiaEspecial=' + iddia;
+            const URLActual = 'Grupos/MensajesDiasEspeciales?grupoId=' + g_datosGrupoAcd.Codigo;
+            AvanzarPagina(URLActual, URLNext);
+
+        }
+
+    </script>
+}

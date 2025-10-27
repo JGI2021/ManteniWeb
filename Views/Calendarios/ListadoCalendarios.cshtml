@@ -1,0 +1,458 @@
+﻿
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources;
+
+
+@model List<Calendario>
+
+
+@{
+    ViewBag.Title = "Calendarios ";
+    List<AsociacionHorarioCalendario> lsAsociacionHorarioCalendarios = (List<AsociacionHorarioCalendario>)ViewBag.CalendariosAsociados;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    tbody tr:hover {
+        cursor: pointer;
+    }
+
+    .borderless {
+        border: 0px none;
+    }
+
+    .li-padding {
+        padding: 2px 15px !important;
+        background-color: inherit;
+    }
+
+    .ul-margin {
+        margin-bottom: 5px !important;
+    }
+
+    .texto-centrado {
+        text-align: center;
+    }
+
+    .texto-en-negrita {
+        font-weight: 600;
+    }
+    .dispTabla {
+        margin-top: 5px;
+    }
+
+    .fondoColor {
+        text-indent: 5px;
+        background-color: #c2c2c2;
+    }
+
+    .dispFila {
+        display: table-row;
+    }
+
+    .columna-grupos {
+        width: 95px;
+        color: #04152a;
+        font-weight: 600;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL *@
+        @Html.Partial("MenuLateralCalendario")
+        @* FIN MENU LATERAL *@
+
+
+        @* FORMULARIO  *@
+        <div class="col-lg-8 col-md-8">
+
+            @* Panel de errores *@
+            <div id="alertaResultado" class="row rowSeparacion15 no-display">
+                <div class="col-lg-offset-1 col-md-10">
+                    <div id="panelResultado" class="panel">
+                        <div class="panel-heading">
+                            <span id="panelmensajeResultado"></span>
+                            <button type="button" class="close" data-target="#copyright-wrap" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @* MOSTRAR TABLA DE REPROGRAMACIONES *@
+            <div class='row rowSeparacion10'>
+                <table id="CalendariosTable" class="display" style="width:100%; margin-bottom:20px;">
+                    <thead>
+                        <tr>
+                            <th class="th"></th>
+                            <th class="th">@ComunResources.descripcion</th>
+                            <th class="th">@ComunResources.st_horario</th>
+                            <th class="th">@GruposRes.gruposACD / @ComunResources.pr_campanas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Calendario calendario in Model)
+                        {
+                            string estilo = "";
+                            string title = "";
+                            if (calendario.EsCalendarioSubsistema)
+                            {
+                                estilo = "texto-en-negrita";
+                                title = ComunResources.lb_horarioSistema;
+                            }
+
+                            <tr id="tr_@calendario.IdCalendario"  title="@title" >
+                                <td class="texto-centrado">
+                                    <input type="checkbox" id="chk_@calendario.IdCalendario" value="" />
+                                </td>
+                                <td class="td-click @estilo" >
+                                    @calendario.NombreCalendario
+                                </td>
+                                <td class="td-click @estilo">
+                                    @calendario.HorarioCalendario.Descripcion 
+                                    <!--span class="fa fa-edit" onclick="MostrarHorario(@calendario.HorarioCalendario.CodigoHorario)" style="float: left;margin-right:4px" title="Mostrar horario"></span-->
+                                </td>
+                                <td>
+                                    @Html.Raw(ObtenerHtmlAsociacionHorarios(calendario))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string ObtenerHtmlAsociacionHorarios(Calendario calendario)
+    {
+        int contador = 0;
+        string html = " <div id = 'Asociacion" + calendario.IdCalendario + "' class='collapse'> " +
+                      "   <table class='table table-condensed table-borderless' style='font-size:14px;'> " +
+                      "      <tbody> ";
+        string datos = string.Empty;
+        string cabecera = string.Empty;
+        // Obtenemos todos los grupos acd del identificador de horario
+        CreaGrupo(GruposRes.gruposACD, ref cabecera, ref datos);
+        foreach (AsociadosXTipo ah in calendario.Asociados)
+        {
+            if ((ah.IdCalendario == calendario.IdCalendario || (calendario.EsCalendarioSubsistema && ah.IdCalendario == "")) && ah.TipoAsociacion == TipoAsociacionCalendario.tipoAsociacionGrupoACD)
+            {
+                EscribeLinea(ah.NombreAsociado, ref datos);
+                contador++;
+            }
+        }
+
+        FinalizaGrupo(datos, cabecera, ref html);
+
+        /// Datos de Campaña
+        CreaGrupo(ComunResources.pr_campanas, ref cabecera, ref datos);
+
+        foreach (AsociadosXTipo ah in calendario.Asociados)
+        {
+            if (ah.IdCalendario == calendario.IdCalendario && ah.TipoAsociacion == TipoAsociacionCalendario.tipoAsociacionCampana)
+            {
+                EscribeLinea(ah.NombreAsociado, ref datos);
+                contador++;
+            }
+        }
+
+        FinalizaGrupo(datos, cabecera, ref html);
+
+        /// Datos de Listas
+        CreaGrupo("Listas ", ref cabecera, ref datos);
+
+        foreach (AsociadosXTipo ah in calendario.Asociados)
+        {
+            if (ah.IdCalendario == calendario.IdCalendario && ah.TipoAsociacion == TipoAsociacionCalendario.tipoAsociacionLista)
+            {
+                EscribeLinea(ah.NombreAsociado, ref datos);
+                contador++;
+            }
+        }
+
+        FinalizaGrupo(datos, cabecera, ref html);
+
+        html += "  </tbody> ";
+
+        html += " </table> " +
+                "</div> ";
+
+        // Aunue va al principio lo pongo al final porque se le pasa el contador de asociaciones actualizado
+        string htmlInicio = " <button type='button' id='BtnToogleHorario" + calendario.IdCalendario + "' class='btn btn-sm btn-mostrar' " +                
+                            "     data-toggle='collapse' data-target='#Asociacion" + calendario.IdCalendario + "' style='float:right'> " +
+                            "    </span> <span class='badge badge-bkgcolor-cadetblue' style='margin-left: 5px;'>" + contador.ToString() + " </span>" +
+                            "   <span class='fa fa-bars'> " +
+                            " </button> ";
+        return htmlInicio + html;
+
+    }
+
+
+    private void EscribeLinea(string nombre, ref string datos)
+    {
+        datos += "<span class='dispLinea' >" + nombre + "</span>";
+    }
+
+    private void CreaGrupo(string tipoAsig, ref string cabecera, ref string datos)
+    {
+        cabecera = " <tr> ";
+        cabecera += "   <td class='columna-grupos'>" + tipoAsig + " </td> " +
+                    "   <td class='dispTabla'> ";
+        datos = string.Empty;
+    }
+
+    private void FinalizaGrupo(string datos, string cabecera, ref string html)
+    {
+        if (datos != string.Empty)
+        {
+            html += cabecera + datos +
+                   "   </td> " +
+                   " </tr> ";
+        }
+    }
+
+}
+
+
+
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/bootbox.min.js" type="text/javascript"></script>
+
+    <script>
+        var tableCal;
+
+        $(document).ready(function () {
+            tableCal = $('#CalendariosTable').DataTable({
+                "order": [],
+                "autoWidth": false,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[5, 10, 15, 25, 50, -1], [5, 10, 15, 25, 50, 100, "Todos"]],
+                "pageLength": 10,
+                "columns": [
+                    { "width": "3%" },
+                    { "width": "25%" },
+                    { "width": "25%" },
+                    { "width": "47%" }
+                ]
+
+            });
+
+            $('#CalendariosTable').css('display', 'table');
+
+            $("#CalendariosTable").on("click", ".td-click", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+                let id = $(this).parent().attr('id');
+                id = id.substr(3);
+                AvanzarPagina('Calendarios/ListadoCalendarios', 'Calendario.aspx?CodigoCalendario=' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#CalendariosTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.substr(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+
+        function OptionsChecked() {
+            tableCal.draw();
+        }
+
+
+        function NuevoCalendario() {
+            AvanzarPagina('Calendarios/ListadoCalendarios', 'Calendario.aspx?CodigoCalendario=0');
+        }
+
+
+        function EliminarCalendario() {
+            // Obtener id seleccionado
+            let idselecc = $("#idsSeleccionados").val();
+
+            var dialog = bootbox.dialog({
+                title: '<b>Eliminar Horario</b>',
+                message: "<p>Se va a eliminar el horario seleccionado. ¿Desea continuar?</p>",
+
+                buttons: {
+                    ok: {
+                        label: "Si",
+                        className: 'btn-info',
+                        callback: function () {
+
+                            let urlFranja = getRutaAbsolutaMVC() + "/Calendarios/EliminarCalendario";
+                            let params = { "idsCalendarios": idselecc };
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: urlFranja,
+                                data: JSON.stringify(params),
+                                contentType: "application/json; charset=utf-8",
+                                success: function (datos) {
+                                    let respuesta = JSON.parse(datos);
+                                    MostrarMensajeEliminacion(respuesta);
+                                    $('.EdicionSimple').css('display', 'none');
+                                    $('.EdicionMultiple').css('display', 'none');
+
+                                }, error: function (e) { console.log(e); }
+                            });
+
+                        }
+                    },
+                    cancel: {
+                        label: "No",
+                        className: 'btn-default',
+                        callback: function () {
+                            console.log('Custom cancel clicked');
+                        }
+                    }
+
+                }
+            });
+        }
+
+
+        function EditarCalendario() {
+            // Obtener id seleccionado
+            let id = $("#idsSeleccionados").val();
+
+            AvanzarPagina('Calendarios/ListadoCalendarios', 'Calendario.aspx?CodigoCalendario=' + id);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// Muestra un mensaje si todo ha ido bien o si ha fallado
+        /// ------------------------------------------------------------------------------------
+        function MostrarMensajeEliminacion(respuesta) {
+
+            //muestro el mensaje de error o de que todo ha ido bien
+            if (respuesta.Error === "S") {
+                $("#panelResultado").removeClass("myAlertSuccess");
+                $("#panelResultado").addClass("panel-danger");
+                $("#panelmensajeResultado").html("<b><span class='fa fa-exclamation-triangle' style='font-size:20px;'> Atención: </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+            }
+            else {
+                $("#panelResultado").addClass("myAlertSuccess");
+                $("#panelResultado").removeClass("panel-danger");
+                $("#panelmensajeResultado").html("<b> <span class='fa fa-check-square-o fondoAlert' > </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+            }
+
+            // Elimino los registros de la tabla
+            let eliminados = respuesta.StrAux1.split(',');
+            if (eliminados && eliminados.length > 0) {
+                for (let i = 0; i < eliminados.length; i++) {
+                    const id = eliminados[i];
+                    $("#tr_" + id).remove();
+                }
+            }
+
+            $('#alertaResultado').css('display', 'block');
+            window.setTimeout(function () {
+                $('#alertaResultado').css('display', 'none');
+            }, 10000);
+        }
+
+
+        function Horarios() {
+            var URLNext = 'Horario/ListaHorarios';
+            AvanzarPagina('Calendarios/ListadoCalendarios', URLNext);
+        }
+        function DiasEspeciales() {
+            var URLNext = 'DiasEspeciales/ListadoDiasEspeciales';
+            AvanzarPagina('Calendarios/ListadoCalendarios', URLNext);
+        }
+
+        function CopiaCalendario() {
+            let id = $("#idsSeleccionados").val();
+            var URLNext = 'CalendarioCopia.aspx?CodigoCalendario=' + id;
+           AvanzarPagina('Calendarios/ListadoCalendarios',URLNext);
+        }
+
+    </script>
+
+}
+
+
+
+
+

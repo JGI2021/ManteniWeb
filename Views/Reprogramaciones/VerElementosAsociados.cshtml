@@ -1,0 +1,55 @@
+﻿@model ManteniWeb.DatosTablas.ReposReprogramacion
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+
+
+<style>
+    .asociados {
+        padding: 8px 25px 10px 25px;
+        border-left: 3px solid #778899;
+        margin-left: 20px;
+        background-color: #f2f2f2;
+    }
+
+    .en-linea {
+        display: inline-flex;
+    }
+</style>
+
+<div id="VistaCampanasConReprogramacion" class="row">
+    <div class="col-md-12">
+        <a href="#" onclick="MostrarOcultarElementosAsociados()">Campañas y listas asociadas ... </a>
+        @{
+            string campania = "";
+            string lista = "";
+
+            foreach (ElementoAsociado elemento in Model.LsElementosAsociados)
+            {
+                if (elemento.TipoElemento == Comun.TIPO_ELEMENTO_CAMPANA)
+                {
+                    campania += "<span class='ml-15'>&#9679; " + elemento.NombreElemento + " (" + elemento.IdElemento + ") </span> ";
+                }
+                else if (elemento.TipoElemento == Comun.TIPO_ELEMENTO_LISTA)
+                {
+                    lista += "<span class='ml-15'>&#9679; " + elemento.NombreElemento + " (" + elemento.IdElemento + ") [" + elemento.NombreAux + "] </span> ";
+                }
+            }
+        }
+        <div id="PanelAsociados" class="asociados no-display">
+            @if (campania != "")
+            {
+                <div >
+                    <label for="p_campanas">Campañas:</label>
+                    @Html.Raw(campania)
+                </div>
+            }
+            @if (lista != "")
+            {
+                <div >
+                    <label>Listas:</label>
+                    @Html.Raw(lista)
+                </div>
+            } 
+        </div>
+    </div>
+</div>

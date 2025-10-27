@@ -1,0 +1,231 @@
+﻿<table>
+
+<general
+ 	DisplayName="Permisos" 
+ 	Database="TIPHONE"
+ 	SubsystemFieldName="subsistema"
+ 	TableName="PERMISOS_ADM_SUPERV">
+</general>
+
+<panels>
+  
+<panel
+	id="administracion"
+        DisplayName="Administración">
+</panel>
+
+<panel
+	id="supervision"
+        DisplayName="Supervisión">
+</panel>
+<panel
+	id="audio"
+        DisplayName="Audio">
+</panel>
+</panels>
+  
+<fields>
+
+<field>
+<fattr 
+	FieldName="administra_permisos" 
+	Panel="administracion"
+	DisplayName="Administra permisos" 
+	 
+	EditionType="check"	
+	MaxLen="10"
+	Mandatory="false" 
+	ValidateAs="bool"
+	ToolTip="Indica si el usuario administra permisos."
+	External="false"
+	  
+	UpdateNeeded="true"
+  InitialValue="false"
+	TabOrder="2">
+</fattr>		
+
+</field>
+
+<field>
+<fattr 
+	FieldName="administra_campanas" 
+	Panel="administracion"
+	DisplayName="Administra campañas" 
+	 
+	EditionType="check" 		
+	Mandatory="false" 
+	ValidateAs="boolean"
+	ToolTip="Indica si el usuario puede administrar campañas."
+	External="false"
+	  
+	UpdateNeeded="true"
+  InitialValue="false"
+	TabOrder="3">
+</fattr>		
+</field>
+
+<field>
+<fattr 
+	FieldName="administra_grupos" 
+	Panel="admnistracion"
+	DisplayName="Administra grupos" 
+	 
+	EditionType="check" 
+	Mandatory="false" 
+	ValidateAs="bool"
+	MaxLen="1"
+	ToolTip="Indica si el usuario puede administrar grupos."
+	External="false"
+	  
+	UpdateNeeded="true"
+  InitialValue="false"
+	TabOrder="4">
+</fattr>	
+</field>
+
+<field>
+<fattr 
+	FieldName="administra_listas" 
+	Panel="administracion"
+	DisplayName="Administra listas" 
+	 
+	EditionType="check" 
+	Mandatory="false" 
+	ValidateAs="bool"
+	ToolTip="Indica si el usuario puede administrar listas."
+	External="false"
+	  
+	UpdateNeeded="true"
+  InitialValue="false"
+	TabOrder="5">
+</fattr>	
+
+</field>
+<field>
+<fattr 
+	FieldName="administra_operaciones" 
+	Panel="administracion"
+	DisplayName="Administra operaciones" 
+	 
+	EditionType="check" 
+	Mandatory="false" 
+	ValidateAs="boolean"
+	ToolTip="Indica si el usuario puede administrar operaciones."
+	External="false"
+	  
+	UpdateNeeded="true" 
+  InitialValue="false"
+	TabOrder="6">
+</fattr>
+</field>
+
+  <field>
+    <fattr
+      FieldName="administra_posiciones"
+      Panel="administracion"
+      DisplayName="Administra posiciones"
+       
+      EditionType="check"
+      Mandatory="false"
+      ValidateAs="boolean"
+      ToolTip="Indica si el usuario puede administrar posiciones."
+      External="false"
+        
+      UpdateNeeded="true"
+      InitialValue="false"
+      TabOrder="7">
+    </fattr>
+  </field>
+
+<field>
+<fattr 
+	FieldName="administra_grabaciones" 
+	Panel="audio"
+	DisplayName="Exportar grabaciones" 
+	 
+	EditionType="check" 
+	Mandatory="false" 
+	ValidateAs="boolean"
+	ToolTip="Indica si el operador puede exportar grabaciones."
+	External="false"
+	  
+	UpdateNeeded="true"
+	InitialValue="false"
+	TabOrder="8">
+</fattr>	
+</field>
+
+<field>
+<fattr
+      FieldName="escucha_grabaciones"
+      Panel="audio"
+      DisplayName="Oir grabaciones"
+       
+      EditionType="check"
+      Mandatory="false"
+      ValidateAs="boolean"
+      ToolTip="Indica si el operador puede oir grabaciones."
+      External="false"
+        
+      UpdateNeeded="true"
+      InitialValue="false"
+      TabOrder="9">
+    </fattr>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="escucha_conversaciones"
+      Panel="audio"
+      DisplayName="Oir conversaciones"
+       
+      EditionType="check"
+      Mandatory="false"
+      ValidateAs="boolean"
+      ToolTip="Indica si el operador puede oir conversaciones en tiempo real."
+      External="false"
+        
+      UpdateNeeded="true"
+      InitialValue="false"
+      TabOrder="10">
+    </fattr>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="supervisa_campanas"
+      Panel="supervision"
+      DisplayName="Supervisar campañas"
+       
+      EditionType="check"
+      Mandatory="false"
+      ValidateAs="boolean"
+      ToolTip="Indica si el operador puede supervisar campañas y listas."
+      External="false"
+        
+      UpdateNeeded="true"
+      InitialValue="false"
+      TabOrder="11">
+    </fattr>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="supervisa_grupos"
+      Panel="supervision"
+      DisplayName="Supervisar grupos"
+       
+      EditionType="check"
+      Mandatory="false"
+      ValidateAs="boolean"
+      ToolTip="Indica si el operador puede supervisar grupos."
+      External="false"
+        
+      UpdateNeeded="true"
+      InitialValue="false"
+      TabOrder="12">
+    </fattr>
+  </field>
+
+</fields>
+</table>

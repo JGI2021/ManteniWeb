@@ -1,0 +1,221 @@
+﻿@using ManteniWeb.Models.Grupos
+@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.Controllers
+
+@model ModeloGrupoCanal
+
+@{
+    DatosCanalOperacionGrupo datosTelefonia = Model.lsoperacionescanal.Find(t => t.CanalId == 1);
+    List<TDatosProgramaDc> lsProgramasDC = (List<TDatosProgramaDc>)ViewBag.ListaProgramas;
+    TDatosGrupo grupoACD = (TDatosGrupo)ViewBag.DatosGrupoAcd;
+}
+
+
+<style>
+    /*  bhoechie tab */
+    div.bhoechie-tab-container {
+        z-index: 10;
+        background-color: #ffffff;
+        padding: 0 !important;
+        border-radius: 4px;
+        -moz-border-radius: 4px;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+        margin-left: 50px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        background-clip: padding-box;
+        opacity: 0.97;
+    }
+
+    div.bhoechie-tab-menu {
+        padding-right: 0;
+        padding-left: 0;
+        padding-bottom: 0;
+    }
+
+        div.bhoechie-tab-menu div.list-group {
+            margin-bottom: 0;
+        }
+
+            div.bhoechie-tab-menu div.list-group > a {
+                margin-bottom: 0;
+            }
+
+                div.bhoechie-tab-menu div.list-group > a .glyphicon,
+                div.bhoechie-tab-menu div.list-group > a .fa {
+                    color: #778899;
+                }
+
+                div.bhoechie-tab-menu div.list-group > a:first-child {
+                    border-top-right-radius: 0;
+                }
+
+                div.bhoechie-tab-menu div.list-group > a:last-child {
+                    border-bottom-right-radius: 0;
+                }
+
+                div.bhoechie-tab-menu div.list-group > a.active,
+                div.bhoechie-tab-menu div.list-group > a.active .glyphicon,
+                div.bhoechie-tab-menu div.list-group > a.active .fa {
+                    background-color: #778899;
+                    color: #ffffff;
+                }
+
+                    div.bhoechie-tab-menu div.list-group > a.active:after {
+                        content: '';
+                        position: absolute;
+                        left: 100%;
+                        top: 50%;
+                        margin-top: -13px;
+                        border-left: 0;
+                        border-bottom: 13px solid transparent;
+                        border-top: 13px solid transparent;
+                        border-left: 10px solid #778899;
+                    }
+
+    div.bhoechie-tab-content {
+        background-color: #ffffff;
+        /* border: 1px solid #eeeeee; */
+        padding-left: 20px;
+        padding-top: 10px;
+    }
+
+    div.bhoechie-tab div.bhoechie-tab-content:not(.active) {
+        display: none;
+    }
+</style>
+
+
+@if (Model != null)
+{
+    @* Mensaje de alerta *@
+
+    if (Model.respuesta != null)
+    {
+
+        <script>
+            let respuesta =  @Html.Raw(Json.Encode(Model.respuesta));
+
+            if (respuesta.Error === "S") {
+                $('#alerta').removeClass('alert-success');
+                $('#alerta').addClass('alert-danger');
+                $('#alert-mensaje').html(respuesta.Mensaje);
+            }
+            else {
+                /// Mostramos mensaje de que todo se ha actualizado perfectamente
+                $('#alert-mensaje').html(respuesta.Mensaje);
+                $('#alerta').removeClass('alert-danger');
+                $('#alerta').addClass('alert-success');
+            }
+
+            $('#alerta').css('display', 'block');
+
+            setTimeout(function () {
+                $('#alerta').css('display', 'none');
+                // Si se ha pulsado guardar y salir
+            }, 4000);
+        </script>
+    }
+
+
+    <div class="row" style="margin-bottom:25px;">
+        <div class="col-lg-8 col-md-8 bhoechie-tab-container">
+
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 bhoechie-tab-menu">
+                @{
+                    string activo = "";
+
+                }
+                <div class="list-group">
+                    @foreach (DatosCanalOperacionGrupo datosCanalOperacion in Model.lsoperacionescanal)
+                    {
+                        activo = "";
+                        if (datosCanalOperacion.CanalId == 1)
+                        {
+                            activo = "active";
+                        }
+
+                        <a href="#" class="list-group-item @activo text-center">
+                            <b>Canal @datosCanalOperacion.NombreCanal</b>
+                        </a>
+                    }
+                </div>
+            </div>
+            
+            <div class="col-lg-10 col-md-10 col-sm-10 bhoechie-tab">
+                @foreach (DatosCanalOperacionGrupo datosCanalOperacion in Model.lsoperacionescanal)
+                {
+                    activo = "";
+                    if (datosCanalOperacion.CanalId == 1)
+                    {
+                        activo = "active";
+                    }
+                    <!-- flight section -->
+                    <div class="bhoechie-tab-content @activo">
+
+                        <div class="col-md-6 col-lg-6 padding-top-8" style="margin-bottom: 15px;">
+                            @Html.Raw(ObtenerDatosCanal(datosCanalOperacion.EsperaProgramaId, datosCanalOperacion.CanalId.ToString(),
+                                                        datosCanalOperacion.NombreCanal, "prEspera", lsProgramasDC))
+                        </div>
+                        <div class="col-md-6 col-lg-6 padding-top-8" style="margin-bottom: 15px;">
+                            @Html.Raw(ObtenerDatosCanal(datosCanalOperacion.ColaTransferProgramaId, datosCanalOperacion.CanalId.ToString(),
+                                                        datosCanalOperacion.NombreCanal, "prClTraf", lsProgramasDC))
+                        </div>
+                        <div class="col-md-6 col-lg-6 padding-top-8" style="margin-bottom: 15px;">
+                            @Html.Raw(ObtenerDatosCanal(datosCanalOperacion.HoldProgramaId, datosCanalOperacion.CanalId.ToString(),
+                                                        datosCanalOperacion.NombreCanal, "prLlHold", lsProgramasDC))
+                        </div>
+                        <div class="col-md-6 col-lg-6 padding-top-8" style="margin-bottom: 15px;">
+                            @Html.Raw(ObtenerDatosCanal(datosCanalOperacion.RingBackProgramaId, datosCanalOperacion.CanalId.ToString(),
+                                                        datosCanalOperacion.NombreCanal, "prRinbak", lsProgramasDC))
+                        </div>
+                        <div class="col-md-6 col-lg-6 padding-top-8" style="margin-bottom: 15px;">
+                            @Html.Raw(ObtenerDatosCanal(datosCanalOperacion.ColaSalienteProgramaId, datosCanalOperacion.CanalId.ToString(),
+                                                        datosCanalOperacion.NombreCanal, "prSalien", lsProgramasDC))
+                        </div>
+                        <div class="col-md-6 col-lg-6 padding-top-8" style="margin-bottom: 15px;">
+                            @Html.Raw(ObtenerDatosCanal(datosCanalOperacion.DistribucionProgramaId, datosCanalOperacion.CanalId.ToString(),
+                                                        datosCanalOperacion.NombreCanal, "prDistri", lsProgramasDC))
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+
+        </div>
+    </div>
+}
+
+@functions {
+    public string ObtenerDatosCanal(string programaId, string canalId, string nombreCanal, string idsel, List<TDatosProgramaDc> lsProgramasDC)
+    {
+        string html = "";
+
+        html += "<label for='programaespera' id='lb-"+idsel+"-" + canalId + "' class='lbProgramas'>Programa de espera " + nombreCanal + "</label>";
+        html += "<select class='form-control slProgramas' id='sl-"+idsel+"-" + canalId + "' onchange='AsociaProgramaACanal(this.id)'> ";
+        if (programaId == "")
+        {
+            programaId = "POR_DEFECTO";
+        }
+
+        foreach (TDatosProgramaDc programa in lsProgramasDC)
+        {
+            if (programaId == programa.ProgramaId)
+            {
+                html += "<option value='" + programaId + "' selected >" + programa.Descripcion + "</option> ";
+            }
+            else
+            {
+                html += "<option value='" + programaId + "' >" + programa.Descripcion + "</option> ";
+            }
+        }
+
+        html += "</select> ";
+        return html;
+    }
+
+}

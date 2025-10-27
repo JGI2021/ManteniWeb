@@ -1,0 +1,429 @@
+﻿@model  ManteniWeb.Models.ImportarRegistrosCarga
+
+@using ManteniWeb.Models;
+@using ManteniWeb.App_GlobalResources
+
+
+@{
+    string campana = Model.Campana.Alias != null ? " - " + CampanaResources.cmp_campana + ": " + Model.Campana.Alias : " Not selected";
+    ViewBag.Title = CampanaResources.cmp_importarRegistros + " " + campana;    
+}
+
+<link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+<link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/css/MyTreeView.css" rel="stylesheet" />
+
+<style>
+    .margen {
+        margin-bottom: 15px;
+        margin-right: 15px;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title  </span>
+        </h2>
+    </div>
+</div>
+
+
+<div class="row rowSeparacion20">
+    @* Panel izquierdo, donde se coloca el menú *@
+    <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+        <div class="visible-lg visible-md ">
+            <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                <li></li>
+                <li class="RowAccionesSiempreVisibles" style="">
+                    <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-1">
+                                <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col-lg-10 col-sm-11">@ComunResources.btn_volver</div>
+                        </div>
+                    </a>
+                </li>
+                <li></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-10 col-md-10">
+        @using (Html.BeginForm("CargaDeFichero", "ImportarRegistros", FormMethod.Post, new { id = "ASPForm", enctype = "multipart/form-data" }))
+        {
+
+            <input type="hidden" id="IdCampana" name="IdCampana" value="@Model.IdCampana" />
+            <div class='row rowSeparacion15'>
+                <div class='radio'>
+                    <label> 
+                        <input type='radio' name='NumeroFicheros' id='optionRadio1' value='1' onclick="TipoDeCarga(1)" >
+                        @CampanaResources.cmp_subirUnSoloFichero
+                    </label>
+                </div>
+                <div class='radio'>
+                    <label>
+                        <input type='radio' name='NumeroFicheros' id='optionRadio2' value='2' onclick="TipoDeCarga(2)">
+                        @CampanaResources.cmp_msgSubirDosFicheros
+                    </label>
+                </div>
+            </div>
+
+
+            <div class='row'>
+                <label class='checkbox-inline' style="margin-left: 20px;">
+                    <input type='checkbox' name='TieneCabecera'  id='TieneCabecera' />                    
+                    @CampanaResources.cmp_impLosFicheroConCabecera
+                </label>
+            </div>
+
+            <div class='row rowSeparacion15'>
+                <label>@CampanaResources.cmp_impSeleccionaSeparador:</label>
+                <div class='radio'>
+                    <label>
+                        <input type='radio' name='Separador' id='optionSeparador1' value='COMA'>
+                        @CampanaResources.cmp_impComa (,)
+                    </label>
+                </div>
+                <div class='radio'>
+                    <label>
+                        <input type='radio' name='Separador' id='optionSeparador2' value='PUNTOYCOMA' checked>
+                        @CampanaResources.cmp_impPuntoyComa (;)
+                    </label>
+                </div>
+                <div class='radio'>
+                    <label>
+                        <input type='radio' name='Separador' id='optionSeparador3' value='TABULADOR'>
+                        @CampanaResources.cmp_impTabulador
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="row rowSeparacion15">
+                <div class='form-group'>
+                    <div><label>@CampanaResources.cmp_impSeleccionesUnaOpcion</label></div>
+                    <div class='radio'>
+                        <label>
+                            <input type='radio' name='TipoCarga' id='opcion1' value='DEJAR_TODOS'>
+                            @CampanaResources.cmp_impMantenerYAgrgarNuevos
+                        </label>
+                    </div>
+                    <div class='radio'>
+                        <label>
+                            <input type='radio' name='TipoCarga' id='opcion2' value='DEJAR_NINGUNO'>
+                            @CampanaResources.cmp_impEliminarViejoAgregarNuevo
+                        </label>
+                    </div>
+                    <div class='radio'>
+                        <label>
+                            <input type='radio' name='TipoCarga' id='opcion3' value='DEJAR_FINALIZADOS'>
+                            @CampanaResources.cmp_impMantenFinAgregarNuevos
+                        </label>
+                    </div>
+                    <div class='radio'>
+                        <label>
+                            <input type='radio' name='TipoCarga' id='opcion3' value='ABM_SOBRE_ABIERTOS' checked>
+                            @CampanaResources.cmp_impAltaBajaModif
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class='row' id='unfichero' style="display:none;">
+                <div class='row rowSeparacion15' id="numeroFicheros" >
+                    <label class='col-form-label' for="NumeroTelefonosCliente">@CampanaResources.cmp_impFicheroTelefonos<span style="color:red;"> * </span></label>
+                    <div class='form-group'>
+                        <input type='number' class='form-control btnInput' aria-label='Phone File' id='NumeroTelefonosCliente' name="NumeroTelefonosCliente" style="width:150px;" value='1' min="1" max="20" />
+                    </div>
+                </div>
+
+                <div class='form-group'>
+                    <div><label>Marque los atributos a utilizar</label></div>
+                    <label class='checkbox-inline'>
+                        @*<input type='checkbox' id='checkHoraInicio' class="checksDatosTelefonos" value='hora_inicio' name="DatosUnSoloTfno.HayHoraInicio"> Hora inicio*@
+                        @Html.EditorFor(model => model.DatosUnSoloTfno.HayHoraInicio) Hora inicio
+                    </label>
+                    <label class='checkbox-inline' style="left: 20px;">
+                        @*<input type='checkbox' id='checkValor1' class="checksDatosTelefonos" value='' name="DatosUnSoloTfno.HayValor1"> Valor 1*@
+                        @Html.EditorFor(model => model.DatosUnSoloTfno.HayValor1) Valor1
+                    </label>
+                    <label class='checkbox-inline' style="left: 40px;">
+                        @*<input type='checkbox' id='checkPrioridad' class="checksDatosTelefonos" value='' name="DatosUnSoloTfno.HayPrioridad"> Prioridad*@
+                        @Html.EditorFor(model => model.DatosUnSoloTfno.HayPrioridad) Prioridad
+                    </label>
+                </div>
+                <div class='form-group'>
+                    <label class='checkbox-inline'>
+                        @*<input type='checkbox' id='checkHoraFin' class="checksDatosTelefonos" value='' name="DatosUnSoloTfno.HayHoraFin"> Hora fin*@
+                        @Html.EditorFor(model => model.DatosUnSoloTfno.HayHoraFin) Hora fin
+                    </label>
+                    <label class='checkbox-inline' style="left: 38px;">
+                        @*<input type='checkbox' id='checkValor2' class="checksDatosTelefonos" value='' name="DatosUnSoloTfno.HayValor2"> Valor 2*@
+                        @Html.EditorFor(model => model.DatosUnSoloTfno.HayValor2) Valor2
+                    </label>
+                    <label class='checkbox-inline' style="left: 58px;">
+                        @*<input type='checkbox' id='checkPeso' class="checksDatosTelefonos" value='' name="DatosUnSoloTfno.HayPeso"> Peso*@
+                        @Html.EditorFor(model => model.DatosUnSoloTfno.HayPeso) Peso
+                    </label>
+                </div>
+            </div>
+
+            <div id='dosficheros'>
+                <div class='row ' style="width: 500px !important;" id="divFichero1">
+                    <label class='col-form-label' id="lblFiheroPersonas">@CampanaResources.cmp_impFiheroClientes<span style="color:red;"> * </span></label>
+                    <div class='input-group'>
+                        <input type='text' class='form-control btnInput' aria-label='Person File' id='InputPersonFile' readonly placeholder='@CampanaResources.cmp_impSelecionarFichero' value='' />
+                        <span class='input-group-btn'>
+                            <button class='btn btn-primary' type='button' style='height: 34px; margin-bottom: 0px;' onclick='BuscarFicheroPersonas();'>
+                                <span class='glyphicon glyphicon-search' aria-hidden='true'>
+                                </span> Buscar
+                            </button>
+                        </span>
+                    </div>
+                    <input type='file' id='filePicker2' name="Fichero1" onchange="ValidateFile(this.id)" style='display:none; height:0' accept='*.pem' />
+                </div>
+
+                <div class='row rowSeparacion15' style="width: 500px !important;" id="divFichero2">
+                    <label class='col-form-label' id="lblFiheroTelefonos">@CampanaResources.cmp_impFicheroTelefonos<span style="color:red;"> * </span></label>
+                    <div class='input-group'>
+                        <input type='text' class='form-control btnInput' aria-label='Phone File' id='InputPhoneFile' readonly placeholder='@CampanaResources.cmp_impSelecionarFichero' value='' />
+                        <span class='input-group-btn'>
+                            <button class='btn btn-primary' type='button' style='height: 34px; margin-bottom: 0px;' onclick='BuscarFicheroTelefonos();'>
+                                <span class='glyphicon glyphicon-search' aria-hidden='true'>
+                                </span> Buscar
+                            </button>
+                        </span>
+                    </div>
+                    <input type='file' id='filePicker3' name="Fichero2" onchange="ValidateFile(this.id)" style='display:none; height:0' accept='*.pem' />
+                </div>
+                
+
+                <div class='row rowSeparacion25'>
+                    <button type='button' class='btn btn-primary' title='upload' onclick="CargarCampana()">
+                        <i id='btnspin' class='fa fa-spinner fa-pulse' style='display:none;'></i>  @CampanaResources.cmp_impCargarCampana &nbsp;&nbsp;
+                    </button>
+                </div>
+            </div>
+
+
+
+            <div id="MensajeRespuesta">
+                @if (Model.RespuestaCarga.TipoMensaje == 1)
+                {
+                    <div class="row rowSeparacion25">
+                        <div class="col-lg-8 col-md-8">
+                            <div class="panel panel-danger">
+                                <div id="panelwarning-head" class="panel-heading">ERROR!!  @Model.RespuestaCarga.Mensaje</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (Model.RespuestaCarga.TipoMensaje == 2)
+                {
+                    <div class="row rowSeparacion25">
+                        <div class="col-lg-8 col-md-8">
+                            <div class="panel panel-success">
+                                <div id="panelwarning-head" class="panel-heading">@Model.RespuestaCarga.Mensaje</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div id="pnlErrores">
+                @if (Model.RespuestaCarga.Errores.Count > 0)
+                {
+                    if (Model.RespuestaCarga.TipoMensaje == 1)
+                    {
+                        <div class="row">
+                            <h4 style="font-weight:600;color:crimson;">Errores de carga</h4>
+                        </div>
+                        <div class="row rowSeparacion15">
+                            <div class="col-lg-8 col-md-8" style="overflow-y: auto; max-height: 500px; padding-top: 20px; border: 1px solid #d1dede; margin-bottom: 30px;">
+                                <ul>
+                                    @foreach (string error in Model.RespuestaCarga.Errores)
+                                    {
+                                        <li>@error</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <label>Total errores: @Model.RespuestaCarga.Errores.Count</label>
+                    }
+                    else
+                    {
+                        <div class="row rowSeparacion15">
+                            <h4 style="color: #5cb85c;">Registros rechazados</h4>
+                        </div>
+                        <div class="row rowSeparacion15">
+                            <div class="col-lg-8 col-md-8" style="overflow-y: auto; max-height: 500px; padding-top: 20px; border: 1px solid #d1dede; margin-bottom: 30px;">
+                                <ul>
+                                    @foreach (string error in Model.RespuestaCarga.Errores)
+                                    {
+                                        <li>@error</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <label>Total registros: @Model.RespuestaCarga.Errores.Count</label>
+                    }
+                }
+            </div>
+
+        }
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+        let modelo = @Html.Raw(Json.Encode(new ImportarRegistrosCarga()));
+
+        $(document).ready(function () {
+            $('#btnspin').css('display', 'none');
+
+            modelo.Separador =  @Html.Raw(Json.Encode(Model.Separador));
+            modelo.NumeroFicheros =  @Html.Raw(Json.Encode(Model.NumeroFicheros));
+            modelo.TieneCabecera =  @Html.Raw(Json.Encode(Model.TieneCabecera));
+            modelo.TipoCarga =  @Html.Raw(Json.Encode(Model.TipoCarga));
+            modelo.NumeroTelefonosCliente = @Html.Raw(Json.Encode(Model.NumeroTelefonosCliente));
+            modelo.DatosUnSoloTfno = @Html.Raw(Json.Encode(Model.DatosUnSoloTfno));
+
+            if (modelo.TieneCabecera === null)
+                modelo.TieneCabecera = 0;
+
+            $('#InputPersonFile').on('click', function () {
+                BuscarFicheroPersonas();
+            });
+
+
+            $('#InputPhoneFile').on('click', function () {
+                BuscarFicheroTelefonos();
+            });           
+
+            aplicarChecks(modelo);
+        });
+
+        function aplicarChecks(modelo) {
+            if (modelo.NumeroFicheros === "1") {
+                document.getElementById("optionRadio1").checked = true;
+                TipoDeCarga(1);
+                document.getElementById("NumeroTelefonosCliente").value = modelo.NumeroTelefonosCliente;
+                AplicarSeleccionDatosUnTelefono();
+            }
+            else {
+                document.getElementById("optionRadio2").checked = true;
+                TipoDeCarga(2);
+                document.getElementById("NumeroTelefonosCliente").value = "1";
+            }
+
+            if (modelo.TieneCabecera == "on" || modelo.TieneCabecera == "1")
+                document.getElementById("TieneCabecera").checked = true;
+            else
+                document.getElementById("TieneCabecera").checked = false;
+
+            if (modelo.Separador === "COMA")
+                document.getElementById("optionSeparador1").checked = true;
+            else if (modelo.Separador === "PUNTOYCOMA")
+                document.getElementById("optionSeparador2").checked = true;
+            else if (modelo.Separador === "TABULADOR")
+                document.getElementById("optionSeparador3").checked = true;
+
+            if (modelo.TipoCarga === "DEJAR_TODOS")
+                document.getElementById("opcion1").checked = true;
+            else if (modelo.TipoCarga === "DEJAR_NINGUNO")
+                document.getElementById("opcion2").checked = true;
+            else if (modelo.TipoCarga === "DEJAR_FINALIZADOS")
+                document.getElementById("opcion3").checked = true;
+            else if (modelo.TipoCarga === "ABM_SOBRE_ABIERTOSABM_SOBRE_ABIERTOS")
+                document.getElementById("opcion4").checked = true;
+            
+        }
+
+        function CargarCampana() {
+            $('#btnspin').css('display', 'inline-block');
+            ASPForm.submit();
+        }
+
+        function BuscarFicheroPersonas() {
+            console.log('pulsado buscar personas ');
+            var element = $("#filePicker2");
+            element.click();
+            $("#pnlErrores").css('display', 'none');
+            $("#MensajeRespuesta").css('display', 'none');
+        }
+
+        function BuscarFicheroTelefonos() {
+            console.log('pulsado buscar teléfonos ');
+            var element = $("#filePicker3");
+            element.click();
+            $("#pnlErrores").css('display', 'none');
+            $("#MensajeRespuesta").css('display', 'none');
+        }
+
+        function ValidateFile(id) {
+            var arrInputs = $('#' + id);
+            for (var i = 0; i < arrInputs.length; i++) {
+                var oInput = arrInputs[i];
+                if (oInput.type == "file") {
+                    var sFileName = oInput.value;
+
+                    if (id == 'filePicker2') {
+                        // aqui se guarda toda la ruta del fichero
+                        //   $('#hiddCertificateName').val(sFileName);
+                        console.log(sFileName);
+                        fichero = sFileName.split('\\\\').pop();
+                        fichero = fichero.replace(/C:\\fakepath\\/i, '');
+                        $('#InputPersonFile').val(fichero);
+                    }
+                    else if (id == 'filePicker3') {
+                        // aqui se guarda toda la ruta del fichero
+                        //$('#hiddCertificateKey').val(sFileName);
+                        console.log(sFileName);
+                        fichero = sFileName.split('\\\\').pop();
+                        fichero = fichero.replace(/C:\\fakepath\\/i, '');
+                        $('#InputPhoneFile').val(fichero);
+                    }
+                    else {
+                        console.log('El campo id no viene con el valor correcto ');
+                    }
+                } DatosUnSoloTfno_HayHoraInicio
+            }
+
+            return true;
+        }
+
+        function TipoDeCarga(tipo) {
+            if (tipo === 1) {
+                $("#divFichero2").css('display', 'none');
+                $("#lblFiheroPersonas").text("Fichero");
+                $("#unfichero").css('display', 'block');
+            }
+            else {
+                $("#divFichero2").css('display', 'block');
+                $("#lblFiheroPersonas").text('@CampanaResources.cmp_impFiheroClientes');
+                $("#unfichero").css('display', 'none');
+                document.getElementById("DatosUnSoloTfno_HayHoraInicio").checked = false;
+                document.getElementById("DatosUnSoloTfno_HayHoraFin").checked = false;
+                document.getElementById("DatosUnSoloTfno_HayValor1").checked = false;
+                document.getElementById("DatosUnSoloTfno_HayValor2").checked = false;
+                document.getElementById("DatosUnSoloTfno_HayPrioridad").checked = false;
+                document.getElementById("DatosUnSoloTfno_HayPeso").checked = false;
+            }
+        }
+
+        function AplicarSeleccionDatosUnTelefono() {
+            document.getElementById("DatosUnSoloTfno_HayHoraInicio").checked = modelo.DatosUnSoloTfno.HayHoraInicio;
+            document.getElementById("DatosUnSoloTfno_HayHoraFin").checked = modelo.DatosUnSoloTfno.HayHoraFin;
+            document.getElementById("DatosUnSoloTfno_HayValor1").checked = modelo.DatosUnSoloTfno.HayValor1;
+            document.getElementById("DatosUnSoloTfno_HayValor2").checked = modelo.DatosUnSoloTfno.HayValor2;
+            document.getElementById("DatosUnSoloTfno_HayPrioridad").checked = modelo.DatosUnSoloTfno.HayPrioridad;
+            document.getElementById("DatosUnSoloTfno_HayPeso").checked = modelo.DatosUnSoloTfno.HayPeso;
+        }
+    </script>
+}
+
+

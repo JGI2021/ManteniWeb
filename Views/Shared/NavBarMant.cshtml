@@ -1,0 +1,410 @@
+﻿@using ManteniWeb.Code;
+
+@{ 
+    string tipoCabecera = "cabecera1";
+    switch (Comun.ColorSuperiorConf.ToUpper())
+    {
+        case "00796B":
+            tipoCabecera = "cabecera1";
+            break;
+        case "0D77B6":
+            tipoCabecera = "cabecera2";
+            break;
+        case "D32F2F":
+            tipoCabecera = "cabecera3";
+            break;
+        case "455A64":
+            tipoCabecera = "cabecera4";
+            break;
+        case "303F9F":
+            tipoCabecera = "cabecera5";
+            break;
+        case "388E3C":
+            tipoCabecera = "cabecera6";
+            break;
+
+    }
+    TUsuario usuario = EstaticosUsuario.GetUsuario(HttpContext.Current);
+    string operadorConectado = usuario.NombreOperador;
+    string idOperador = usuario.UserId;
+}
+
+<nav class='navbar navbar-inverse navbar-static-top @tipoCabecera' >
+    <div class='container-fluid'>
+        <div class='navbar-header'>
+            <a class='navbar-brand' href='#' data-toggle='tooltip' data-placement='bottom' title='Menú lateral' id='clickMenu'>
+                <img src='~/img/logo_tiphone.png' alt='Logo Tiphone' height='25' />
+            </a>
+            <a href='~/Principal.aspx' target='_parent' class='navbar-brand' data-toggle='tooltip' data-placement='bottom' title='Menú principal'>
+                <span class="fa fa-home" aria-hidden="true" style="color: #fff;"></span>
+            </a>
+            <button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#bs-example-navbar-collapse-1'>
+                <span class='sr-only'>Toggle navigation</span>
+            </button>
+        </div>
+        <div class='collapse navbar-collapse' id='bs-example-navbar-collapse-1' style="font-size: 17px;">
+            <ul class='nav navbar-nav navbar-right' id='listaNavGeneral'>
+                <li data-toggle='tooltip' data-placement='bottom' title='Salir'>
+                    <a href="~/MatarSesion.aspx"><span class="fa fa-sign-out" style="color: white !important"> </span></a>
+                </li>
+                <li><span> </span></li>
+                <li></li>   
+                <li class='dropdown' data-toggle='tooltip' data-placement='bottom' title='Información del usuario' id='ContenidoListaInfoUsuario'>
+                    <a  onclick='AvanzarPagina("Principal.aspx", "Operadores/Operador/@idOperador")'>
+                        <span class="fa fa-user visible-xs visible-sm visible-md visible-lg " aria-hidden="true" style="color: #fff;"> @operadorConectado </span>
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+
+<nav class='cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left paddingTop15px' style='background:@tipoCabecera' id="MEnu">
+    <h3 style='background:#455A64;max-height:10%;'><img id='clickTiphone' src='~/img/logo_tiphone.png' alt='Logo Tiphone' height='35' width='150'></h3>
+    <div class='panel-group panel-group-principal' id='accordionGeneral' role='tablist' aria-multiselectable='true' style='height:90%;'>
+        <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+            <div class='panel-heading panel-heading-principal' role='tab' id='AccesosDirectos'>
+                <h4 class='panel-title'>
+                    <a class='accordionContent' href='AccesosDirectos.aspx' target='iframeGlobal'> Accesos directos <br></a>
+                </h4>
+            </div>
+        </div>
+
+        <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+            <div class='panel-heading panel-heading-principal' role='tab' id='ConfiguracionGeneral'>
+                <h4 class='panel-title'>
+                    <a class='accordionContent' href='Settings.aspx' target='iframeGlobal'> Configuración general <br></a>
+                </h4>
+            </div>
+        </div>
+
+        @if (Convert.ToBoolean(Comun.op_administrar_campana) && (Comun.administraCampanas || Comun.supervisaCampanas))
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='mnuCampanas'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='Campanas.aspx' target='iframeGlobal'> Campañas <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_grupo) && Comun.administraOSupervisaAlgunGrupo)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Grupos'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='GruposAtencion.aspx' target='iframeGlobal'> Grupos <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+
+        @if (Comun.administraSubsistema && Convert.ToBoolean(Comun.op_administrar_distribucion) && Comun.administraOSupervisaAlgunGrupo)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Distribucion'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='GruposDistribucion.aspx' target='iframeGlobal'> Distribución <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_operadores))
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Operadores'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' id='TituloOperadores' href='Operadores/Litado' target='iframeGlobal'> Operadores <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Comun.administraSubsistema && Convert.ToBoolean(Comun.op_administrar_posiciones))
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Posiciones'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='Posiciones.aspx' target='iframeGlobal'> Posiciones <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_escuchas) && WebConfigParams.CanalesExistentes[TipoDeCanal.cnTelefonico] && Comun.escuchaConversaciones)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Escuchas'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='Escuchas.aspx' target='iframeGlobal'> Escuchas <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_grabaciones) && WebConfigParams.CanalesExistentes[TipoDeCanal.cnTelefonico] && Comun.escuchaGrabaciones)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Grabaciones'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='Grabaciones/FrmGrabaciones?tipoBusqueda=A' target='iframeGlobal'> Grabaciones <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Comun.administraSubsistema && Convert.ToBoolean(Comun.op_administrar_mon_remoto) && Comun.monitoresRemotos)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='MonitoresRemotos'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='MonitoresRemotos.aspx' target='iframeGlobal'> Monitores remotos <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Comun.administraSubsistema && Convert.ToBoolean(Comun.op_administrar_monitorizaciones))
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='Monitorizaciones'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='Monitorizaciones.aspx' target='iframeGlobal'> Monitorizaciones <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_buzones_de_voz) && WebConfigParams.CanalesExistentes[TipoDeCanal.cnVoicemail])
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='ResumenBuzonDeVoz'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='ResumenBuzonDeVoz.aspx' target='iframeGlobal'> Buzón de voz <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_gestionesOffLine) &&
+        (WebConfigParams.CanalesExistentes[TipoDeCanal.cnVoicemail] || WebConfigParams.CanalesExistentes[TipoDeCanal.cnChat]))
+        {
+        <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+            <div class='panel-heading panel-heading-principal' role='tab' id='ResumenBuzonDeVoz'>
+                <h4 class='panel-title'>
+                    <a class='accordionContent' href='ResumenGestionesOffLine.aspx' target='iframeGlobal'> Buzón de voz <br></a>
+                </h4>
+            </div>
+        </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_emails) && WebConfigParams.CanalesExistentes[TipoDeCanal.cnEmail] && Comun.administraOSupervisaAlgunGrupo)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='mails'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='ResumenEmails.aspx' target='iframeGlobal'> E-mails <br></a>\n");
+                    </h4>\
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_servicio_estadisticas) && Comun.administraEstadisticas)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='ServicioEstadisticas'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='ServicioEstadisticas.aspx' target='iframeGlobal'> Servicio estadísticas <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_gestor_encaminamientos) && Comun.administraSubsistema)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='FilaEncaminamientos'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='Encaminamientos.aspx' target='iframeGlobal'> Gestor de colas <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_ivr) && Comun.administraSubsistema)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='FilaIVR'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='GestorIVR.aspx' target='iframeGlobal'> Operador automático <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        @if (Convert.ToBoolean(Comun.op_administrar_chat) && WebConfigParams.CanalesExistentes[TipoDeCanal.cnChat] && Comun.administraChat)
+        {
+            <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+                <div class='panel-heading panel-heading-principal' role='tab' id='FilaChat'>
+                    <h4 class='panel-title'>
+                        <a class='accordionContent' href='MantenimientoChat.aspx' target='iframeGlobal'> Mantenimiento chat <br></a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+
+        <div class='panel panelAzulGeneral' style='background-color:@tipoCabecera;border-color:@tipoCabecera;'>
+            <div class='panel-heading panel-heading-principal' role='tab' id='CerrarSesion'>
+                <h4 class='panel-title'>
+                    <a href='MatarSesion.aspx'>Salir</a>
+                </h4>
+            </div>
+        </div>
+    </div>
+
+
+</nav>
+
+
+<div class='modal fade' id='miModalFav' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='close' data-dismiss='modal'>
+                    <span aria-hidden='true'></span>
+                    <span class='sr-only'>Cerrar</span>
+                </button>
+                <h4 class='modal-title'>Atención</h4>
+            </div>
+            <div class='modal-body'>
+                <p>Debe de indicar un nombre para añadirlo a favoritos.</p>
+                <div id='NuevoFav'>
+                    <div>
+                        <input id='favorito' class='form-control' style='font-family: Roboto;' placeholder='Nombre del favorito'
+                               name='favorito' type='text' value='' />
+                    </div>
+                </div>
+                <div class='alert alert-danger' style='margin: 10px; visibility: hidden; display: none' id='MensajeErrorNuevoFavorito'>
+                    <strong>Error!</strong>
+                </div>
+            </div>
+            <div class='modal-footer'>
+                <input type='button' class='btn btn-default botonFicha' value='Confirmar' onclick='aceptaFavorito()' />
+                <input type='hidden' id='fvtoAnadir' name='fvtoAnadir' value='false' />
+                <button type='button' class='btn btn-default botonFicha' data-dismiss='modal'>Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='miModalEliminarFav' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='close' data-dismiss='modal'>
+                    <span aria-hidden='true'></span>
+                    <span class='sr-only'>Cerrar</span>
+                </button>
+                <h4 class='modal-title'>Atención</h4>
+            </div>
+            <div class='modal-body'>
+                <p>Se va a eliminar el registro de favoritos,¿Desea continuar?</p>
+            </div>
+            <div class='modal-footer'>
+                <input type='button' class='btn btn-default botonFicha' value='Eliminar' name='eliminarFav' id='eliminarFav'
+                       onclick='EliminarFavorito()' />
+                <input type='hidden' id='fvtoEliminar' name='fvtoEliminar' value='false' />
+                <button type='button' class='btn btn-default botonFicha' data-dismiss='modal'>Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(parent.window.document).contents().find('#bolita').hide();
+    $(parent.window.document).contents().find('#bolita').removeClass("menu-active");
+    $(parent.window.document).contents().find('.cbp-spmenu').removeClass("menu-open");
+    $('#clickMenu').click(function () {
+        $(parent.window.document).contents().find('#bolita').click();
+    });
+    $('#clickMenu2').click(function () {
+        if (window.location.pathname != '/MenuPrincipal.aspx')
+            $(parent.window.document).contents().find('#bolita').click();
+    });
+    $('#ToPrincipalWindow').click(function () {
+        window.location = 'Principal.aspx';
+    });
+
+    $('#favOff').click(function () {
+        $('#miModalFav').modal({ backdrop: 'static' });
+        $('#miModalFav').modal('show');
+        $('#MensajeErrorNuevoFavorito').css('visibility', 'hidden');
+        $('#MensajeErrorNuevoFavorito').css('display', 'none');
+        $('#MensajeErrorNuevoFavorito').text('Tiene que indicar un nombre');
+    });
+
+    $('#favOn').click(function () {
+        //          $('#miModalEliminarFav').modal({ backdrop: 'static' });
+        alert('FON');
+        $('#miModalEliminarFav').modal('show');
+    });
+
+    function EliminarFavorito() {
+        $('#fvtoEliminar').val('true');
+        document.forms[0].submit();
+    }
+
+    $(document).ready(function () {
+        $('#Boton_bCerrarCambioPwd').click(function () {
+            $('#BotonCambiarPwd').modal('hide');
+        });
+        $('#Boton_bCambiarPwd').click(function () {
+            AceptaCambiarPwd();
+        });
+    });
+
+    @*$('#abrirFicha').click(function () {
+        var URLActual = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
+        AvanzarPaginaDeMVCAWebFrm(URLActual, "Operadores/Operador/" + reemplazarCaracteresEspeciales('@operadorConectado') );
+    });*@
+
+
+    
+
+    function aceptaFavorito() {
+        var valor = $('#favorito').val();
+        if (valor == '') {
+            $('#MensajeErrorNuevoFavorito').css('visibility', 'visible');
+            $('#MensajeErrorNuevoFavorito').css('display', 'block');
+            $('#MensajeErrorNuevoFavorito').text('Tiene que indicar un nombre');
+        }
+        else {
+            $('#fvtoAnadir').val('true');
+            document.forms[0].submit()
+        }
+    }
+
+
+
+    var colorSuperior = '';
+    colorSuperior = $('.cbp-spmenu h3').css("background-color");
+    $('#iframeGlobal').on("load",function(){
+//    $('#iframeGlobal').load(function () {
+        $('iframe').contents().find('.navbar-static-top').css('background-color', $('.cbp-spmenu h3').css("background-color"));
+        $('iframe').contents().find('.navbar-static-top').css('border-color', $('.cbp-spmenu h3').css("background-color"));
+    });
+
+</script>
+
+
+

@@ -1,0 +1,244 @@
+﻿    
+@model ManteniWeb.Models.Organizacion
+<style>
+    .fijarPanelMensajes {
+        position: fixed;
+        z-index: 1;
+        width: 47%;
+        left: 17%;
+    }
+</style>
+
+
+@{ 
+    int administrarOrganizacion = 0;
+    try
+    {
+        administrarOrganizacion = (int)ViewBag.AdministraOrganizacion;
+    }
+    catch
+    {
+
+    }
+}
+
+
+
+
+<!-- SE MUESTRA LA ORGANIZACION -->
+
+<div class="row" >
+
+
+    @if (Model.HayError)
+    {
+        <!-- PANEL DE ERROR -->
+        <div class="row rowSeparacion15 errorpanel fijarPanelMensajes" >
+            <div id="panelwarning" class="col col-lg-7">
+                <div class="panel panel-danger">
+                    <div id="panelwarning-head" class="panel-heading">ERROR! --> @Model.Message</div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.HayMensaje)
+    {
+        <div class="row rowSeparacion15 errorpanel fijarPanelMensajes" >
+            <div id="panelsuccess" class="col col-lg-7">
+                <div class="panel panel-success">
+                    <div id="panelsuccess-head" class="panel-heading">OK! --> @Model.Message</div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="tree"  >
+        @Html.Raw(Display(Model, administrarOrganizacion))
+    </div>
+</div>
+
+<!-- FIN MOSTRAR ORGANIZACION-->
+
+
+@functions {
+
+    public string DisplaySubOrganizaciones(List<ManteniWeb.Models.Organizacion> lsorganiz, int i, bool seleccionadopadre, bool MostrarNodosHijos)
+    {
+        string s = "";
+
+        s += "<ul>";
+
+        i++;
+        string color = "ColorNormal";
+        bool estoyEnAsesor = false;
+        string asesores = "";
+
+        foreach (ManteniWeb.Models.Organizacion suborgorg in lsorganiz)
+        {
+            if (suborgorg.MostrarNodo == false)
+            {
+                continue;
+            }
+
+            var disabled = "";
+
+            if (suborgorg.Nombrenivel != "ASESORES")
+            {
+                if (MostrarNodosHijos)
+                {
+                    s += "<li class='parent_li' >";
+                }
+                else
+                {
+                    s += "<li class='parent_li' style='display:none' >";
+                }
+
+                if (suborgorg.Seleccionado /*|| seleccionadopadre*/)
+                {
+                    color = "NodoJerarquico";
+                    MostrarNodosHijos = true;
+                }
+                else
+                {
+                    color = "ColorNormal";
+                }
+
+                // Miramos si hay que activar el check  o no
+                if (!suborgorg.ActivarCheck && suborgorg.Nombrenivel != "EQUIPO")   // En equipo siempre debe estar activo ya que solo se muestran los equipos a los que tiene permiso
+                {
+                    disabled = " disabled ";   // desactivará el checkbox porque no pertenece a su nodo de trabajo
+                }
+
+                s += "<div id='div_" + suborgorg.Idorganizacion + "' > </div> ";   // Para poder buscar el nivel al pulsar un <a> en coordinadores
+                if (suborgorg.Nombrenivel == "EQUIPO")
+                {
+
+                    s += "<input type='checkbox' class='tree-checkbox parent ' id='" + suborgorg.Idorganizacion + "' " +
+                            "    data-equipo='S' data-equipo-name='" + suborgorg.Nombre + "' " + disabled + " />";
+                }
+                else
+                {
+                    s += "<input type='checkbox' class='tree-checkbox parent ' id='" + suborgorg.Idorganizacion + "'" +
+                            "    data-equipo='N' data-equipo-name='" + suborgorg.Nombre + "' " + disabled + "/>";
+                }
+
+
+                s += "<span class='tree-padre " + color + "'>";
+                s += "    <i class='glyphicon glyphicon-menu-down' ></i>";
+                s += suborgorg.Nombre;
+                s += "    <label id='nivel'" + suborgorg.Nivel + "' class='ColorBlue'>(" + suborgorg.Nombrenivel + ")";
+                if (suborgorg.Nombrenivel == "EQUIPO")
+                {
+                    s += "    </label><span class='badge badge-info'> " + suborgorg.SubOrganizacion.Count + " </span>     ";
+                }
+
+                s += " <span class='badge badge-green'  onmouseover='MuestraPanelCoordinadores(\"" + suborgorg.Idorganizacion + "\")' " +
+                     "      onmouseout='OcultaPanelCoordinadores()' > " + suborgorg.Coordinadores.Count + " </span>  ";
+                string coord = "";
+                foreach (ManteniWeb.Models.Coordinador coordinador in suborgorg.Coordinadores)
+                {
+                    if (coord == "")
+                    {
+                        coord = coordinador.NombreCoordinador;
+                    }
+                    else
+                    {
+                        coord += "@" + coordinador.NombreCoordinador;
+                    }
+                }
+                s += "<input type='hidden' id='org_" + suborgorg.Idorganizacion + "' value='" + coord + "' /> ";
+
+
+                s += "</span> ";
+            }
+            else
+            {
+                if (!estoyEnAsesor)
+                {
+                    s += "<li style='display:none;'>";
+                    estoyEnAsesor = true;
+                }
+
+                asesores += suborgorg.Nombre + "<br/>";
+            }
+
+
+            if (suborgorg.SubOrganizacion.Count > 0)
+                s += DisplaySubOrganizaciones(suborgorg.SubOrganizacion, i, false, MostrarNodosHijos);
+
+
+            if (!estoyEnAsesor)
+            {
+                s += "</li>";
+            }
+        }
+
+        if (estoyEnAsesor)
+        {
+            s += "<span class='tree-hoja node-item " + color + "'> " + asesores + " </span>";
+            s += "</li>";
+        }
+
+        s += "</ul>";
+        return s;
+    }
+
+
+    public string Display(ManteniWeb.Models.Organizacion organiz, int administrarOrganizacion = 0)
+    {
+        string s = "<ul style='padding-left: 0px;'>";
+        string color = "ColorNormal";
+        string disabled = "";
+
+        s += "<li class='parent_li'> ";
+        if (organiz.Seleccionado)
+        {
+            color = "NodoJerarquico";
+        }
+
+        // Mira si hay que desactivar el checkbox
+        if (!organiz.ActivarCheck)
+        {
+            disabled = " disabled ";
+        }
+
+        s += "<div id='div_" + organiz.Idorganizacion + "' > </div> ";   // Para poder buscar el nivel al pulsar un <a> en coordinadores
+        s += "<input type='checkbox' class='tree-checkbox parent ' id='" + organiz.Idorganizacion + "' " + disabled + " />";
+
+        s += "<span class='tree-padre " + color + "'>";
+        s += "<i class='glyphicon glyphicon-menu-down'></i>";
+        s += organiz.Nombre;
+        s += "  <label class='ColorBlue'>(" + organiz.Nombrenivel + ")</label> ";
+
+
+        s += " <span class='badge badge-green' onmouseover='MuestraPanelCoordinadores(\"" + organiz.Idorganizacion + "\")' " +
+             "      onmouseout='OcultaPanelCoordinadores()' > " + organiz.Coordinadores.Count + " </span>  ";
+        string coord = "";
+        foreach (ManteniWeb.Models.Coordinador coordinador in organiz.Coordinadores)
+        {
+            if (coord == "")
+            {
+                coord = coordinador.NombreCoordinador;
+            }
+            else
+            {
+                coord += "@" + coordinador.NombreCoordinador;
+            }
+
+        }
+        s += "<input type='hidden' id='org_" + organiz.Idorganizacion + "' value='" + coord + "' /> ";
+
+        s += "</span> ";
+
+
+        int i = 0;
+
+        if (organiz.SubOrganizacion.Count > 0)
+            s += DisplaySubOrganizaciones(organiz.SubOrganizacion, i, organiz.Seleccionado, true);
+
+        s += "</li>";
+        s += "</ul>";
+
+        return s;
+    }
+}

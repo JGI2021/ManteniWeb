@@ -1,0 +1,198 @@
+﻿<table>
+
+	<general
+	  DisplayName="Comando operador"
+	  Database="DBCHAT"
+	  TableName="CHAT_MENSAJES_RECURRENTES">
+	</general>
+
+	<panels>
+		<panel
+		  id="panelgenerales"
+		  DisplayName="Generales">
+		</panel>
+	</panels>
+
+	<fields>
+		<field>
+			<fattr
+			  FieldName="GRUPO_ACD_ID"
+			  Panel="panelgenerales"
+			  DisplayName="Grupo ACD"
+			  IsKey="true"
+			  ReadOnly="false"
+			  EditionType="Combo"
+			  Mandatory="true"
+			  ValidateAs="Integer"
+			  ToolTip="Grupo ACD."
+			  External="true"
+			  UpdateNeeded="false"
+			  Linea="Lv1"
+			  PosColumna="4"
+			  TabOrder="1">
+			</fattr>
+			<external>
+				<type tipo="table"/>
+				<table
+				  DatabaseName="TIPHONE"
+				  TableName="GRUPO_ACD"
+				  FieldKey="GRUPO_ACD_ID"
+				  FieldValue="ALIAS"
+				  DefaultKey="NULL"
+				  DefaultValue=""
+				  FilterSubsistema="true">
+				</table>
+			</external>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="Activo"
+			  Panel="panelgenerales"
+			  DisplayName="Estado"
+			  EditionType="Combo"
+			  Mandatory="false"
+			  ValidateAs="Boolean"
+			  ToolTip="Marque si desea que esté activo este comando."
+			  External="true"
+			  UpdateNeeded="true"
+			  Linea="Lv1"
+			  PosColumna="2"
+			  TabOrder="4">
+			</fattr>
+			<external>
+				<type tipo="collection"/>
+				<collection>
+					<collectionitem
+					   key="0"
+					   value="Inactivo">
+					</collectionitem>
+					<collectionitem
+					   key="1"
+					   value="Activo">
+					</collectionitem>
+				</collection>
+			</external>
+		</field>
+
+
+		<field>
+			<fattr
+			  FieldName="Comando"
+			  Panel="panelgenerales"
+			  DisplayName="Comando"
+			  EditionType="Edit"
+			  IsKey="true"
+			  MaxLen="50"
+			  Mandatory="true"
+			  ValidateAs="Alpha"
+			  ToolTip="Comando de chat."
+			  External="false"
+			  UpdateNeeded="false"
+			  Linea="Lv2"
+			  PosColumna="4"
+			  TabOrder="2">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="Alias"
+			  Panel="panelgenerales"
+			  DisplayName="Alias mensaje"
+			  EditionType="Edit"
+			  Mandatory="true"
+			  ValidateAs="Alpha"
+			  ToolTip="Alias del comando"
+			  External="false"
+			  UpdateNeeded="true"
+			  Linea="Lv2"
+			  MaxLen="50"
+			  PosColumna="5"
+			  TabOrder="3">
+			</fattr>
+		</field>
+
+
+
+		<field>
+			<fattr
+			 FieldName="LANGUAGE"
+			 Panel="panelgenerales"
+			 DisplayName="Idioma"
+			 EditionType="Combo"
+			 Mandatory="false"
+			 ValidateAs="Alpha"
+			 ToolTip="Idioma del mensaje"
+			 UpdateNeeded="true"
+			 External="true"
+			 TabOrder="4"
+			 Linea="Lv3"
+			 PosColumna="4"
+			 ></fattr>
+			<external>
+				<type tipo="table"/>
+				<table
+				  DatabaseName="GENERAL"
+				  TableName="LANGUAGES"
+				  FieldKey="ISO_CODE"
+				  FieldValue="NAME"
+				  DefaultKey="es"
+				  DefaultValue="Español">
+				</table>
+			</external>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="es_plantilla_whatsApp"
+			  Panel="panelgenerales"
+			  DisplayName="Es plantilla whatsApp"
+			  EditionType="Combo"
+			  Mandatory="false"
+			  ValidateAs="Boolean"
+			  ToolTip="Indicar si es una plantilla de WhatsApp o no"
+			  External="true"
+			  UpdateNeeded="true"
+			  Linea="Lv3"
+			  PosColumna="2"
+			  TabOrder="5">
+			</fattr>
+			<external>
+				<type tipo="collection"/>
+				<collection>
+					<collectionitem
+					   key="0"
+					   value="No">
+					</collectionitem>
+					<collectionitem
+					   key="1"
+					   value="Sí">
+					</collectionitem>
+				</collection>
+			</external>
+		</field>
+
+
+		<!-- Se crea en el fichero ComandoChat funcion AnadeTextArea. Se tiene este como no visible ya que se le pasa el valor del mensaje y la funcion
+		     del xml se encarga de grabarlo en la tabla-->
+		<field>
+			<fattr
+			  FieldName="MENSAJE"
+			  Panel="panelgenerales"
+			  DisplayName="Mensaje "
+			  EditionType="EditArea"
+			  Mandatory="true"
+			  ValidateAs="Alpha"
+			  MaxLen="2000"
+			  ToolTip="Mensaje"
+			  External="false"
+			  UpdateNeeded="true"
+			  Linea="Lv4"
+			  Visible="false"
+			  TabOrder="6">
+			</fattr>
+		</field>
+
+	</fields>
+</table>

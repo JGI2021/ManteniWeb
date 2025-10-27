@@ -1,0 +1,154 @@
+﻿@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.Controllers
+@using ManteniWeb.Models.Grupos
+
+@model ModeloGrupoCanal
+
+
+@{
+    //  List<TDatosOperationType> lsOperaciones = (List<TDatosOperationType>)ViewBag.ListaOperaciones;
+
+    TDatosGrupo grupoACD = (TDatosGrupo)ViewBag.DatosGrupoAcd;
+    DCRespuestaGeneral respuesta = (DCRespuestaGeneral)ViewBag.Respuesta;
+    List<TDatosProgramaDc> lsProgramasDC = (List<TDatosProgramaDc>)ViewBag.ListaProgramas;
+
+    string title = "Programas por canal grupo ";
+
+    if (grupoACD != null)
+    {
+        title += grupoACD.Alias;
+    }
+}
+
+<style>
+    .btn-inout-primary {
+        color: black !important;
+        background-color: inherit !important;
+        font-weight: bold;
+    }
+
+        .btn-inout-primary:hover {
+            background-color: #a7c1d8 !important;
+            color: white !important;
+        }
+
+
+    .panel-canal {
+        border-top: 1px solid #d2d2d2;
+        margin-left: 14px;
+        margin-top: -5px;
+        padding: 7px 25px 5px 25px;
+    }
+
+
+    .margen-top-15 {
+        margin-top: 15px;
+    }
+
+    .padding-top-8 {
+        padding-top: 8px;
+    }
+
+    .floatRight {
+        float: right;
+    }
+
+    .panel-botones-guardar {
+        margin-top: 20px;
+        margin-bottom: 35px;
+        margin-right: 30px;
+    }
+
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+
+
+
+@Html.AntiForgeryToken()
+<div class="container-fluid">
+    <div class="row">
+        @* Panel izquierdo, donde se coloca el menú *@
+        @Html.Partial("MenuLateralGrupo")
+
+        <div class="col-sm-10 col-lg-10 col-md-10 panelPricipalCentro" id="CentralPanel">
+
+            <div class='row rowSeparacion15'>
+                <div class='col-lg-1 col-md-1'></div>
+                <div class='col-lg-6 col-md-6'>
+                    <div id="alerta" class="alert" style="display:none;">
+                        <a href="#" onclick="CloseAlert();" style="float: right;"><strong><span id="idmensajealert">Atención </span> </strong></a>
+                        <p id="alert-mensaje"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="PanelOperaciones">
+                @Html.Partial("PanelProgramasDCPorCanal", Model)
+        
+            </div>
+
+            <div class="row panel-botones-guardar">
+                <div class="col-md-10 col-lg-10">
+                    <div class="floatRight">
+                        <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarF" onclick="GuardarDatosCanalesGrupos(0,'programadc')">Guardar</button>
+                        <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarGS" onclick="GuardarDatosCanalesGrupos(1,'programadc')">Guardar y salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts {
+    <script src="~/js/OperacionesCanalesGrupo.js"></script>
+
+    <script>
+
+        let g_arrDatosCanal = [];
+        let g_datosGrupoACD;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Obtengo los datos del grupo ACD seleccionado
+            g_datosGrupoACD = @Html.Raw(Json.Encode(grupoACD));
+            g_arrDatosCanal = @Html.Raw(Json.Encode(Model.lsoperacionescanal));
+
+            //$(".slProgramas").on('change', function () {
+
+            //    AsociaProgramaACanal(this.id);
+            //    // Cambio la etiqueta de color indicando que ha habido un cambio
+            //    let labelid = 'lb' + this.id.slice(2);
+            //    $('#' + labelid).css('color', '#0275d8');
+            //});
+
+            $("div.bhoechie-tab-menu>div.list-group>a").on('click', function (e) {
+                e.preventDefault();
+                var index = $(this).index();
+                let antNodo = document.querySelectorAll('div.bhoechie-tab-menu>div.list-group>a.active');
+                if (antNodo.length > 0) {
+                    antNodo[0].classList.remove("active");
+                    $(this).addClass("active");
+                    $("div.bhoechie-tab>div.bhoechie-tab-content").removeClass("active");
+                    let pnl = $("div.bhoechie-tab>div.bhoechie-tab-content")
+                    $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
+                }
+            });
+        });
+
+
+
+    </script>
+}
+

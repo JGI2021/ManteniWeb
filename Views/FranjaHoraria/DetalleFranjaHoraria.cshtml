@@ -1,0 +1,68 @@
+﻿@model  ManteniWeb.DatosTablas.ReposFranjaHoraria
+
+@using ManteniWeb.DatosTablas
+
+
+<table id="TableDetalles" class="table table-condensed table-borderless">
+    <thead>
+        <tr>
+            <th>Día <span class="red-text"> *</span></th>
+            <th>Hora desde <span class="red-text"> *</span></th>
+            <th>Hora hasta <span class="red-text"> *</span></th>
+            <th>Siguiente día <span class="red-text"> *</span></th>
+            <th>Siguiente hora</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (ReposDetalleFranjaHoraria detalle in Model.DetalleFranjaHoraria)
+        {            
+            <tr>
+                <td>
+                    <select type="text" id="dt-@detalle.IdDetalle-DiaDelaSemana" class="form-control changeColor" placeholder="Seleccionar día..." onchange="CambiaDato(@detalle.IdDetalle,this.id,'dia')">
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            if (i == @detalle.Dia)
+                            {
+                                <option value="@i" selected>@detalle.DiaDeLaSemana(i)</option>
+                            }
+                            else
+                            {
+                                <option value="@i">@detalle.DiaDeLaSemana(i)</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="time" id="dt-@detalle.IdDetalle-HoraDesde" class="form-control changeColor" value="@detalle.HoraDesde" name="HoraDesde" onchange="CambiaDato(@detalle.IdDetalle,this.id,'horaD')" />
+                </td>
+                <td>
+                    <input type="time" id="dt-@detalle.IdDetalle-HoraHasta" class="form-control changeColor" value="@detalle.HoraHasta" name="HoraHasta" onchange="CambiaDato(@detalle.IdDetalle,this.id,'horaH')" />
+                </td>
+                <td>
+                    <select type="text" id="dt-@detalle.IdDetalle-DiaProximaLlamada" class="form-control changeColor" onchange="CambiaDato(@detalle.IdDetalle,this.id,'diaProx')">
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            if (i == @detalle.DiaProximaLlamada)
+                            {
+                                <option value="@i" selected>@detalle.DiaDeLaSemana(i)</option>
+                            }
+                            else
+                            {
+                                <option value="@i">@detalle.DiaDeLaSemana(i)</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="time" id="dt-@detalle.IdDetalle-HoraProximaLlamada" class="form-control changeColor" value="@detalle.HoraProximaLlamada" name="HoraProximaLlamada" 
+                           onchange="CambiaDato(@detalle.IdDetalle,this.id,'horaProx')"/>
+                </td>
+                <td><button class="btn btn-default" onclick="EliminaDetalleFranja('@detalle.IdDetalle')"> <span class="fa fa-trash-o red-text margen-top-20"></span></button></td>
+            </tr>
+        }
+        @Html.Partial("NuevoDetalleFranja")
+    </tbody>
+</table>
+

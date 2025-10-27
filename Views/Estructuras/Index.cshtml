@@ -1,0 +1,380 @@
+﻿@using ManteniWeb.Models
+@using Newtonsoft.Json;
+@model IEnumerable<EstructuraDeDatos>
+
+
+@{
+    ViewBag.Title = "Estructuras de datos";
+}
+<link href='~/css/footable.core.css' rel='stylesheet' type='text/css' />
+<link href="~/footable/css/footable.core.bootstrap.min.css" rel="stylesheet" />
+<link href="~/footable/css/footable.core.standalone.css" rel="stylesheet" />
+<link href="~/css/footableManteniWeb.metro.css" rel="stylesheet" />
+<link href="~/css/jquery-confirm.min.css" rel="stylesheet" />
+
+<style>
+    @@font-face {
+            font-family: 'Roboto';
+            font-style: normal;
+            font-weight: 300;
+            src: local('Roboto Light'), local('Roboto-Light'), url(./fonts/Roboto-Light.woff2) format('woff2');
+        }
+
+        body {
+            font-family: 'Roboto',sans-serif !important;
+        }
+
+    tr:hover {
+        cursor: pointer;
+    }
+
+    .wrapper {
+        height: 100%;
+        width: 100%;
+    }
+
+    #mySearchInput {
+        background-image: url('../img/search-icon-32.png');
+        background-position: 2px 2px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 0px 10px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    .formLabel {
+        padding-left: 0px;
+        padding-top: 20px;
+    }
+
+
+    .myUlClass {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .myUlClass li {
+            margin-top: -1px; /* Prevent double borders */
+            text-decoration: none;
+            font-size: 13px;
+            color: black;
+            display: block;
+        }
+
+
+    .list-group-item {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .panel-botom-0 {
+        margin-bottom: 0px !important;
+    }
+
+    .panel-group:hover {
+        border: 1px solid #6e8b75;
+        border-radius: 5px;
+    }
+
+    li span:hover {
+        cursor: pointer;
+    }
+
+    .no-mostrar {
+        display: none;
+    }
+
+    .poner-link:hover {
+        text-decoration: underline;
+        color: #337ab7 !important;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-cubes' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+@Html.AntiForgeryToken();
+<div class="container-fluid">
+    <div class="row">
+
+        @* Panel izquierdo, donde se coloca el menú *@
+        <div class="col-lg-3 col-md-3 col-sm-3" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+        @* Panel central donde se muestra la tabla con los equipos*@
+        <div class="col-lg-6 col-md-6">
+            <div class="row rowSeparacion20">
+                <div class="col-md-3 col-sm-3 col-lg-3">
+                    <label class="control-label" for="mostrarvariables">
+                        <input type="checkbox" id="mostrarvariables" onclick="MostrarOcultarVariables();" onkeypress="CompruebaCaracter(event);" onpaste="return false;" /> Mostrar variables
+                    </label>
+                </div>
+                <div class="col-sm-5 col-lg-5 col-xs-5">
+                    <input type="text" id="mySearchInput" onkeyup="SearchInTable()" placeholder="Buscar variables ..." title="Escribir un nombre">
+                </div>
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <button type="button" class="btn btn-primary" id="BtnCrearEstructura" onclick="MostratPanelCrearEstructura('A');" style="float: right;"><span class="fa fa-plus"></span> &nbsp; Nueva estructura</button>
+                </div>
+            </div>
+
+            @* Panel donde se creará una NUEVA ESTRUCTURA *@
+            <div class="row">
+                <div id="PanelAltaEstructura" class="panel no-mostrar" style="height:500px;overflow-y:auto;scrollbar-3dlight-color:aqua;">
+                    <div class="panel-heading panel-title">
+                        <h4 id="TituloPanelEstructura"><strong>Nueva estructura</strong></h4>
+                    </div>
+                    <div class="panel-body" style="padding-left: 35px;padding-right:35px;">
+                        <div class="row">
+                            <input type="hidden" id="AccionEstructura" value="" />
+                            <input type="hidden" id="CodigoDeEstructura" value="" />
+                            <div class="form-group">
+                                <label for="InputNombreEstructura">Nombre estructura <span style="color:red;">*</span></label>
+                                <input type="text" id="InputNombreEstructura" maxlength="40" placeholder="Introduzca un nombre ..." class="form-control" />
+                            </div>
+                            <div class="form-inline" id="BotoneraEstructura">
+                                <button type="button" id="ButtonAddVariable" class="btn btn-primary" onclick="MostrarPanelAddVariable()" style="margin-right:5px;"> Añadir variable</button>
+                                <button type="button" class="btn btn-success" style="margin-right:5px;" onclick="GuardarEstructura()">Guardar estructura</button>
+                                <button type="button" class="btn btn-default" onclick="CerrarPanelEstructura()">Salir</button>
+                            </div>
+                            @*  Se va a crear una nueva variable. Panel de NUEVA VARIABLE  *@
+                            <div id="PanelAltaVariable" class="panel panel-default no-mostrar rowSeparacion10" style="height:110px;">
+                                <div class="panel-body" style="padding-left: 20px;padding-right:20px;">
+                                    <div class="form-inline">
+                                        <label for="InputVariable">Variable <span style="color:red;">* &nbsp;</span></label>
+                                        <input type="text" id="InputVariable" maxlength="40" placeholder="Introduzca un nombre ..."
+                                               onkeypress="CompruebaCaracter(event);" onpaste="return false;"
+                                               class="form-control" style="margin-right:20px;width:225px;" />&nbsp;&nbsp;
+                                        <label for="SelectTipo">Tipo variable <span style="color:red;">* &nbsp;</span></label>
+                                        <select id="SelectTipo" class="form-control" style="margin-right:20px;width:200px;">
+                                            <option value="1">Alfanumérico</option>
+                                            <option value="2">Entero</option>
+                                            <option value="8">Decimal</option>
+                                            <option value="11">Fecha hora</option>
+                                            <option value="15">Blob/Imagen</option>
+                                            <option value="24">Cadena unicode</option>
+                                        </select>
+                                        <div style="padding-top:15px;">
+                                            <button type="button" class="btn btn-success" id="GuardarVariable" style="margin-right:5px;" onclick="GuardarVariable()">Guardar variable</button>
+                                            <button type="button" class="btn btn-default" id="CancelarVariable" onclick="CancelarVariable()">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DivTablaVariables" class="row no-mostrar" style="margin-top:15px;">
+                            <table class="table" id="TablaVariables">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre variable</th>
+                                        <th>Tipo variable</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @*   PANELES CON LAS ESTRUCTURAS DE DATOS  *@
+            <div class="row">
+                @foreach (EstructuraDeDatos estructura in Model)
+                {
+                    <div class="panel-group panel-botom-0" id="panel_@estructura.Codigo">
+                        <div class="panel panel-default panel-botom-0">
+                            <div class="panel-heading">
+                                <table style="width:100%;border:none !important;">
+                                    <tr>
+                                        <td style="padding-right:10px; padding-left:0px; width:50%;">
+                                            <a data-toggle="collapse" href="#collapse_@estructura.Codigo" style="width:100%;color:black;">
+                                                <h5 class="panel-title poner-link" >
+                                                    <b> @estructura.NombreEstructura </b>
+                                                </h5>
+                                            </a>
+                                        </td>
+                                        <td style="float:right;"><b>Variables</b> &nbsp;&nbsp; <span class="badge badge-bkgcolor-cadetblue">@estructura.Variables.Count</span></td>
+                                        <td>
+                                            <span class="fa fa-trash-o" style="color:red; float:right; margin-right:5px;" onclick="EliminaEstructura('@estructura.Codigo');" tooltip="Eliminar estructura"></span>
+                                            <span class="fa fa-edit" style="color:green; float:right; margin-right:5px;" onclick="EditaEstructura('@estructura.Codigo');" ></span>
+                                            
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_@estructura.Codigo">
+                                <div class="wrapper">
+                                    <ul class="list-group panel-botom-0 myUlClass">
+                                        <li class="list-group-item">
+                                            <table class="table" id="myOpTable_@estructura.Codigo">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nombre</th>
+                                                        <th>Tipo</th>
+                                                        <th>Orden</th>
+                                                        <th style="float:right;padding-right:10px;border-bottom-width:0px;">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (VariableEstructura variable in estructura.Variables)
+                                                    {
+                                                        <tr id="tr_@(estructura.Codigo)_ord_@variable.Orden">
+                                                            <td>@variable.NombreVariable</td>
+                                                            <td>@variable.NombreTipoVariable</td>
+                                                            <td>@variable.Orden</td>
+                                                            <td style="float:right;">
+                                                         @* <span class="fa fa-edit" style="color:green;" onclick="Editarvariable(@estructura.Codigo,'@variable.NombreVariable')"></span>&nbsp;*@
+                                                                <span class="fa fa-arrow-up" style="color:cadetblue;" onclick="Subirvariable(@estructura.Codigo, @variable.Orden)"></span>&nbsp;
+                                                                <span class="fa fa-arrow-down" style="color:darkcyan;" onclick="Bajarvariable(@estructura.Codigo, @variable.Orden)"></span>&nbsp;
+                                                                <span class="fa fa-trash-o" style="color:red;" onclick="EliminarVariable(@estructura.Codigo, '@variable.NombreVariable', @variable.Orden) "></span>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/footable/js/footable.core.min.js"></script>
+    <script src="~/js/EstructurasDeDatos.js"></script>
+    <script src="~/js/jquery-confirm.min.js"></script>
+
+    <script>
+
+
+        var arrayVariables = new Array();
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            @{
+                //serializer initializatio
+                string jsEstructuras = JsonConvert.SerializeObject(Model);
+            }
+            arrayEstructuras =  JSON.parse('@jsEstructuras'.replace(/&quot;/g, '"'));
+        });
+
+
+        /// Mostrar todas las variables de las estructuras de datos u ocultarlas
+        function MostrarOcultarVariables() {
+            var mycheck = document.getElementById("mostrarvariables");
+            var totestructuras = arrayEstructuras.length;
+            if (mycheck.checked) {
+                for (j = 0; j < totestructuras; j++) {
+                    var datoestructura = arrayEstructuras[j];
+                    var panel = document.getElementById("collapse_" + datoestructura.Codigo);
+                    if (!$('#' + panel.id).hasClass("in"))
+                        $('#' + panel.id).addClass("in");
+                }
+            }
+            else {
+                for (j = 0; j < totestructuras; j++) {
+                    var datoestructura = arrayEstructuras[j];
+                    var panel = document.getElementById("collapse_" + datoestructura.Codigo);
+                    if ($('#' + panel.id).hasClass("in"))
+                        $('#' + panel.id).removeClass("in");
+                }
+            }
+        }
+
+        /// Buscar variables en las estructuras de datos
+        function SearchInTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            // Dato introducido para buscar
+            input = document.getElementById("mySearchInput");
+            filter = input.value.toUpperCase();
+            filter = input.value.toUpperCase();
+            var totestructuras = arrayEstructuras.length;
+            var datoestructura;
+            var idq = 0;
+            // buscamos en todas las estructuras
+            for (j = 0; j < totestructuras; j++) {
+                datoestructura = arrayEstructuras[j];
+                var panelcollapse = document.getElementById("collapse_" + datoestructura.Codigo);
+                var panel = document.getElementById("panel_" + datoestructura.Codigo);
+                idq = "myOpTable_" + datoestructura.Codigo;
+
+                table = document.getElementById(idq);
+                tr = table.getElementsByTagName("tr");
+                var totfilas = tr.length - 1;  // Hay que quitar la cebecera, que también es una fila y no debemos contarla
+                var cuentafilas = 0;
+
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "table-row";
+                            if (!$('#' + panelcollapse.id).hasClass("in"))
+                                $('#' + panelcollapse.id).addClass("in");
+                        }
+                        else {
+                            tr[i].style.display = "none";
+                            cuentafilas++;
+                        }
+                    }
+                }
+
+                if (totfilas == cuentafilas) {
+                    panel.style.display = "none";
+                }
+                else {
+                    panel.style.display = "";
+                }
+            }
+        }
+
+    </script>
+}
+
+

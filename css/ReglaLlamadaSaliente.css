@@ -1,0 +1,19 @@
+﻿
+
+
+.panel-tabla-ani {
+    float: right;
+    margin-right: 14px;
+    top: -15px;
+    position: relative;
+}
+
+
+th {
+    background: #778899 !important;
+    color: white !important;
+    font-weight: 300 !important;
+}
+
+
+

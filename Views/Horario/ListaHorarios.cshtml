@@ -1,0 +1,460 @@
+﻿@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources;
+
+@model List<Horario>
+ 
+@{
+    ViewBag.Title = "Horarios ";
+    List<AsociacionHorarioCalendario> lsAsociacionHorarioCalendarios = (List<AsociacionHorarioCalendario>)ViewBag.CalendariosAsociados;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    tbody tr:hover {
+        cursor: pointer;
+    }
+
+    .borderless {
+        border: 0px none;
+    }
+
+    .li-padding {
+        padding: 2px 15px !important;
+        background-color: inherit;
+    }
+
+    .ul-margin {
+        margin-bottom: 5px !important;
+    }
+
+    .texto-centrado {
+        text-align: center;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="NuevoHorario();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-plus visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Nuevo horario</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="EdicionMultiple" style="display: none;">
+                        <a href="#" role="button" id="OptionButton_3" class="" onclick="EliminarHorario();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-trash-o visible-lg visible-md visible-xs dark-red-text" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Eliminar horario</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="EdicionSimple" style="display: none;">
+                        <a href="#" role="button" id="OptionButton_3" class="" onclick="EditarHorario();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-edit visible-lg visible-md visible-xs darkgreen-text" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Editar horario</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        @* FIN MENU LATERAL *@
+
+
+        @* FORMULARIO  *@
+        <div class="col-lg-8 col-md-8">
+
+            @* Panel de errores *@
+            <div id="alertaResultado" class="row rowSeparacion15 no-display">
+                <div class="col-lg-offset-1 col-md-10">
+                    <div id="panelResultado" class="panel">
+                        <div class="panel-heading">
+                            <span id="panelmensajeResultado"></span>
+                            <button type="button" class="close" data-target="#copyright-wrap" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @* MOSTRAR TABLA DE REPROGRAMACIONES *@
+            <div class='row rowSeparacion10'>
+                <table id="HorariosTable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="th"></th>
+                            <th class="th">Descripción</th>
+                            <th class="th">Horario</th>
+                            <th class="th">Calendarios asociados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Horario horario in Model)
+                        {
+
+                            <tr id="tr_@horario.CodigoHorario">
+                                <td class="texto-centrado">
+                                    <input type="checkbox" id="chk_@horario.CodigoHorario" value="" />
+                                </td>
+                                <td class="td-click">
+                                    @horario.Descripcion
+                                </td>
+                                <td class="td-click">
+                                    @Html.Raw(ObtenerHtmlFilaHorario(horario))
+                                </td>
+                                <td>
+                                    @{ var horariocalendarios = lsAsociacionHorarioCalendarios.Find(h => h.IdHorario == horario.CodigoHorario); }
+
+                                    @if (horariocalendarios != null)
+                                    {
+                                        <div id='ver_@horario.CodigoHorario' class='td-click'>
+                                            @Html.Raw(ObtenerHtmlAsociacionHorarioCalendarios(horariocalendarios))
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string ObtenerHtmlFilaHorario(Horario horario)
+    {
+        List<FilaHorarios> filas = new List<FilaHorarios>();
+
+        string htmlhorario = "   <ul class='list-group ul-margin'> ";
+        for (int i = 1; i <= 7; i++)
+        {
+            int iDia = i;
+            if (i == 7)
+                iDia = 0;
+            // Como los domingos son el 0 en la lista hago el cambio
+            THorarioDia diah = horario.Horariodias.Find(x => x.IdDiaSemana == iDia);
+            // Si viene a null es que es un día sin asignar y si todo está a cero
+            if (diah == null || !diah.HayActividad())
+            {
+                var fh = filas.Find(x => x.HorarioDia.ToUpper() == "SIN SERVICIO");
+                if (fh != null)
+                {
+                    fh.AddDia(horario.NombreDiaCorto(iDia.ToString()));
+                }
+                else
+                {
+                    fh = new FilaHorarios()
+                    {
+                        Dias = horario.NombreDiaCorto(iDia.ToString()),
+                        HorarioDia = "Sin Servicio"
+                    };
+                    filas.Add(fh);
+                }
+            }
+            else
+            {
+                string horasDia = diah.TextoHorario;
+                var fh = filas.Find(x => x.HorarioDia == horasDia);
+                if (fh != null)
+                {
+                    fh.AddDia(horario.NombreDiaCorto(iDia.ToString()));
+                }
+                else
+                {
+                    fh = new FilaHorarios()
+                    {
+                        Dias = horario.NombreDiaCorto(iDia.ToString()),
+                        HorarioDia = horasDia
+                    };
+                    filas.Add(fh);
+                }
+            }
+        }
+
+
+        foreach (FilaHorarios filah in filas)
+        {
+            string estilo = "";
+            htmlhorario += "  <li class='list-group-item borderless li-padding'>" + filah.Dias + ": ";
+            if (filah.HorarioDia.ToUpper() == "SIN SERVICIO")
+            {
+                estilo = "color: darkred;";
+            }
+
+            htmlhorario += "     <span style='" + estilo + " margin-lef:5px;'>" + filah.HorarioDia + "</span> " +
+                           "  </li>";
+        }
+
+        htmlhorario += "    </ul> ";
+
+        return htmlhorario;
+    }
+
+
+    private string ObtenerHtmlAsociacionHorarioCalendarios(AsociacionHorarioCalendario horariocalendarios)
+    {
+        string datos = "";
+
+        datos = "<ul class='list-inline ul-margin'> ";
+        if (horariocalendarios.LsCalendarios.Count == 0)
+        {
+            datos += "<li class='list-inline-item'> <span class='dark-red-text'>&#x2022; Sin calendario</span> </li>";
+        }
+        else
+        {
+            foreach (Calendario calendario in horariocalendarios.LsCalendarios)
+            {
+                datos += "<li class='list-inline-item'> <span class='darkgreen-text'>&#x2022; " + calendario.NombreCalendario + "</span></li>";
+            }
+        }
+
+        datos += "</ul> ";
+
+        return datos;
+    }
+
+}
+
+
+
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/bootbox.min.js" type="text/javascript"></script>
+
+    <script>
+        var tableop;
+
+        $(document).ready(function () {
+            tableop = $('#HorariosTable').DataTable({
+                "order": [],
+                "autoWidth": false,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[5, 10, 15, 25, 50, -1], [5, 10, 15, 25, 50, 100, "Todos"]],
+                "columns": [
+                    { "width": "5%" },
+                    { "width": "20%" },
+                    { "width": "35%" },
+                    { "width": "40%" }
+                ]
+
+            });
+
+            $('#HorariosTable').css('display', 'table');
+
+            $("#HorariosTable").on("click", ".td-click", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+                let id = $(this).parent().attr('id');
+                id = id.substr(3);
+                AvanzarPagina('Horario/ListaHorarios', 'Horario/HorarioRepositorio/' + id);
+
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#HorariosTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.substr(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+
+        function OptionsChecked() {
+            tableop.draw();
+        }
+
+
+        function NuevoHorario() {
+            AvanzarPagina("Horario/ListaHorarios", "Horario/NuevoHorario");
+        }
+
+
+        function EliminarHorario() {
+            // Obtener id seleccionado
+            let idselecc = $("#idsSeleccionados").val();
+
+            var dialog = bootbox.dialog({
+                title: '<b>Eliminar Horario</b>',
+                message: "<p>Se va a eliminar el horario seleccionado. ¿Desea continuar?</p>",
+
+                buttons: {
+                    ok: {
+                        label: "Si",
+                        className: 'btn-info',
+                        callback: function () {
+
+                            let urlFranja = getRutaAbsolutaMVC() + "/Horario/EliminarHorario";
+                            let params = { "idsHorario": idselecc };
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: urlFranja,
+                                data: JSON.stringify(params),
+                                contentType: "application/json; charset=utf-8",
+                                success: function (datos) {
+                                    let respuesta = JSON.parse(datos);
+                                    MostrarMensajeEliminacion(idselecc, respuesta);
+                                    $('.EdicionSimple').css('display', 'none');
+                                    $('.EdicionMultiple').css('display', 'none');
+
+                                }, error: function (e) { console.log(e); }
+                            });
+
+                        }
+                    },
+                    cancel: {
+                        label: "No",
+                        className: 'btn-default',
+                        callback: function () {
+                            console.log('Custom cancel clicked');
+                        }
+                    }
+
+                }
+            });
+        }
+
+
+        function EditarHorario() {
+            // Obtener id seleccionado
+            let id = $("#idsSeleccionados").val();
+
+            AvanzarPagina('Horario/ListaHorarios', 'Horario/HorarioRepositorio/' + id);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// Muestra un mensaje si todo ha ido bien o si ha fallado
+        /// ------------------------------------------------------------------------------------
+        function MostrarMensajeEliminacion(idselecc, respuesta) {
+            //muestro el mensaje de error o de que todo ha ido bien
+            if (respuesta.Error === "S") {
+                $("#panelResultado").removeClass("myAlertSuccess");
+                $("#panelResultado").addClass("panel-danger");
+                $("#panelmensajeResultado").html("<b><span class='fa fa-exclamation-triangle' style='font-size:20px;'> Atención: </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+            }
+            else {
+                $("#panelResultado").addClass("myAlertSuccess");
+                $("#panelResultado").removeClass("panel-danger");
+                $("#panelmensajeResultado").html("<b> <span class='fa fa-check-square-o fondoAlert' > </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+                // Elimino el registro de la tabla
+                $("#tr_" + idselecc).remove();
+            }
+
+            $('#alertaResultado').css('display', 'block');
+            window.setTimeout(function () {
+                $('#alertaResultado').css('display', 'none');
+            }, 10000);
+        }
+
+    </script>
+
+}
+
+
+
+

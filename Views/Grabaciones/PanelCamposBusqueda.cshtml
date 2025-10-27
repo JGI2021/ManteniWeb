@@ -1,0 +1,417 @@
+﻿@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+@using System.Text;
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.Code;
+
+
+@model DatosFormGrabaciones
+
+
+@{
+    
+    List<TDatosOperador> operadores = ViewBag.Operadores as List<TDatosOperador>;
+    List<TDatosCampaign> campanasAsignadas = ViewBag.CampanasAsignadas as List<TDatosCampaign>;
+    List<TDatosGrupo> gruposACDAsignados = ViewBag.GruposAsignados as List<TDatosGrupo>;
+}
+
+<div style='clear:both;'></div>
+<div class='row form-horizontal'>
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-group'>
+            <label for='Desde' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.fechaDesde</label>
+            <div class='col-sm-9' id='sandbox-container1'>
+                <div class='input-group date'>
+                    <input type='text' class='form-control input-sm campoBusqueda' id='Desde' name='Desde' value='@Model.Desde'>
+                    <span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-group'>
+            <label for='Tipo' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.Tipo</label>
+            <div class='col-sm-9'>
+                <select class='form-control selectpicker campoBusqueda' id='Tipo' name='Tipo' data-container=".main-content" >
+                    @Html.Raw(CrearSelectTipoLlamada(Model.TipoLlamada))
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-group'>
+            <label for='Agente' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.usuario</label>
+            <div class='col-sm-9'>
+                <select class='form-control selectpicker campoBusqueda' id='Agente' name='Agente' multiple>
+                    @Html.Raw(CrearQueryAgentes(Model.Agente, operadores));
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-group'>
+            <label for='Origen' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.gr_origen</label>
+            <div class='col-sm-9'>
+                <input type='text' class='form-control campoBusqueda' id='Origen' name='Origen' placeholder='Origen' value='@Model.Origen'>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* FILA 2 *@
+<div class='row form-horizontal'>
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-group'>
+            <label for='Hasta' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.fechaHasta</label>
+            <div class='col-sm-9' id='sandbox-container2'>
+                <div class='input-group date'>
+                    <input type='text' class='form-control campoBusqueda' id='Hasta' name='Hasta' value='@Model.Hasta'>
+                    <span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='Cliente' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.cliente</label>
+                <div class='col-sm-9'>
+                    <input type='text' class='form-control campoBusqueda' id='Cliente' name='Cliente' placeholder='Cliente' value='@Model.Cliente'>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='Canal' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.Canal</label>
+                <div class='col-sm-9'>
+                    <select class='form-control campoBusqueda' id='Canal' name='Canal' onchange="CambioDeCanal()">
+                        @Html.Raw(ObtenerCanales())
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='Destino' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.gr_destino</label>
+                <div class='col-sm-9'>
+                    <input type='text' class='form-control campoBusqueda' id='Destino' name='Destino' placeholder='Destino' value='@Model.Destino'>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> @* Fin fila 2 *@
+
+@* FILA 3 *@
+<div class='row form-horizontal rowSeparacion10'>
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class="form-group">
+            @*<label class='radio-inline'>
+                @if (Model.OpcionBusqueda == OpcionesDeBusquedaGrabacion.grupoacd)
+                {
+                    <input type='radio' class="campoBusqueda" name='optradio' id='OpcionGrupo' checked value='@Model.OpcionBusqueda.ToString()'><b>Grupos ACD&nbsp;&nbsp;&nbsp;</b>
+                }
+                else
+                {
+                    <input type='radio' class="campoBusqueda" name='optradio' id='OpcionGrupo' value='@Model.OpcionBusqueda.ToString()'><b>Grupos ACD&nbsp;&nbsp;&nbsp;</b>
+                }
+            </label>
+            <label class='radio-inline'>
+                @if (Model.OpcionBusqueda == OpcionesDeBusquedaGrabacion.campana)
+                {
+                    <input type='radio' class="campoBusqueda" name='optradio' id='OpcionCampana' checked value='" + OpcionesDeBusquedaGrabacion.campana + "'><b> @CampanaResources.cmp_campana </b>
+                }
+                else
+                {
+                    <input type='radio' class="campoBusqueda" name='optradio' id='OpcionCampana' value='" + OpcionesDeBusquedaGrabacion.campana + "'><b> @CampanaResources.cmp_campana </b>
+                }
+            </label>*@
+            <label for='Destino' class='col-sm-3 control-label EstiloEtiquetaForm'>Buscar por</label>
+            <div class='col-sm-9'>
+                <select class="form-control campoBusqueda" id="opcionBusqueda">
+                    @if (Model.OpcionBusqueda == OpcionesDeBusquedaGrabacion.grupoacd)
+                    {
+                        <option value="@((int)OpcionesDeBusquedaGrabacion.grupoacd)" selected>@GruposRes.gruposACD</option>
+                        <option value="@((int)OpcionesDeBusquedaGrabacion.campana)">@CampanaResources.cmp_campana</option>
+                        <option value="@((int)OpcionesDeBusquedaGrabacion.todos)">@ComunResources.todos</option>
+                    }
+                    else
+                    {
+                        <option value="@OpcionesDeBusquedaGrabacion.grupoacd">@GruposRes.gruposACD</option>
+                        <option value="@OpcionesDeBusquedaGrabacion.campana" selected>@CampanaResources.cmp_campana</option>
+                        <option value="@OpcionesDeBusquedaGrabacion.todos">@ComunResources.todos</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3' id='GruposAcd'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='Grupo' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.pr_grupos</label>
+                <div class='col-sm-9'>
+                    <select class='form-control campoBusqueda' id='Grupo' name='GrupoAcdSeleccionado' onchange='RellenaComboTipificacionesMVC()' >
+                        @Html.Raw(RellenaComboGrupos(Model.GrupoAcdSeleccionado, gruposACDAsignados))
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3' id='Campanas'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='SelCampanas' class='col-sm-3 control-label EstiloEtiquetaForm'>@CampanaResources.cmp_campana</label>
+                <div class='col-sm-9'>
+                    <select class='form-control input-sm campoBusqueda' id='SelCampanas' name='CampaniaSeleccionada' onchange='RellenaComboListasMVC();RellenaComboResultadosNegocioMVC()' >
+                        @Html.Raw(RellenaComboCampanas(Model.CampaniaSeleccionada, campanasAsignadas))
+                    </select>
+                </div>
+                <input type='checkbox' id='SoloActivos' onclick='MuestraOcultaDatosCampana()' style='margin-left:29%' />
+                <label class='subindice'>Solo activas</label>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3 col-sm-3' id='Listas'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='SelListas' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.listas</label>
+                <div class='col-sm-9'>
+                    <select class='form-control selectpicker campoBusqueda' id='SelListas' name='ListaSeleccionada' multiple>
+                        <option value="T" selected>-- @ComunResources.todos --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3' id='ResultadosNgcio' style="display: none;">
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='SelListas' class='col-sm-3 control-label EstiloEtiquetaForm'>@CampanaResources.cmp_resultadosNegocio</label>
+                <div class='col-sm-9'>
+                    <select class='form-control selectpicker campoBusqueda' id='SelResultadosNegocio' name='ResultadoDeNegocioSeleccionado' multiple>
+                        <option value="T" selected>-- @ComunResources.todos --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='col-lg-3 col-md-3 col-sm-3' id='TipificacioneGrupos' style="display: none;">
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='SelTipificaciones' class='col-sm-3 control-label EstiloEtiquetaForm'>Tipificación</label>
+                <div class='col-sm-9'>
+                    <select class='form-control selectpicker campoBusqueda' id='SelTipificaciones' name='TipificacionSecundariaSel' multiple>
+                        <option value="T" selected>-- @ComunResources.todos --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@functions {
+    private string CrearSelectTipoLlamada(string seleccionado)
+    {
+        string html = string.Empty;
+
+        if (seleccionado == "T")
+            html = "<option value='T' selected>"+ComunResources.todos+"</option>";
+        else
+            html += "<option value='T'>"+ComunResources.todos+"</option>";
+
+        if (seleccionado == "2")
+            html += "<option value='2' selected>"+ComunResources.llamadaEntrante+"</option>";
+        else
+            html += "<option value='2'>"+ComunResources.llamadaEntrante+"</option>";
+
+        if (seleccionado == "S")
+            html += "<option value='S' selected>"+ComunResources.llamadaSaliente+"</option>";
+        else
+            html += "<option value='S'>"+ComunResources.llamadaSaliente+"</option>";
+
+        if (seleccionado == "11")
+            html += "<option value='11' selected>"+ComunResources.llamadaPreview+"</option>";
+        else
+            html += "<option value='11'>"+ComunResources.llamadaPreview+"</option>";
+
+        if (seleccionado == "1")
+            html += "<option value='1' selected>"+ComunResources.llamadaPredictiva+"</option>";
+        else
+            html += "<option value='1'>"+ComunResources.llamadaPredictiva+"</option>";
+
+        if (seleccionado == "9")
+            html += "<option value='9' selected>"+ComunResources.llamadaManual+"</option>";
+        else
+            html += "<option value='9'>"+ComunResources.llamadaManual+"</option>";
+
+
+        return html;
+    }
+
+    private string CrearQueryAgentes(string seleccionado, List<TDatosOperador> operadores)
+    {
+
+        StringBuilder js = new StringBuilder();
+        js.Append("<option value='T' selected>"+ComunResources.todos+"</option>\n");
+
+        foreach (TDatosOperador operador in operadores)
+        {
+            js.Append("<option value='" + operador.Codigo + "'>" + operador.Nombre + "</option>\n");
+        }
+
+        return js.ToString();
+    }
+
+    private string ObtenerCanales()
+    {
+        string html = string.Empty; ;
+
+        foreach (KeyValuePair<string, string> InfoCanalKV in WebConfigParams.DCanales)
+        {
+            string id = InfoCanalKV.Key;
+            string Descripcion = InfoCanalKV.Value;
+
+            //De momento quito los canales de WhatsApp porque en estadísticas de donde salen los datos estás con canal = 3
+            if (id == "11")
+                continue;
+
+            if (id == "1")
+            {
+                html += "<option value='" + id + "' selected='selected'>" + Descripcion + "</option>";
+            }
+            else
+                {
+                    html += "<option value='" + id + "'>" + Descripcion + "</option>";
+                }
+        }
+
+        return html;
+    }
+
+    private string RellenaComboGrupos(string grupoSeleccionado, List<TDatosGrupo> datosGrupos)
+    {
+        string opcionesGrupos = string.Empty;
+
+        StringBuilder js = new StringBuilder();
+
+        if (datosGrupos.Count == 0)
+        {
+            js.Append("<option value='X' selected> Usuario sin permisos de acceso a grupos </option> ");
+        }
+        else
+        {
+            if (datosGrupos == null)
+            {
+                return "Error al leer los grupos.";
+            }
+
+            if (grupoSeleccionado == "T")
+            {
+                js.Append("<option value='T' selected>"+ComunResources.todos+"</option>\n");
+            }
+            else
+            {
+                js.Append("<option value='T'>"+ComunResources.todos+"</option>\n");
+            }
+
+            string nombreGrupo = string.Empty;
+
+            foreach (TDatosGrupo grupo in datosGrupos)
+            {
+                var grupoacdId = grupo.Codigo;
+                // No muestro los grupos inactivos
+                if (grupo.Estado == "0")
+                    continue;
+
+                if (WebConfigParams.MostrarDescripcion)
+                    nombreGrupo = grupo.Descripcion;
+                else
+                    nombreGrupo = grupo.Alias;
+
+                if (grupoSeleccionado == grupoacdId)
+                {
+                    js.Append("<option value='" + grupoacdId + "' selected>" + nombreGrupo + "</option>\n");
+                }
+                else
+                {
+                    js.Append("<option value='" + grupoacdId + "'>" + nombreGrupo + "</option>\n");
+                }
+            }
+        }
+        return js.ToString();
+
+    }
+
+    private string RellenaComboCampanas(string campanaSeleccionada, List<TDatosCampaign> datosCampana)
+    {
+        string opcionesGrupos = string.Empty;
+
+        StringBuilder js = new StringBuilder();
+
+        if (datosCampana.Count == 0)
+        {
+            js.Append("<option value='X' selected> Usuario sin permisos de acceso a grupos </option> ");
+        }
+        else
+        {
+            if (datosCampana == null)
+            {
+                return "Error al leer los grupos.";
+            }
+
+            if (campanaSeleccionada == "T")
+            {
+                js.Append("<option value='T' selected>"+ComunResources.todos+"</option>\n");
+            }
+            else
+            {
+                js.Append("<option value='T'>"+ComunResources.todos+"</option>\n");
+            }
+
+            string nombreCampana = string.Empty;
+            string claseIncactivo = string.Empty;
+
+            foreach (TDatosCampaign campana in datosCampana)
+            {
+                var campanaId = campana.Codigo;
+
+                if (campana.Activo == 0)
+                    claseIncactivo = "CampanaInactiva";
+
+                if (WebConfigParams.MostrarDescripcion)
+                    nombreCampana = campana.Descripcion;
+                else
+                    nombreCampana = campana.Alias;
+
+                if (campanaSeleccionada == campanaId)
+                {
+                    js.Append("<option value='" + campanaId + "' class='" + claseIncactivo + "' selected>" + nombreCampana + "</option>\n");
+                }
+                else
+                {
+                    js.Append("<option value='" + campanaId + "' class='" + claseIncactivo + "'>" + nombreCampana + "</option>\n");
+                }
+            }
+        }
+        return js.ToString();
+    }
+}

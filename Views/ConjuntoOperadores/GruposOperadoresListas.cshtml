@@ -1,0 +1,83 @@
+﻿@using ManteniWeb.ClasesDeDatos
+
+@model DCConjuntosOperadores
+
+
+<link href="~/css/ConjuntosOperadores.css" rel="stylesheet" />
+
+
+@{
+    ViewBag.Title = "Grupos de operadores a Listas";
+    string listas = string.Empty;
+
+    foreach (DatosConjuntoLista conjunto in Model.DatConjuntoListas)
+    {
+        if (listas == "")
+        {
+            listas = conjunto.IdLista.ToString();
+        }
+        else
+        {
+            listas += "," + conjunto.IdLista.ToString();
+        }
+    }
+}
+
+
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-users' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <input type="hidden" id="listasSeleccionadas" value="@listas" />
+
+    <div class="row rowSeparacion20">
+        @* Panel izquierdo, donde se coloca el menú *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="col-lg-8 col-md-8">
+
+            <div class="row">
+                <div class="col-md-12 ">
+                    <div class='row rowSeparacion10' id="panel-body-conjuntosOperadores">
+                        @Html.Partial("PanelesGruposDeOperadores")
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@section scripts  {
+    
+            <script src="~/js/ConjuntoOperadores.js"></script>
+} 

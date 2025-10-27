@@ -1,0 +1,96 @@
+﻿@using ManteniWeb.Models;
+@using ManteniWeb.App_GlobalResources
+@using ManteniWeb.SQLServices;
+
+@{
+    List<DatosOrganizacion> organizaciones = new List<DatosOrganizacion>();
+    try
+    {
+        organizaciones = (List<DatosOrganizacion>)ViewBag.ListaDeOrganizaciones;
+    }
+    catch { }
+}
+
+<div class="no-display">
+    <select id='ComboAsignarOrganizacion'>
+        @foreach (DatosOrganizacion organizacion in organizaciones)
+        {
+            <option value='@organizacion.IdOrganizacion'> @organizacion.Ruta  (@organizacion.NivelOrganizacion)</option>
+        }
+    </select>
+</div>
+
+<div class="panelOperadores">
+    <div class="row cabeceraPanel bakground-color-info ">
+        <div class="col-md-2" id="panel-title" style="color:white">
+            <b>Asesores</b>
+        </div>
+        <div class="col-md-9">
+            <label class="label" id="EtiquetaNivelJerarquicoEquipo"></label>
+        </div>
+        <div class="col-md-1">
+            <a class="close" onclick="CerrarPanel('panelOperadores');"><span class="fa fa-close"></span></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 " id="panel-body-cooridnadores">
+            <div class='row rowSeparacion10'>
+                <!-- DESASIGNADOS -->
+                <div class='col-md-5 col-sm-5'>
+                    <div class='row'>
+                        <div class='col-lg-2 col-md-2 form-check'>
+                            <input type='checkbox' value='' id='IdCheckNoAsignados' class='PosCheckBoxTodos' onclick='CheckTodosCaja(this.id, "ul_noasociados")' />
+
+                        </div>
+                        <div class='col-md-10 col-lg-10'>
+                            <h5><b> Sin Asignar </b></h5>
+                            <input type='text' id='myInputGroupNoAsociados' class='form-control' onkeyup='BuscaSeleccionadoEnGrupo("myInputGroupNoAsociados","ul_noasociados")' placeholder='@CampanaResources.bs_buscar...' title='Escribir un nombre ' />
+                        </div>
+                    </div>
+                    <div class='row rowSeparacion10 CajaElementos'>
+                        <ul id='ul_noasociados' class='list-group'>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+                <!--  BOTONERA DE ASIGNACIÓN Y DESASIGNACIÓN  -->
+                <div class='col-md-2 CajaElementosSinScroll'>
+                    <div class='centrarVer'>
+                        <button type='button' class='btn btn-default' style='width:100%' onclick="AsignarRegistros()"> Asignar <span class='fa fa-angle-double-right'> </span> </button>
+                        <button type='button' class='btn btn-default' style='width:100%;top:59%' onclick="DesAsignarRegistros()"> Desasignar <span class='fa fa-angle-double-left'> </span></button>
+                    </div>
+                </div>
+
+                <!--  ASIGNADOS  -->
+                <div class='col-md-5 col-sm-5'>
+                    <div class='row'>
+                        <div class='col-lg-2 col-md-2 form-check'>
+                            <input type='checkbox' value='' class='PosCheckBoxTodos' id='IdCheckAsignados' onclick='CheckTodosCaja(this.id, "ul_siasociados")' />
+                        </div>
+                        <div class='col-md-10 col-lg-10'>
+                            <h5><b> Asignados </b></h5>
+                            <input type='text' id='myInputGroupSi' class='form-control' onkeyup='BuscaSeleccionadoEnGrupo("myInputGroupSi","ul_siasociados")' placeholder='@CampanaResources.bs_buscar...' title='Escribir un nombre '>
+                        </div>
+                    </div>
+                    <div class='row rowSeparacion10 CajaElementos'>
+                        <ul id='ul_siasociados' class='list-group'>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row rowSeparacion25" style="text-align:right;margin-right: 12px !important;">
+                <button type="button" class="btn btn-info botonFicha disabled" id="BbotonAceptarF" onclick="GuardarOperadores()">Guardar</button>
+                <button type="button" class="btn btn-default botonFicha" onclick="CerrarPanel('panelOperadores');">Salir</button>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+

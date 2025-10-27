@@ -1,0 +1,457 @@
+﻿
+@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.Code;
+
+@model List<TDatosCampaign>
+
+@{
+    string title = ComunResources.pr_campanas;
+    List<Calendario> calendarios = ViewBag.Calendarios as List<Calendario>;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/MyDataTables.css" rel="stylesheet" />
+@Scripts.Render("~/bundles/jqueryval")
+
+<style>
+    .table-striped > tbody > tr:nth-child(odd) > td,
+    .table-striped > tbody > tr:nth-child(odd) > th {
+        background-color: #f2f2f2;
+    }
+
+    .table-striped > tbody > tr:nth-child(even) > td,
+    .table-striped > tbody > tr:nth-child(even) > th {
+        background-color: inherit;
+    }
+
+    .table-hover > tbody > tr:hover > td {
+        background-color: #dddddd !important;
+    }
+
+    .sidebar {
+        margin: 0;
+        padding: 0;
+        width: 350px;
+        background-color: #272c33;
+        position: fixed;
+        height: 100%;
+        overflow: auto;
+    }
+
+        .sidebar a {
+            display: block;
+            color: white !important;
+            padding: 16px;
+            text-decoration: none;
+        }
+
+            .sidebar a.active {
+                background-color: #04AA6D;
+                color: black !important;
+            }
+
+            .sidebar a:hover:not(.active) {
+                background-color: #555;
+                color: white;
+            }
+
+    div.content {
+        margin-left: 350px;
+        padding: 1px 16px;
+        height: 1000px;
+    }
+
+    @@media screen and (max-width: 700px) {
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+
+            .sidebar a {
+                float: left;
+            }
+
+        div.content {
+            margin-left: 0;
+        }
+    }
+
+    @@media screen and (max-width: 400px) {
+        .sidebar a {
+            text-align: center;
+            float: none;
+        }
+    }
+
+</style>
+
+@*<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-hashtag' aria-hidden="true"></i>
+            <span style='margin-left: 1em;' id="titlePage">@title</span>
+        </h2>
+    </div>
+</div>*@
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+@Html.Partial("MenuCampanas")
+
+<div class="content" style="padding-left: 50px; padding-right: 120px;">
+    <div class="row rowSeparacion25">
+
+        @*<div class="col-lg-2 col-md-2 caja-datos-long" id="menuLateral">
+                @Html.Partial("MenuCampanas")
+            </div>*@
+
+        <div class="col-lg-12 col-md-12 col-sm-12" id="panel-datos">
+            <div id="panel-boton-open-close">
+                <div class="row" style="top: -10px;">
+                    <div class="col-lg-12 col-sm-12">
+                        <button type="button" class="btn btn-default" style="float: left;" onclick="OpenCloseMenu()">
+                            <span class="fa fa-th"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="container">
+                    <h2 class='visible-lg visible-md' style="font-family: inherit;">
+                        <i class='fa fa-hashtag' aria-hidden="true"></i>
+                        <span style='margin-left: 1em;' id="titlePage">@title</span>
+                    </h2>
+                </div>
+            </div>
+
+            <div class="row ">
+                @* Aquí incluyo los checks de activo inactivo y cerradp *@
+                @Html.Raw(ChecksCabecera())
+            </div>
+
+            <div class="row" style="font-size: 15px !important;">
+                <div class='col-lg-12' style="top: 25px;font-size:15px;">
+                    <table id='tablaCampanas' class="table table-striped table-hover table-responsive" style="width:100%; margin-bottom: 25px;">
+                        <thead>
+                            <tr>
+                                <th class="th"></th>
+                                <th class="th">@CampanaResources.cmp_Codigo</th>
+                                <th class="th">@CampanaResources.cmp_nombre</th>
+                                <th class="th">@CampanaResources.cmp_descripcion</th>
+                                <th class="th">@CampanaResources.cmp_fechaInicioFin</th>
+                                <th class="th">@CampanaResources.cmp_marcacion</th>
+                                <th class="th">@CampanaResources.cmp_prioridad</th>
+                                <th class="th">@CampanaResources.cmp_calendario</th>
+                                <th class="th">@CampanaResources.cmp_horario</th>
+                                <th class="th">@ComunResources.estado</th>
+                                <th class="th">@CampanaResources.cmp_plataforma</th>
+                                <th class="th"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyTblGrabaciones">
+                            @foreach (TDatosCampaign campana in Model)
+                            {
+                                string mensajeEstado = string.Empty;
+                                string tipoMarcacion = campana.EsPredictiva() ? "Predictiva" : "Preview";
+
+                                <tr id="tr_@campana.Codigo">
+                                    <td id="td_@campana.Codigo">
+                                        <input type="checkbox" id="chk_@campana.Codigo" />
+                                    </td>
+                                    <td>@campana.Codigo</td>
+                                    @if (!campana.EsCampanaDePlanificador)
+                                    {
+                                        <td>@campana.Alias</td>
+                                        <td>@campana.Descripcion</td>
+                                    }
+                                    else
+                                    {
+                                        <td><span style='color:#056825;' title='Asociada al planificador'>@campana.Alias</span></td>
+                                        <td>
+                                            <img src='./resources/favicon.png' alt='Planificador' width='15' height='12'>
+                                            <span style='color:#056825;' title='Asociada al planificador'>campana.Descripcion</span>
+                                        </td>
+                                    }
+
+                                    @if (campana.DateFinish >= DateTime.Today)
+                                    {
+                                        <td>@campana.DateStart.ToString(WebConfigParams.FormatDate) - @campana.DateFinish.ToString(WebConfigParams.FormatDate)</td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @{ mensajeEstado = ComunResources.fueraDeFecha;}
+                                            <span style='color:red;font-weight:600;'>
+                                                @campana.DateStart.ToString(WebConfigParams.FormatDate) - @campana.DateFinish.ToString(WebConfigParams.FormatDate)
+                                            </span>
+                                        </td>
+
+                                    }
+                                    <td>@tipoMarcacion</td>
+                                    <td>@campana.Prioridad</td>
+                                    <td>@campana.NombreCalendario</td>
+                                    <td>@Html.Raw(ObtenerHorario(campana.IdCalendario, calendarios))</td>
+                                    <td>@Html.Raw(EstadoCampana(campana.Activo, campana.Codigo))</td>
+                                    <td>@Html.Raw(ObtenerNombrePlataforma(campana.IdPlataforma))</td>
+                                    <td>
+                                        @if (mensajeEstado != string.Empty)
+                                        {
+                                            <span style="color: red; font-weight:600;">@mensajeEstado</span>
+                                        }
+                                        else
+                                        {
+                                            <div class='row no-display' style='margin-right:5px !important;'>
+                                                <div id='tooltipwrap_@campana.Codigo' class='col-md-9 col-sm-9 col-lg-9 tooltipwrap'
+                                                     onmouseover='MostrarResumen(this.id)' onmouseout='OcultarResumen(this.id)'>
+                                                </div>
+
+                                                <div class='col-md-2 col-sm-2 col-lg-2'>
+                                                    <span class='fa fa-history'
+                                                          onclick='ObtenerRegistrosCampana("@campana.TableName","@campana.Codigo","@campana.Alias" );'>
+                                                    </span>
+                                                </div>
+                                                <input type='hidden' id='lista_@campana.Codigo' value='' />
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div> @* fin class="row" *@
+
+        </div> @* Fin panel datos *@
+
+    </div> @* End div ater container-fuid *@
+</div> @* End div class="container-fuid" *@
+
+
+
+
+@functions {
+
+    private string ChecksCabecera()
+    {
+        string html = "";
+        html += "<div class='row rowSeparacion25'> " +
+                "  <div class='col-lg-6 col-md-6 col-sm-6' style='margin-bottom:20px;'> " +
+                "     <label class='checkbox-inline' style='margin-left:4px;'>";
+        html += $"       <input type='checkbox' value='0' id='MostrarActivos' checked onclick='OptionsChecked()' /><b>  {ComunResources.chk_activo} </b>";
+        html += "     </label> ";
+        html += "     <label class='checkbox-inline Separa20Izquierda'>";
+        html += $"       <input type='checkbox' value='1' id='MostrarNoActivos' onclick='OptionsChecked()' /><b> {ComunResources.chk_inactivo}</b> ";
+        html += "     </label> " +
+                "     <label class='checkbox-inline Separa20Izquierda' >";
+        html += $"       <input type='checkbox' value='2' id='MostrarCerrados' onclick='OptionsChecked()' /><b> {ComunResources.chk_cerrado} </b>";
+        html += "     </label> " +
+                "  </div>" +
+                "</div>";
+        html += $"<input type='hidden' id='Mostrar' value='1' />";
+        return html;
+    }
+
+    private string ObtenerHorario(string idCalendario, List<Calendario> calendarios)
+    {
+        string strHorario = Comun.ObtenerHorarioDelDia(idCalendario, calendarios, out bool fueraDeHora);
+
+        if (!fueraDeHora)
+            return strHorario;
+
+        return "<span style='color:red;font-weight:400;'>" + strHorario + "</span>";
+    }
+
+    private string EstadoCampana(int estado, string idCampana)
+    {
+        string strEstado = "", color = "";
+
+        if (estado == Comun.CTE_CAMPANA_ACTIVA)
+        {
+            strEstado = ComunResources.chk_activo;
+            color = "green";
+        }
+        else if (estado == Comun.CTE_CAMPANA_INACTIVA)
+        {
+            strEstado = ComunResources.chk_inactivo;
+            color = "red";
+        }
+        else if (estado == Comun.CTE_CAMPANA_CERRADA)
+        {
+            strEstado = ComunResources.chk_cerrado;
+            color = "#a1a1a1";
+        }
+        else
+        {
+            strEstado = estado.ToString();
+        }
+
+        return "<span style='display:none'>" + strEstado + "</span>" +
+                "<input type='button' class='table-button' style='border-color:" + color + ";color: " + color + "' id='estado_" + idCampana + "' " +
+                "         onclick=\"ActivaDesactivaCampana('" + idCampana + "');\" value='" + strEstado + "' />\n";
+
+    }
+
+
+    private string ObtenerNombrePlataforma(int idPlataforma)
+    {
+        switch (idPlataforma)
+        {
+            case 0:
+            case 1:
+                return CampanaResources.cmp_plataformaTelefonica;
+            case 3:
+                return CampanaResources.cmp_plataformaWhatsApp;
+            case 5:
+                return CampanaResources.cmp_plataformaSMS;
+            default:
+                return idPlataforma.ToString();
+        }
+    }
+}
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.3.1/i18nextHttpBackend.min.js"></script>
+    <script src="~/js/i18next/i18next.min.js" type="text/javascript"></script>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const language = '@WebConfigParams.AppLanguage';
+            // Inicializa i18Next para traducir los ficheros javascript
+            i18next.use(i18nextHttpBackend).init({
+                lng: language,
+                debug: true,
+                fallbackLng: "en",
+                backend: {
+                    loadPath: '../locales/{{lng}}.json'
+                }
+            });
+
+
+            tablaCampana = $('#tablaCampanas').DataTable({
+                "order": [[3, "asc"]],
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "@CampanaResources.bs_loadingRecords",
+                    "lengthMenu": "@CampanaResources.bs_lengthMenu",
+                    "zeroRecords": "@CampanaResources.bs_zeroRecords",
+                    "info": "@CampanaResources.bs_info",
+                    "infoEmpty": "@CampanaResources.bs_sinRegistros",
+                    "infoFiltered": "",
+                    "search": "@CampanaResources.bs_buscar",
+                    "paginate": {
+                        "first": "@CampanaResources.bs_primero",
+                        "next": "@CampanaResources.bs_siguiente",
+                        "previous": "@CampanaResources.bs_anterior",
+                        "last": "@CampanaResources.bs_ultimo"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, -1], [15, 25, 50, "Todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#tablaCampanas').css('display', 'table');
+
+            $("#tablaCampanas").on("click", "td", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+                let usarOperadorEstendido = $("#usarOperadorExtendido").val();
+
+                AvanzarPagina('Operadores/listado', 'Operadores/Operador/' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#tablaCampanas").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+        });
+
+        $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                const activas = document.getElementById('MostrarActivos');
+                const inactivas = document.getElementById('MostrarNoActivos');
+                const idCampana = data[1];
+                let estado = data[9];
+
+                if (estado != null) {
+                    estado = estado.trim();
+
+                    if (activas.checked && estado === '@ComunResources.chk_activo' ||
+                        inactivas.checked && estado === '@ComunResources.chk_inactivo') {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        );
+
+
+        function OptionsChecked() {
+            tablaCampana.draw();
+        }
+
+        function OpenCloseMenu() {
+            if ($("#panel-menu").filter(":visible").length > 0) {
+                $("#panel-menu").css('display', 'none');
+            }
+            else {
+                $("#panel-menu").css('display', 'block');
+            }
+        }
+    </script>
+
+}

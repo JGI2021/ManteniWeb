@@ -1,0 +1,343 @@
+﻿@using ManteniWeb.ClasesDeDatos
+
+@model List<DatosRegla>
+
+@*<script src="~/Scripts/bootstrap-select.min.js"></script>*@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css" />
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+
+<style>
+    th {
+        background: #778899 !important;
+        color: white !important;
+        font-weight: 300 !important;
+    }
+</style>
+
+
+@{
+    string title = "Reglas de marcación";
+
+    List<ReglaGruposAsociados> reglaGruposAsociados = ViewBag.ReglasGruposAsociados as List<ReglaGruposAsociados>;
+}
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-2 col-md-2">
+            @Html.Partial("MenuRegistros")
+        </div>
+
+        <div class="col-lg-8 col-md-8">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div id="alerta" class="alert" style="display:none">
+                    <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                    <p id="alert-mensaje"></p>
+                </div>
+
+                <table id="ReglasTable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="no-sort"></th>
+                            <th>ID regla</th>
+                            <th>Nombre</th>
+                            <th>Prefijo operador</th>
+                            <th>Prefijo PBX</th>
+                            <th>Sufijo DNIS</th>
+                            <th>Grupos teléfonos</th>
+                            <th>Grupos ACD</th>
+                        </tr>
+                    </thead>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr id="tr_@item.regla">
+                            <td id="td_@item.regla">
+                                <input type="checkbox" id="chk_@item.regla" />
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.regla)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.nombreRegla)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.prefijoOP)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.prefijoPBX)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.sufijoDNIS)
+                            </td>
+                            <td>
+                                @Html.Raw(GruposAnis(item.GrupoANis))
+                            </td>
+                            <td>
+                                @Html.Raw(GruposAsociadosARegla(reglaGruposAsociados, item.regla))
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+
+@functions {
+    public string GruposAnis(List<MarcacionesGrupoANI> grupoANis)
+    {
+        string strani = string.Empty;
+
+        foreach(MarcacionesGrupoANI grupoANI in grupoANis)
+        {
+            string urlHasta = "LlamadaSaliente/EditaGrupoANI/" + grupoANI.aniGroupId;
+            string urlDesde = "LlamadaSaliente/Reglas";
+            if (strani == string.Empty)
+            {
+                strani = "<a onclick='return AvanzarPagina(\"" + urlDesde + "\",\"" + urlHasta + "\")' style='cursor:pointer;'> " +
+                                  grupoANI.descripcion +
+                                "</a> ";
+            }
+            else
+            {
+                strani += " , " + "<a onclick='return AvanzarPagina(\"" + urlDesde + "\",\"" + urlHasta + "\")' style='cursor:pointer;'> " +
+                                  grupoANI.descripcion +
+                                "</a> ";
+            }
+        }
+
+        return strani;
+    }
+
+
+    public string GruposAsociadosARegla(List<ReglaGruposAsociados> rsgsas, string idregla)
+    {
+        var reglaGrupos = rsgsas.Find(regla => regla.idRegla == idregla);
+        string resultado = "";
+
+        if (reglaGrupos != null)
+        {
+            foreach (GrupoAsociado grupoAsociado in reglaGrupos.gruposAsociados)
+            {
+                string urlHasta = "GrupoAtencion.aspx?id=" + grupoAsociado.grupoAcdId;
+                string urlDesde = "LlamadaSaliente/Reglas";
+                if (resultado == string.Empty)
+                {
+                    resultado = "<a onclick='return AvanzarPagina(\"" + urlDesde + "\",\"" + urlHasta + "\")' style='cursor:pointer;'> " +
+                                  grupoAsociado.aliasGrupoAcd +
+                                "</a> ";
+                }
+                else
+                {
+                    resultado += ", " + "<a onclick='return AvanzarPagina(\"" + urlDesde + "\",\"" + urlHasta + "\")' style='cursor:pointer;'> " +
+                                  grupoAsociado.aliasGrupoAcd +
+                                "</a> ";
+                }
+            }
+        }
+        return resultado;
+    }
+}
+
+
+@section scripts {
+
+    <script src="~/Content/DataTables/datatables.min.js" type="text/javascript"></script>
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/js/sweetalert2/dist/sweetalert2.all.min.js" type="text/javascript"></script>
+
+
+    <script>
+
+        $(function () {
+            tableop = $('#ReglasTable').DataTable({
+                "order": [[3, "asc"]],
+                "processing": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "Sin registros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Sin registros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "Todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#ReglasTable').css('display', 'table');
+
+            $("#ReglasTable").on("click", "td:not(:nth-last-child(2))", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+
+                AvanzarPagina('LlamadaSaliente/Reglas', 'LlamadaSaliente/EditaRegla?idRegla=' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#ReglasTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+        function EliminarRegistro() {
+            Swal.fire({
+                title: 'Eliminar regla',
+                text: "Se eliminarán las reglas seleccionadas. ¿Desear continuar? ",
+                icon: 'warning',
+                heightAuto: false,
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const jsonData = { "idregla": $('#idsSeleccionados').val() }
+                    let url = getRutaAbsoluta();
+                    $.post(url + "/LlamadaSaliente/EliminaRegla", jsonData, function (resultado) {
+                        if (resultado !== null) {
+
+                            let respuesta = JSON.parse(resultado);
+                            MostrarMensajeRespuesta(respuesta);
+                            if (respuesta.Error === "N") {
+                                EliminaFilasTabla();
+                            }
+                        }
+
+                    });
+                }
+            });
+
+        }
+
+        /// ---------------------------------------------------------------------
+        /// Muestra el mensaje de alerta y el mensaje de respuesta del servidor
+        /// ---------------------------------------------------------------------
+        function MostrarMensajeRespuesta(respuesta) {
+            console.log("Respuesta guardar datos: " + respuesta.Mensaje);
+            if (respuesta) {
+                if (respuesta.Error === "S") {
+                    $('#alerta').removeClass('alert-success');
+                    $('#alerta').addClass('alert-danger');
+                    $('#alert-mensaje').html(respuesta.Mensaje);
+                }
+                else if (respuesta.Error === "N") {
+                    /// Mostramos mensaje de que todo se ha actualizado perfectamente
+                    $('#alert-mensaje').html(respuesta.Mensaje);
+                    $('#alerta').removeClass('alert-danger');
+                    $('#alerta').addClass('alert-success');
+                }
+            }
+            else {
+                console.log("No se puede hacer un parse de la respuesta de errores al actualizar los datos, llega vacío.")
+            }
+
+            // Se muestra el panel que indica si ha ido bien o si ha fallado
+            $('#alerta').css('display', 'block');
+            // Se mantien por 6 segundos, luego se quita
+            setTimeout(function () {
+                $('#alerta').css('display', 'none');
+                // Si se ha pulsado guardar y salir
+            }, 4000);
+        }
+
+        function EliminaFilasTabla() {
+            let idsSeleccionados = $("#idsSeleccionados").val();
+            let arrIds = idsSeleccionados.split(",");
+
+            for (let i = 0; i <= arrIds.length; i++) {
+                let id = arrIds[i];
+                $("#tr_" + id).remove();
+            }
+        }
+
+
+        function NuevoRegistro() {
+            AvanzarPagina("LlamadaSaliente/Reglas", "LlamadaSaliente/EditaRegla?idRegla=0");
+        }
+
+        function EditarRegistro() {
+            let idSeleccionado = $("#idsSeleccionados").val();
+            AvanzarPagina('LlamadaSaliente/Reglas', 'LlamadaSaliente/EditaRegla?idRegla=' + idSeleccionado);
+        }
+
+    </script>
+
+}

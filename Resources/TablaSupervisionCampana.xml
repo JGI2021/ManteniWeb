@@ -1,0 +1,153 @@
+﻿<table>
+
+  <general
+    DisplayName="Campañas"
+ 	Database="TIPHONE"
+    SubsystemFieldName="subsistema"
+    TableName="CAMPAIGNS"
+    TableName2="TE_TIEMPO_ESPERA"
+    CrossField2="id_campana"
+    TableName3="TE_TRAMOS"
+    CrossField3="id_campana">
+  </general>
+
+  <panels>
+    <panel
+      id="panelInformeSemanal"
+      DisplayName="Informe Semanal">
+    </panel>
+
+    <panel
+      id="panelInformeDiario"
+      DisplayName="Informe Diario">
+    </panel>
+
+    <panel
+      id="panelInformeHorario"
+      DisplayName="Informe Horario">
+    </panel>
+    
+    <panel
+      id="panelDistribucionPorEstado"
+      DisplayName="Distribución por estado">
+    </panel>
+
+	  <panel
+		  id="panelDistribucionPorResultado"
+		  DisplayName="Distribución por resultado">
+	  </panel>
+	  
+	<panel
+		id="panelResultadosRegistro"
+		DisplayName="Resultados de registro">
+	</panel>
+
+	  <panel
+		  id="panelResultadosNegocio"
+			DisplayName="Resultados de negocio">
+	  </panel>
+
+	  <panel
+		  id="panelResultadosLlamada"
+			DisplayName="Resultados de llamada">
+	  </panel>
+
+	  <panel
+      id="panelDistEstadoAgentes"
+      DisplayName="Dist.Estado por Agentes">
+	  </panel>
+	  
+	  <panel
+      id="panelDistResultadoAgentes"
+      DisplayName="Dist.Resultado por Agentes">
+	  </panel>
+  </panels>
+
+  <fields>
+
+    <field>
+      <fattr
+        FieldName="campaign_code"
+        Panel="panelInformeSemanal"
+        DisplayName="Identificador"
+        IsKey="true"
+        ReadOnly="true"
+        EditionType="GRAPH"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Identificador de la campaña."
+        External="false"
+        TabOrder="1">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="alias"
+        Panel="panelInformeDiario"
+        DisplayName="Alias"
+        EditionType="GRAPH"
+        MaxLen="15"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Teclee un Alias para esta campaña."
+        External="false"  
+        UpdateNeeded="true"
+        TabOrder="2">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="description"
+        Panel="panelInformeHorario"
+        DisplayName="Descripción"
+        EditionType="GRAPH"
+        MaxLen="50"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Introduzca un texto que describa esta campaña."
+        External="false"
+        UpdateNeeded="true"
+        TabOrder="3">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="max_calls_per_customer"
+        Panel="panelDistribucionRegistro"
+        DisplayName="Máx. llamadas"
+        EditionType="GRAPH"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Indique el nº máximo de llamadas por cliente."
+        External="false"
+        UpdateNeeded="true"
+        MaxLen="3"
+        DefaultValue="10"
+        Linea="Linea1"
+        TabOrder="4">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="type"
+        Panel="panelAgentes"
+        DisplayName="Tipo"
+        EditionType="Combo"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Seleccione el tipo de llamada."
+        External="false"
+        UpdateNeeded="true"
+        Linea="TpoPreview"
+        TabOrder="5">
+      </fattr>
+    </field>
+
+  </fields>
+
+
+</table>

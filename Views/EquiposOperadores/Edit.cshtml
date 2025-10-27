@@ -1,0 +1,541 @@
+﻿@model EquiposOperadoresEdit
+@using ManteniWeb.Models;
+@using Newtonsoft.Json;
+@using ManteniWeb.Code;
+@using System.Collections;
+
+@{
+    ViewBag.Title = "Equipo: \"" + Model.EquipoEdicion.Nombreequipo + "\"";
+    ViewBag.Formulario = Model.EquipoEdicion.Nombreequipo;
+}
+
+
+<link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+<link href='~/css/footable.core.css' rel='stylesheet' type='text/css' />
+<link href="~/css/footableManteniWeb.metro.css" rel="stylesheet" />
+
+<style>
+    .formLabel {
+        padding-left: 0px;
+        padding-top: 20px;
+    }
+
+    .wrapper {
+        height: 100%;
+        width: 100%;
+    }
+
+
+    .InputBuscar {
+        background-image: url('../../img/search-icon-32.png');
+        background-position: 2px 2px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 20px 10px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+        margin-top: 25px;
+    }
+
+    .MostraOperadores {
+        margin-bottom: 12px;
+        margin-top: 25px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }    
+
+    .myUlClass {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .myUlClass li {
+        margin-top: -1px; /* Prevent double borders */
+        text-decoration: none;
+        font-size: 13px;
+        color: black;
+        display: block;
+    }
+
+    .myUlClass li:hover:not(.header) {
+        background-color: #eee;
+    }
+
+    .list-group-item {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .panel-botom-0 {
+        margin-bottom: 0px !important;
+    }
+
+    .panel-group:hover {
+        border: 1px solid #6e8b75;
+        border-radius: 5px;
+    }
+
+    li span:hover {
+        cursor: pointer;
+    }
+</style>
+
+@* JUMBOTRON Para poner el título *@
+<div class="jumbotron" style="padding:4px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-comments-o' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+
+        </h2>
+
+
+        <div class="row">
+            <div class="col-sm-12 col-xs-12 col-lg-12" style="margin-bottom:15px;">
+                <div class="form-inline">
+                    <label for="idlabelequipo" class="control-label" style="margin-left:70px;">Organizacion: &nbsp;&nbsp;</label>
+                    <label id="idlabelequipo" disabled="disabled" style="border:none;"> @Model.EquipoEdicion.RutaOrganizacion</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@Html.AntiForgeryToken()
+
+@* CONTENIDO DE LA PÁGINA *@
+<div class="container-fluid">
+    <div class="row">
+        @* Panel izquierdo, donde se coloca el menú *@
+        <div class="col-sm-2 col-md-2 col-lg-2" style="text-align:left;" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left   visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        @* Panel central *@
+        <div class="col-sm-9 col-lg-9 col-md-9 panelPricipalCentro" id="CentralPanel">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-lg-4">
+                            <label class="control-label MostraOperadores" for="mostraroperadores" >
+                                <input type="checkbox" id="mostraroperadores" onclick="MostrarOcultarOperadores();" /> Ocultar operadores
+                            </label>
+                        </div>
+                        <div class="col-md-8 col-sm-8 col-lg-8">
+                            <input type="text" id="myInput2" class="InputBuscar" onkeyup="BuscaOperadoreEnListaEquipos()" placeholder="Buscar operadores.." title="Escribir un nombre">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div style="height:600px; overflow-y:scroll;">
+
+                            @* GRUPO DE OPERADORES SIN ASIGNAR. SOLO SE AÑADE SI NO ESTA EN EDICIÓN *@
+                            @if (Model.EquipoEdicion.Idequipo != "0")
+                            {
+                                <div class="panel-group panel-botom-0" id="panel_@Model.EquipoSinAsignar.Idequipo" >
+                                    <div class="panel panel-default panel-botom-0">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title" data-toggle="tooltip" title="@Model.EquipoSinAsignar.RutaOrganizacion">
+                                                <a data-toggle="collapse" href="#collapse_@Model.EquipoSinAsignar.Idequipo">
+                                                    <b> Equipo </b> @Model.EquipoSinAsignar.Nombreequipo &nbsp;&nbsp;
+                                                    <span id="badge_@Model.EquipoSinAsignar.Idequipo" class="badge" style="background-color:gray;float:right;">@Model.EquipoSinAsignar.Operadores.Count</span>
+                                                </a>
+                                                <input type="hidden" id="tdeq_@Model.EquipoSinAsignar.Idequipo" value="@Model.EquipoSinAsignar.Nombreequipo" />
+                                            </h5>
+                                        </div>
+                                        <div id="collapse_@Model.EquipoSinAsignar.Idequipo" class="panel-collapse collapse in">
+                                            <div class="wrapper" id="diul_@Model.EquipoSinAsignar.Idequipo" ondragenter="return enterEquipo(event)" ondrop="return dropEquipo(event)" ondragover="return allowDropEquipo(event)" ondragleave="return leaveEquipo(event)">
+                                                <ul id="myUL2_@Model.EquipoSinAsignar.Idequipo" class="list-group panel-botom-0 myUlClass OpEquipoOperador">
+                                                    @foreach (DatosOperador operador in Model.EquipoSinAsignar.Operadores)
+                                                    {
+                                                        string idOperador = "eq_" + Model.EquipoSinAsignar.Idequipo + "_op_" + operador.idoperador;
+                                                        string lioperador = "lieq_" + Model.EquipoSinAsignar.Idequipo + "_op_" + operador.idoperador;
+                                                        <li class="list-group-item OpEquipoOperador" id="@lioperador">
+                                                            <span class="OpEquipoOperador" draggable='true' ondragstart='startdragEquipo(event)' ondragend='enddragEquipo(event)' id='@idOperador' data-toggle='tooltip' title='alias: @operador.alias'> @operador.nombreoperador &nbsp;&nbsp; </span>
+                                                            <input type="hidden" id="hidd_@idOperador" value="@operador.alias" />
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!--label for="Operadores" class="control-label col-md-2 formLabel">Operadores</label-->
+                            @foreach (DatosEquipoOperadores equipo in Model.OtrosEquipos)
+                            {
+                                string panel = "panl_" + equipo.Idequipo + "_op_0";
+                                <div class="panel-group panel-botom-0" id="panel_@equipo.Idequipo" >
+                                    <div class="panel panel-default panel-botom-0">
+                                        <div class="panel-heading" ondragenter="return enterEquipo(event)" ondrop="return dropEquipo(event)" ondragover="return allowDropEquipo(event)" ondragleave="return leaveEquipo(event)">
+                                            <h5 id="@panel" class="panel-title OpEquipoOperador" data-toggle="tooltip" title="@equipo.RutaOrganizacion">
+                                                <a data-toggle="collapse" href="#collapse_@equipo.Idequipo">
+                                                    <b> Equipo </b> @equipo.Nombreequipo &nbsp;&nbsp;
+                                                    <span id="badge_@equipo.Idequipo" class="badge" style="background-color:gray;float:right;">@equipo.Operadores.Count</span>
+                                                </a>
+                                                <input type="hidden" id="tdeq_@equipo.Idequipo" value="@equipo.Nombreequipo" />
+                                            </h5>
+                                        </div>
+                                        <div id="collapse_@equipo.Idequipo" class="panel-collapse collapse in">
+                                            <div id="diul_@equipo.Idequipo" class="wrapper" ondragenter="return enterEquipo(event)" ondrop="return dropEquipo(event)" ondragover="return allowDropEquipo(event)" ondragleave="return leaveEquipo(event)">
+                                                <ul id="myUL2_@equipo.Idequipo" class="list-group panel-botom-0 myUlClass">
+                                                    @foreach (DatosOperador operador in equipo.Operadores)
+                                                    {
+                                                        string idOperador = "eq_" + @equipo.Idequipo + "_op_" + operador.idoperador;
+                                                        string liidOperador = "lieq_" + @equipo.Idequipo + "_op_" + operador.idoperador;
+                                                        <li class="list-group-item OpEquipoOperador" id="@liidOperador">
+                                                            <span class="OpEquipoOperador" draggable='true' ondragstart='startdragEquipo(event)' ondragend='enddragEquipo(event)' id='@idOperador' data-toggle='tooltip' title='alias: @operador.alias'> @operador.nombreoperador &nbsp;&nbsp; </span>
+                                                            <input type="hidden" id="hidd_@idOperador" value="@operador.alias" />
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" id="myInput" class="InputBuscar" onkeyup="BuscaOperadoreEnLista()" placeholder="Buscar operadores.." title="Escribir un nombre">
+                    <div style="height:600px;overflow-y:scroll;">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading OpTableEdicion" ondragenter="return enterEquipo(event)" ondrop="return dropEquipo(event)" ondragover="return allowDropEquipo(event)" ondragleave="return leaveEquipo(event)">
+                                    <h5 class="panel-title OpTableEdicion">
+                                        <a class="OpTableEdicion" data-toggle="collapse" href="#collapse1"><b>Equipo</b> @Model.EquipoEdicion.Nombreequipo</a>
+                                        <input type="hidden" class="OpTableEdicion" id="tdeq_@Model.EquipoEdicion.Idequipo" value="@Model.EquipoEdicion.Nombreequipo" />
+                                        <span id="badge_@Model.EquipoEdicion.Idequipo" class="badge OpTableEdicion" style="background-color:gray;float:right;">@Model.EquipoEdicion.Operadores.Count</span>
+                                    </h5>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse in">
+                                    <div id="TablaEquipo" class="wrapper" ondragenter="return enterEquipo(event)" ondrop="return dropEquipo(event)" ondragover="return allowDropEquipo(event)" ondragleave="return leaveEquipo(event)">
+                                        <ul id="myUL" class="list-group panel-botom-0 myUlClass">
+                                            @foreach (DatosOperador operador in Model.EquipoEdicion.Operadores)
+                                            {
+                                                string idOperador = "eq_" + Model.EquipoEdicion.Idequipo + "_op_" + operador.idoperador;
+                                                string liidOperador = "lieq_" + Model.EquipoEdicion.Idequipo + "_op_" + operador.idoperador;
+                                                <li class="list-group-item OpTableEdicion" id="@liidOperador">
+                                                    <span class="OpTableEdicion" draggable='true' ondragstart='startdragEquipo(event)' ondragend='enddragEquipo(event)' id='@idOperador' data-toggle='tooltip' title='@operador.alias'>@operador.nombreoperador &nbsp;&nbsp;</span>
+                                                    <input type="hidden" id="hidd_@idOperador" value="@operador.alias" />
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-sm-1 col-lg-1 col-xs-12" id="PanelDerecha">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+ 
+    <script type="text/javascript" src="~/js/FuncionesJS.js"></script>
+ 
+<script>
+
+        function BuscaOperadoreEnLista() {
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("myUL");
+            li = ul.getElementsByTagName("li");
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("span")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+
+        var arrayEquipos = new Array();
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            @{
+            //serializer initialization
+            var equipo = new DatosEquipoOperadores();
+            equipo = Model.EquipoSinAsignar;
+            Model.OtrosEquipos.Add(equipo);
+            string jsEquipos = JsonConvert.SerializeObject(Model.OtrosEquipos);
+        }
+        arrayEquipos =  JSON.parse('@jsEquipos'.replace(/&quot;/g, '"'));
+    });
+
+
+    function BuscaOperadoreEnListaEquipos() {
+        var input, filter, ul, li, a, i, txtValue, j;
+        input = document.getElementById("myInput2");
+        filter = input.value.toUpperCase();
+        var totequipos = @Model.OtrosEquipos.Count;
+        var datoequipo;
+        var idq = 0;
+
+        for (j = 0; j < totequipos; j++)
+        {
+            datoequipo = arrayEquipos[j];
+            idq = "myUL2_" + datoequipo.Idequipo;
+            // Obtengo el panel donde están todos los datos
+            var panel = document.getElementById("panel_" + datoequipo.Idequipo);
+
+            ul = document.getElementById(idq);
+            li = ul.getElementsByTagName("li");
+
+            var eliminados = 0;
+            var totalli = li.length;
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("span")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                    eliminados++;
+                }
+            }
+            if (eliminados === totalli) {
+                panel.style.display = "none";
+            }
+            else {
+                panel.style.display = "";
+            }
+
+        }
+    }
+
+
+    var idDragged = "";
+    var origenDato = "";
+
+    function startdragEquipo(ev) {
+        ev.dataTransfer.effecAllowed = 'move';
+        ev.dataTransfer.setData("OPERADOR", ev.target.id);
+        idDragged = ev.target.id;
+        origenDato = ev.target.className;
+        ev.dataTransfer.setDragImage(ev.target, 0, 0);
+        ev.target.style.opacity = '0.4';
+    }
+
+    function enddragEquipo(ev) {
+        ev.target.style.opacity = ''; // Pone la opacidad del elemento a 1
+        ev.dataTransfer.clearData("OPERADOR");
+        idDragged = "";
+        origenDato = "";
+    }
+
+
+    function allowDropEquipo(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("OPERADOR");
+        var iddest = ev.target.id; // Elemento sobre el que se arrastra
+        if (iddest == idDragged) {
+            return true;
+        }
+
+        if ((origenDato == 'OpTableEdicion' && iddest.includes('tdeq')) ||
+            (origenDato == 'OpEquipoOperador' && iddest.includes('TablaEquipo')))
+        {
+            return true;
+        }
+    }
+
+
+    function enterEquipo(ev) {
+        ev.target.style.border = '1px dotted #aaaaaa';
+        return true;
+    }
+
+    function leaveEquipo(ev) {
+        ev.target.style.border = '';
+    }
+
+    function dropEquipo(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("OPERADOR");
+        ev.target.style.border = '';
+        var iddest = ev.target.id;
+        // Controlamos que un operador solo pueda pasar de la parte de operadores-equipo a la del equipo que se edita.
+        // no permito el paso de un operador a otro equipo que no sea el que se está editando.
+        if (origenDato == 'OpTableEdicion' && (iddest.includes('tdeq')  || ev.target.className.includes('OpEquipoOperador')))
+        {
+            // Viene con 'lieq_2_op_22' por delante que hay que quitar o puede venir como eq_
+            if (iddest.startsWith('eq_')) {
+                iddest = iddest.substr(3);
+            }
+            else {
+                iddest = iddest.substr(5);
+            }
+            var pos = iddest.indexOf('_');
+            var iddest = iddest.substring(0,pos);
+
+            if (ChangeOperadorToTable(data, iddest,1))
+            {
+                //
+            }
+        }
+        else if (origenDato == 'OpEquipoOperador' && (iddest.includes('TablaEquipo') || ev.target.className.includes('OpTableEdicion')))
+        {
+            var tabladestino = 0;   // Tabla de edicion 1 será la tabla de equipo
+            if (ChangeOperadorToTable(data, @Model.EquipoEdicion.Idequipo, tabladestino))
+            {
+                //   ev.target.appendChild(document.getElementById(data));
+            }
+        }
+        else
+        {
+            ev.target.style.opacity = '';
+            ev.dataTransfer.clearData("OPERADOR");
+            idDragged = "";
+            origenDato = "";
+            return false;
+        }
+
+    }
+
+
+    ///
+    /// obtiene los datos del operador origen y el equipo al que se destina
+    /// Hace una llamada ajax al controlador que se encargará de cambiar el operador de equipo en base de datos y en las
+    /// listas del coordinador.
+    function ChangeOperadorToTable(origen, idequipodestino, tabladestino) {
+        // El origen viene con formato eq_xx_op_zz  donde xx es el id de equipo que viene y zz es el código del operador
+        // quito la parte de eq_xx_op_
+        var dataOperador = "";
+        if (origen.startsWith('eq_')) {
+            dataOperador = origen.substr(3);
+        }
+        else {
+            dataOperador = origen.substr(5);
+        }
+        var pos = dataOperador.indexOf('_');
+        var equipoorigen = dataOperador.substring(0, pos);
+        // ahora obtengo el código del operador
+        var opcode = dataOperador.substr(pos + 4);
+
+
+        var OperadorEquipo = new Object();
+        OperadorEquipo.Idequipo = idequipodestino;
+        OperadorEquipo.idoperador = opcode;
+        OperadorEquipo.aliasoperador = $('#hidd_eq_' + equipoorigen + "_op_" + opcode).val();
+        OperadorEquipo.equiponame = $('#tdeq_' + idequipodestino).val();
+        // Elimino los espacios de delante y detrás con los que viene
+        OperadorEquipo.aliasoperador = OperadorEquipo.aliasoperador.trim();
+        OperadorEquipo.equiponame = OperadorEquipo.equiponame.trim();
+        OperadorEquipo.nombreoperador = $('#' + origen).text();
+        //  alert("equipo: " + idequiponuevo + "  operador " + opcode);
+
+        var url = getRutaAbsoluta() + "/EquiposOperadores/Actualiza";
+        var resultado = true;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: OperadorEquipo,
+            success: function (data, textStatus, xhr) {
+                if (data != "OK") {
+                    console.log(data);
+                    alert(data);
+                    resultado = false;
+                }
+
+                var clasdestino = "";
+                if (tabladestino == 0) {
+                    clasdestino = "OpTableEdicion";
+                }
+                else {
+                    clasdestino = "OpEquipoOperador";
+                }
+                // var opname = $('#hidd_' + origen).val();
+                var newrow = "<li class='list-group-item " + clasdestino + "' id='lieq_" + idequipodestino + '_op_' + OperadorEquipo.idoperador + "' > " +
+                    "   <span id='eq_" + idequipodestino + '_op_' + OperadorEquipo.idoperador + "' class='" + clasdestino + "' draggable='true' ondragstart='startdragEquipo(event)' ondragend='enddragEquipo(event)' id='" + OperadorEquipo.idOperador + "' data-toggle='tooltip' title='" + OperadorEquipo.aliasoperador + "'>" + OperadorEquipo.nombreoperador + " &nbsp;&nbsp;</span> " +
+                    "   <input type='hidden' id='hidd_eq_" + idequipodestino + '_op_' + OperadorEquipo.idoperador + "' value='" + OperadorEquipo.aliasoperador + "' /> " +
+                    "</li> ";
+
+                $('#lieq_' + equipoorigen + '_op_' + OperadorEquipo.idoperador).remove();
+                if (tabladestino == 0) {
+                    $("#TablaEquipo ul").append(newrow);
+                    var totdest = $("#TablaEquipo li").length;
+                    var totorig = $("#diul_" + equipoorigen + " li").length;
+                    if (idequipodestino != null && idequipodestino != undefined) {
+                        $('#badge_' + idequipodestino).text(totdest);
+                    }
+                    $('#badge_' + equipoorigen).text(totorig);
+                }
+                else {
+                    $("#diul_" + OperadorEquipo.Idequipo + " ul").append(newrow);
+                    var totorig = $("#TablaEquipo li").length;
+                    var totdest = $("#diul_" + idequipodestino + " li").length;
+                    $('#badge_' + idequipodestino).text(totdest);
+                    $('#badge_' + equipoorigen).text(totorig);
+
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('Error en llamada ajax a proceso de actualización de operador-equipo');
+                alert('Error en llamada ajax a proceso de actualización de operador-equipo');
+                resultado = false;
+            }
+        }).done(function () { });
+
+        return resultado;
+    }
+        
+
+    function MostrarOcultarOperadores() {
+        var mycheck = document.getElementById("mostraroperadores");
+        var totequipos = arrayEquipos.length;
+        if (!mycheck.checked) {
+            for (j = 0; j < totequipos; j++) {
+                var datoequipo = arrayEquipos[j];
+                var panel = document.getElementById("collapse_" + datoequipo.Idequipo);
+                if (!$('#' + panel.id).hasClass("in"))
+                   $('#' + panel.id).addClass("in");
+            }
+        }
+        else {
+            for (j = 0; j < totequipos; j++) {
+                var datoequipo = arrayEquipos[j];
+                var panel = document.getElementById("collapse_" + datoequipo.Idequipo);
+                if ($('#' + panel.id).hasClass("in"))
+                    $('#' + panel.id).removeClass("in");
+            }
+        }
+    }
+
+</script>
+
+}

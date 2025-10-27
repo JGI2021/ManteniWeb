@@ -1,0 +1,212 @@
+﻿
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Roboto Light'), local('Roboto-Light'), url(fonts/Roboto-Light.woff2) format('woff2');
+}
+
+body {
+    font-family: 'Roboto',sans-serif !important;
+}
+
+html {
+    height: 100%;
+}
+
+
+.sidenav {
+    height: 110px;
+    width: 110px;
+    position: relative;
+    top: 15px;
+    left: 40px;
+}
+
+    .sidenav a {
+        padding: 6px 8px 6px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #818181;
+        display: block;
+    }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+            background-color: #c2c2c2;
+        }
+
+.boton-cambiar-foto {
+    cursor: pointer;
+    background-color: inherit;
+    border: none;
+    left: 50px;
+    top: 2px;
+    position: relative;
+}
+
+    .boton-cambiar-foto:hover {
+        background-color: #f2f2f2;
+    }
+
+.main {
+    margin-left: 105px; /* Same as the width of the sidenav */
+    font-size: 14px; /* Increased text to enable scrolling */
+    padding: 10px 10px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+
+        .sidenav a {
+            font-size: 14px;
+        }
+}
+
+.red-text {
+    color: red;
+}
+
+.darkgreen-text {
+    color: darkgreen;
+}
+
+.primary-text {
+    color: #3B71CA !important;
+}
+
+.btn-out-primary-text {
+    color: #3B71CA !important;
+    border-color: #3B71CA !important;
+}
+
+.btn-top-25 {
+    top: 25px;
+    position: relative;
+}
+
+nav.navbar {
+    position: fixed !important;
+    width: 100% !important;
+}
+
+.fix-panel {
+    position: relative;
+    top: 52px;
+}
+
+.margen-derecho-15 {
+    margin-right: 15px;
+}
+
+.margen-izquierdo-15 {
+    margin-left: 15px;
+}
+
+.mostrar-elem-blk {
+    visibility: visible;
+}
+
+.ocultar-elem {
+    visibility: hidden;
+}
+
+
+.pos-checkbox {
+    top: 35px;
+}
+
+
+li a {
+    font-size: 16px;
+}
+
+li.active a {
+    font-weight: 600;
+}
+
+div.tab-pane {
+    padding-left: 25px;
+    padding-right: 10px;
+}
+
+
+i.verPsswd {
+    float: right;
+    top: -23px;
+    right: 15px;
+    position: relative;
+}
+
+.recuadro-foto {
+    width: 130px;
+    /* border: 1px solid #c2c2c2; */
+    border-radius: 8px;
+    background-color: inherit;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+
+
+.fa-color-ico-edit {
+    color: darkslateblue;
+}
+
+.btn-backcolor-edit {
+    background-color:aliceblue;
+}
+
+.btn-backcolor-edit:hover {
+    background-color: #c2c2c2;
+}
+
+.my-panel-body {
+    padding: 5px 15px
+}
+
+.my-panel-default {
+    border-color: #DDD;
+    margin-bottom: -1px;
+}
+
+.my-btn-small {
+    display: inline-block;
+    padding: 1px 6px; 
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+
+.panel-dias-especiales {
+    padding: 10px 25px; 
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.pointer_cursor {
+    cursor: pointer;
+}
+
+.dia-vacaciones-trash {
+    float: right;
+    margin-right: 10px;
+    top: 4px;
+    position: relative;
+}

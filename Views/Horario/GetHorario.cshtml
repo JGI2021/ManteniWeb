@@ -1,0 +1,367 @@
+﻿@using ManteniWeb.Models;
+@using Newtonsoft.Json;
+@using ManteniWeb.Code;
+@using System.Collections;
+
+@{
+    ViewBag.Title = "Horario";
+}
+
+<link href='~/css/footable.core.css' rel='stylesheet' type='text/css' />
+<link href="~/footable/css/footable.core.bootstrap.min.css" rel="stylesheet" />
+<link href="~/footable/css/footable.core.standalone.css" rel="stylesheet" />
+<link href="~/css/footableManteniWeb.metro.css" rel="stylesheet" />
+<link href="~/css/jquery-confirm.min.css" rel="stylesheet" />
+
+<style>
+        td {
+            width: 1.6%;
+            padding: 4px 2px 4px 2px !important;
+            border-bottom: none;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        th {
+            width: 1.6%;
+            padding: 4px 2px 4px 2px !important;
+            font-size: 10px;
+        }
+
+
+
+        body {
+            font-size: 16px;
+            font-family: 'Roboto',sans-serif !important;
+        }
+
+        .Hora {
+            border: 1px solid #d2d2d2;
+        }
+
+        .marginBottom20 {
+            margin-bottom: 20px;
+        }
+
+        .marginTop20 {
+            margin-top: 20px;
+        }
+
+        .marginLeft40 {
+            margin-left: 40px;
+        }
+
+        .marginLeftRight40 {
+            margin-left: 40px;
+            margin-right: 40px;
+        }
+
+        .marginLeftRight20 {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .marginLeftRight20_5 {
+            margin-left: 20px;
+            margin-right: 5px;
+        }
+
+        .noMostrarPanel {
+            display: none;
+        }
+
+        .floatRight {
+            float: right;
+        }
+
+        .separador {
+
+        }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+
+@Html.AntiForgeryToken()
+<div class="container-fluid">
+    <div class="row">
+        @* Panel izquierdo, donde se coloca el menú *@
+        <div class="col-sm-2 col-md-2 col-lg-2" style="text-align:left;" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left   visible-lg  visible-md  visible-xs " aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        @* Panel central *@
+        <div class="col-sm-9 col-lg-9 col-md-9 panelPricipalCentro" id="CentralPanel">
+            <table id="tablahorario" class="footable">
+                <tr>
+                    <td><input type="checkbox" id="LUNES" value="L" /></td>
+                    <td>Lunes</td>
+                    <td>Sin servicio</td>
+                    <td><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" id="MARTES" value="M" /></td>
+                    <td>Martes</td>
+                    <td>Sin servicio</td>
+                    <td><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" id="MIERCOLES" value="X" /></td>
+                    <td>Miércoles</td>
+                    <td>Sin servicio</td>
+                    <td width="200"><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" id="JUEVES" value="J" /></td>
+                    <td>Jueves</td>
+                    <td>Sin servicio</td>
+                    <td><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" id="VIERNES" value="V" /></td>
+                    <td>Viernes</td>
+                    <td>Sin servicio</td>
+                    <td><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" id="SABADO" value="S" /></td>
+                    <td>Sábado</td>
+                    <td>Sin servicio</td>
+                    <td><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" id="DOMINGO" value="D" /></td>
+                    <td>Domingo</td>
+                    <td>Sin servicio</td>
+                    <td><span class="glyphicon glyphicon-plus"></span></td>
+                </tr>
+            </table>
+
+            <div class="marginLeftRight40 marginBottom20">
+                <label>
+                    <input id="MARTES" type="checkbox" onclick="MostrarHorario()" /> Martes  -  Sin servicio
+                </label>
+            </div>
+
+            <div class="marginLeftRight40 marginBottom20">
+                <label>
+                    <input id="MIERCOLES" type="checkbox" onclick="MostrarHorario()" /> Miércoles  -  Sin servicio
+                </label>
+            </div>
+
+            <div class="marginLeftRight40 marginBottom20">
+                <label>
+                    <input id="JUEVES" type="checkbox" onclick="MostrarHorario()" /> Jueves  -  Sin servicio
+                </label>
+            </div>
+
+            <div class="marginLeftRight40 marginBottom20">
+                <label>
+                    <input id="VIERNES" type="checkbox" onclick="MostrarHorario()" /> Viernes  -  Sin servicio
+                </label>
+            </div>
+
+            <div class="marginLeftRight40 marginBottom20">
+                <label>
+                    <input id="SABADO" type="checkbox" onclick="MostrarHorario()" /> Sábado  -  Sin servicio
+                </label>
+            </div>
+
+            <div class="marginLeftRight40 marginBottom20">
+                <label>
+                    <input id="DOMINGO" type="checkbox" onclick="MostrarHorario()" /> Domingo  -  Sin servicio
+                </label>
+            </div>
+        </div>
+    </div>
+    <div id="PanelHoras" class="panel panel-default noMostrarPanel">
+        <div class="panel-heading">
+            <h4>Introducir horario</h4>
+        </div>
+        <div class="panel-body">
+            <div class="marginTop20 marginLeftRight40 ">
+                <div class="marginLeftRight40 marginBottom20">
+                    <input type="checkbox" value="Sin servicio" onclick="SinServicio()" />
+                </div>
+                <div class="marginLeftRight40 marginBottom20 form-inline">
+                    <label>Hora desde: </label>
+                    <select id="HoraDesde" class="form-control">
+                        <option value="0">00:00</option>
+                        <option value="1">00:30</option>
+                        <option value="2">01:00</option>
+                        <option value="3">01:30</option>
+                        <option value="4">02:00</option>
+                        <option value="5">02:30</option>
+                        <option value="6">03:00</option>
+                        <option value="7">03:30</option>
+                        <option value="8">04:00</option>
+                        <option value="9">04:30</option>
+                        <option value="10">05:00</option>
+                        <option value="11">05:30</option>
+                        <option value="12">06:00</option>
+                        <option value="13">06:30</option>
+                        <option value="14">07:00</option>
+                        <option value="15">07:30</option>
+                        <option value="16">08:00</option>
+                        <option value="17">08:30</option>
+                        <option value="18">09:00</option>
+                        <option value="19">09:30</option>
+                    </select>
+                    <label class="marginLeftRight20"> </label>
+                    <label>Hora hasta:</label>
+                    <select id="HoraHasta" class="form-control">
+                        <option value="0">00:00</option>
+                        <option value="1">00:30</option>
+                        <option value="2">01:00</option>
+                        <option value="3">01:30</option>
+                        <option value="4">02:00</option>
+                        <option value="5">02:30</option>
+                        <option value="6">03:00</option>
+                        <option value="7">03:30</option>
+                        <option value="8">04:00</option>
+                        <option value="9">04:30</option>
+                        <option value="10">05:00</option>
+                        <option value="11">05:30</option>
+                        <option value="12">06:00</option>
+                        <option value="13">06:30</option>
+                        <option value="14">07:00</option>
+                        <option value="15">07:30</option>
+                        <option value="16">08:00</option>
+                        <option value="17">08:30</option>
+                        <option value="18">09:00</option>
+                        <option value="19">09:30</option>
+                    </select>
+                    <label class="marginLeftRight20"> </label>
+                    <button" class="btn btn-primary" onclick="AddHorario()">
+                        <span class="glyphicon glyphicon-plus"></span>  Añadir horario
+                    </button">
+                </div>
+                <div id="periodoHorario" class="marginLeftRight40 marginBottom20 form-inline">
+                    <div class="panel panel-default" style="width: 250px; ">
+                        <div class="panel-body" style="padding: 8px 5px 5px 5px;">
+                            <div class="marginLeftRight20_5">
+                                <label>De 08:00 hasta 14:00</label>
+                                <button type="button" class="close" aria-label="Close" style="float:right;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default " style="width: 250px;">
+                        <div class="panel-body">
+                            <div class="marginLeft40">
+                                <label>De 16:00 hasta 17:30</label>
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="PanelHorario" class="marginTop20 marginLeftRight40 noMostrarPanel">
+                    <label>Horario</label>
+                    <div class="" style="overflow-x: auto">
+                        <table class="table table-bordered " style="width:100%">
+                            <tr>
+                                <td class='Hora' id="M_00">00:000</td>
+                                <td class='Hora' id="M_01">00:30</td>
+                                <td class='Hora' id="M_02">01:00</td>
+                                <td class='Hora' id="M_03">01:30</td>
+                                <td class='Hora' id="M_04">02:00</td>
+                                <td class='Hora' id="M_05">02:30</td>
+                                <td class='Hora' id="M_06">03:00</td>
+                                <td class='Hora' id="M_07">03:30</td>
+                                <td class='Hora' id="M_08">04:00</td>
+                                <td class='Hora' id="M_09">04:30</td>
+                                <td class='Hora' id="M_10">05:00</td>
+                                <td class='Hora' id="M_11">05:30</td>
+                                <td class='Hora' id="M_12">06:00</td>
+                                <td class='Hora' id="M_13">06:30</td>
+                                <td class='Hora' id="M_14">07:00</td>
+                                <td class='Hora' id="M_15">07:30</td>
+                            </tr>
+                            <tr>
+                                <td class='Hora' id="M_16">08:00</td>
+                                <td class='Hora' id="M_17">08:30</td>
+                                <td class='Hora' id="M_18">09:00</td>
+                                <td class='Hora' id="M_19">09:30</td>
+                                <td class='Hora' id="M_20">10:00</td>
+                                <td class='Hora' id="M_21">10:30</td>
+                                <td class='Hora' id="M_22">11:00</td>
+                                <td class='Hora' id="M_23">11:30</td>
+                                <td class='Hora' id="M_24">12:00</td>
+                                <td class='Hora' id="M_25">12:30</td>
+                                <td class='Hora' id="M_26">13:00</td>
+                                <td class='Hora' id="M_27">13:30</td>
+                                <td class='Hora' id="M_28">14:00</td>
+                                <td class='Hora' id="M_29">14:30</td>
+                                <td class='Hora' id="M_30">15:00</td>
+                                <td class='Hora' id="M_31">15:30</td>
+                            </tr>
+                            <tr>
+                                <td class='Hora' id="M_32">16:00</td>
+                                <td class='Hora' id="M_33">16:30</td>
+                                <td class='Hora' id="M_34">17:00</td>
+                                <td class='Hora' id="M_35">17:30</td>
+                                <td class='Hora' id="M_36">18:00</td>
+                                <td class='Hora' id="M_37">18:30</td>
+                                <td class='Hora' id="M_38">19:00</td>
+                                <td class='Hora' id="M_39">19:30</td>
+                                <td class='Hora' id="M_40">20:00</td>
+                                <td class='Hora' id="M_41">20:30</td>
+                                <td class='Hora' id="M_42">21:00</td>
+                                <td class='Hora' id="M_43">21:30</td>
+                                <td class='Hora' id="M_44">22:00</td>
+                                <td class='Hora' id="M_45">22:30</td>
+                                <td class='Hora' id="M_46">23:00</td>
+                                <td class='Hora' id="M_47">23:30</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="floatRight">
+                        <button class="btn btn-primary" type="button" onclick="AplicarHorario()">Aplicar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".footable").footable({ 'empty': 'Sin registros' })
+</script>
+
+@functions {
+
+
+}
+
+@section scripts
+{
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/footable/js/footable.core.min.js"></script>
+    <script src="~/js/EstructurasDeDatos.js"></script>
+    <script src="~/js/jquery-confirm.min.js"></script>
+
+}

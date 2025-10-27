@@ -1,0 +1,520 @@
+﻿
+@using ManteniWeb.Code;
+@using ManteniWeb.App_GlobalResources;
+
+@model List<DiaEspecial>
+
+
+
+@{
+    ViewBag.Title = "Días especiales ";
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    tbody tr:hover {
+        cursor: pointer;
+    }
+
+    .borderless {
+        border: 0px none;
+    }
+
+    .li-padding {
+        padding: 2px 15px !important;
+        background-color: inherit;
+    }
+
+    .ul-margin {
+        margin-bottom: 5px !important;
+    }
+
+    .texto-centrado {
+        text-align: center;
+    }
+
+    .texto-en-negrita {
+        font-weight: 600;
+    }
+
+    .dispTabla {
+        margin-top: 5px;
+    }
+
+    .fondoColor {
+        text-indent: 5px;
+        background-color: #c2c2c2;
+    }
+
+    .dispFila {
+        display: table-row;
+    }
+
+    .columna-grupos {
+        width: 95px;
+        color: #04152a;
+        font-weight: 600;
+    }
+
+    .row-fuera-de-fecha {
+        display: table-row;
+        color: darkred;
+    }
+
+    .pos-checkbox-fueraFecha {
+        margin-left: 10px !important;
+        top: -4px;
+        position: relative;
+    }
+</style>
+
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL *@
+        @Html.Partial("MenuLateralDiasEspeciales")
+        @* FIN MENU LATERAL *@
+
+
+        @* FORMULARIO  *@
+        <div class="col-lg-8 col-md-8">
+
+            @* Panel de errores *@
+            <div id="alertaResultado" class="row rowSeparacion15 no-display">
+                <div class="col-lg-offset-1 col-md-10">
+                    <div id="panelResultado" class="panel">
+                        <div class="panel-heading">
+                            <span id="panelmensajeResultado"></span>
+                            <button type="button" class="close" data-target="#copyright-wrap" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-3" style="display: inline-flex; margin-bottom: 15px;">
+                    <label for="checkFueraDeFecha">Fuera de fecha</label>
+                    <input type="checkbox" id="checkFueraDeFecha" class="pos-checkbox-fueraFecha" checked="checked" @*onclick="MostrarFueraDeFecha()*@" />
+                </div>
+            </div>
+            <table id="DiasEspecialesTable" class="display" style="width:100%; margin-bottom:20px;">
+                <thead>
+                    <tr>
+                        <th class="th"></th>
+                        <th class="th">Fecha</th>
+                        <th class="th">Periódico</th>
+                        <th class="th">Descripción</th>
+                        <th class="th">Horario</th>
+                        <th class="th">Mensaje</th>
+                        <th class="th">Calendarios asociados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DiaEspecial diaEspecial in Model)
+                    {
+                        string claseEstado = "";
+                        string periodico = "No";
+                        string title = "";
+
+                        if (diaEspecial.EsDiaFueraDeFecha())
+                        {
+                            claseEstado = "row-fuera-de-fecha";
+                            title = "Día fuera de fecha";
+                        }
+
+                        if (diaEspecial.Anio == 0)
+                        {
+                            periodico = "Sí";
+                        }
+
+                        <tr id="tr_@diaEspecial.IdDiaEspecial" class="@claseEstado" title="@title">
+                            <td class="texto-centrado">
+                                <input type="checkbox" id="chk_@diaEspecial.IdDiaEspecial" value="" />
+                            </td>
+                            <td class="td-click">
+                                @diaEspecial.FormatedFecha2()
+                            </td>
+                            <td class="td-click">
+                                @periodico
+                            </td>
+                            <td class="td-click">
+                                @diaEspecial.Descripcion
+                            </td>
+                            <td class="td-click">
+                                @diaEspecial.Horario
+                            </td>
+                            <td class="td-click">
+                                @diaEspecial.MensajeFueraHora
+                            </td>
+                            <td>
+                                @Html.Raw(MostrarCalendariosAsociados(diaEspecial))
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    @*Panel para mostrar los calendarios asociados al día especial *@
+    <div class='panel panel-default mypanel' id='GeneralPanel' style="display: none;width: 600px; position:absolute;">
+        <div class='panel-heading' id='CabeceraPanel'> Panel heading without title</div>
+        <div class='panel-body' id='CuerpoPanel'>Panel content</div>
+    </div>
+</div>
+
+
+
+
+@functions {
+    private string MostrarCalendariosAsociados(DiaEspecial diaespecial)
+    {
+        string html = string.Empty;
+        int totCalendarios = diaespecial.LsCalendarios.Count;
+        if (totCalendarios <= 2)
+        {
+            html = ObtenerCalendarios(totCalendarios, diaespecial.LsCalendarios);
+        }
+        else
+        {
+            html = "<div style='font-size:13px;' onmouseover='MuestraPanel(\"" + diaespecial.IdDiaEspecial + "\",\"cl\",\"" + diaespecial.Descripcion + "\");' onmouseout='OcultaPanel()' >" +
+                   "   <div class='col-lg-12' style='color:#778899' id='GeneralId_" + diaespecial.IdDiaEspecial + "' >Calendarios " +
+                   "      <span style='color:#778899; font-weight:600; text-indent: 16px;'  >" + totCalendarios.ToString() + "</span> " +
+                   "   </div>" +
+                   "   <input type='hidden' id='hidd_cl_" + diaespecial.IdDiaEspecial + "' value='" + ObtenerCalendarios(totCalendarios, diaespecial.LsCalendarios) + "' /> " +
+                   "</div>";
+        }
+
+        return html;
+    }
+
+    private string ObtenerCalendarios(int totCalendarios, List<CalendarioAsociados> calendarios)
+    {
+        string datos = "";
+        foreach (CalendarioAsociados calendario in calendarios)
+        {
+            if (totCalendarios <= 2)
+            {
+                datos += "<span class='dispLinea'>" + calendario.NombreCalendario + "</span>";
+            }
+            else
+            {
+                datos += "&lt;span class=\"dispLinea\" &gt;" + calendario.NombreCalendario + "&lt;/span&gt;";
+            }
+        }
+
+        if (datos == "")
+        {
+            datos = " ---- ";
+        }
+
+        return datos;
+    }
+
+}
+
+
+
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/bootbox.min.js" type="text/javascript"></script>
+
+    <script>
+        let tableDias;
+
+        
+        $(function () {
+            let tableDiasEspeciales = $('#DiasEspecialesTable').DataTable({
+                "order": [],
+                "autoWidth": false,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[5, 10, 15, 25, 50, 100, -1], [5, 10, 15, 25, 50, 100, "Todos"]],
+                "pageLength": 15
+            });
+
+            $('#DiasEspecialesTable').css('display', 'table');
+
+            $("#DiasEspecialesTable").on("click", ".td-click", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+                AvanzarPagina('DiasEspeciales/ListadoDiasEspeciales', 'DiaEspecialCalendario.aspx?idDiaEspecial=' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#DiasEspecialesTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+            $("#checkFueraDeFecha").on('click', function () {
+                tableDiasEspeciales.draw();
+            });
+
+            // Custom range filtering function
+            DataTable.ext.search.push(function (settings, data, dataIndex) {
+                let checkFueraHora = document.getElementById('checkFueraDeFecha');
+
+                if (checkFueraHora.checked) {
+                    return true;
+                }
+
+                let fechaReg = data[1];
+                // viene con formato dd-mm-yyyy o dd-MM-yyyy
+                var parts = [];
+
+                if (fechaReg.includes('/'))
+                    parts = fechaReg.split('/');
+                else if (fechaReg.includes('-'))
+                    parts = fechaReg.split('-');
+                else
+                    parts = fechaReg.split(' ');
+                const fecha = new Date(parts[2], parts[1] - 1, parts[0]);
+
+                let fechaHoy = new Date();
+
+                if (fecha >= fechaHoy) {
+                    return true;
+                }
+
+                return false;
+            });
+
+            $("#checkFueraDeFecha").click();
+        });
+
+
+
+        function OptionsChecked() {
+            tableDias.draw();
+        }
+
+        function NuevoDiaEspecial() {
+            let urlNext = 'DiaEspecialCalendario.aspx?idDiaEspecial=0';
+            AvanzarPagina('DiasEspeciales/ListadoDiasEspeciales', urlNext);
+        }
+
+        function EliminarDiaEspecial() {
+            // Obtener id seleccionado
+            let idselecc = $("#idsSeleccionados").val();
+
+            var dialog = bootbox.dialog({
+                title: '<b>Eliminar día especial</b>',
+                message: "<p>Se va a eliminar los días especiales seleccionados. ¿Desea continuar?</p>",
+
+                buttons: {
+                    ok: {
+                        label: "Si",
+                        className: 'btn-info',
+                        callback: function () {
+
+                            let urlFranja = getRutaAbsolutaMVC() + "/DiasEspeciales/EliminarDiasEpeciales";
+                            let params = { "idsDiasEspeciales": idselecc };
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: urlFranja,
+                                data: JSON.stringify(params),
+                                contentType: "application/json; charset=utf-8",
+                                success: function (datos) {
+                                    let respuesta = JSON.parse(datos);
+                                    MostrarMensajeEliminacion(idselecc, respuesta);
+                                    $('.EdicionSimple').css('display', 'none');
+                                    $('.EdicionMultiple').css('display', 'none');
+
+                                }, error: function (e) { console.log(e); }
+                            });
+
+                        }
+                    },
+                    cancel: {
+                        label: "No",
+                        className: 'btn-default',
+                        callback: function () {
+                            console.log('Custom cancel clicked');
+                        }
+                    }
+
+                }
+            });
+        }
+
+
+        function EditarDiaEspecial() {
+            // Obtener id seleccionado
+            let id = $("#idsSeleccionados").val();
+            const urlNext = 'DiaEspecialCalendario.aspx?idDiaEspecial=' + id;
+            AvanzarPagina('DiasEspeciales/ListadoDiasEspeciales', urlNext);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// Muestra un mensaje si todo ha ido bien o si ha fallado
+        /// ------------------------------------------------------------------------------------
+        function MostrarMensajeEliminacion(idselecc, respuesta) {
+            //muestro el mensaje de error o de que todo ha ido bien
+            if (respuesta.Error === "S") {
+                $("#panelResultado").removeClass("myAlertSuccess");
+                $("#panelResultado").addClass("panel-danger");
+                $("#panelmensajeResultado").html("<b><span class='fa fa-exclamation-triangle' style='font-size:20px;'> Atención: </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+            }
+            else {
+                $("#panelResultado").addClass("myAlertSuccess");
+                $("#panelResultado").removeClass("panel-danger");
+                $("#panelmensajeResultado").html("<b> <span class='fa fa-check-square-o fondoAlert' > </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+                // Elimino el registro de la tabla
+                $("#tr_" + idselecc).remove();
+            }
+
+            $('#alertaResultado').css('display', 'block');
+            window.setTimeout(function () {
+                $('#alertaResultado').css('display', 'none');
+            }, 10000);
+        }
+
+        function OcultaPanel() {
+            $('#GeneralPanel').css('display', 'none');
+        }
+        function MuestraPanel(id, tipo, descripcion) {
+            var gralId = 'GeneralId_' + id;
+            var oGral = document.getElementById(gralId);
+            var content = '';
+            if (tipo == 'gr') {
+                content = '<b style=\"color: dodgerblue;\">Grupos ACD &nbsp;&nbsp;\"' + descripcion + '\"</b>';
+                $('#CabeceraPanel').html(content);
+                $('#GeneralPanel').css('border-color', 'dodgerblue');
+            }
+            else if (tipo == 'cm') {
+                content = '<b style=\"color: #778899;\">Campañas &nbsp;&nbsp;\"' + descripcion + '\"</b>';
+                $('#CabeceraPanel').html(content);
+                $('#GeneralPanel').css('border-color', '#778899');
+            }
+            else if (tipo == 'cl') {
+                $('#CabeceraPanel').html('<b style=\"color: #778899;\">Calendarios del día &nbsp;&nbsp;\"' + descripcion + '\"</b>');
+                $('#GeneralPanel').css('border-color', '#778899');
+            }
+            var valor = $('#hidd_' + tipo + '_' + id).val();
+            var cuerpo = '<p>' + valor + '</p>';
+            $('#CuerpoPanel').html(cuerpo);
+            var x = oGral.offsetTop + 150;
+            var y = oGral.offsetLeft - 300;
+            var panel = document.getElementById('GeneralPanel');
+            panel.style.top = x + 'px';
+            panel.style.left = y + 'px';
+            panel.style.width = '600px';
+            $('#GeneralPanel').css('display', 'block');
+        }
+
+        //function MostrarFueraDeFecha() {
+        //    const check = document.getElementById("checkFueraDeFecha");
+
+        //    if (check) {
+        //        if (check.checked) {
+        //            let filasOcultas = document.getElementsByClassName("row-no-mostrar");
+        //            if (filasOcultas && filasOcultas.length > 0) {
+        //                for (let i = filasOcultas.length - 1; i >= 0; i--) {
+        //                    $("#" + filasOcultas[i].id).addClass("row-mostrar");
+        //                    $("#" + filasOcultas[i].id).removeClass("row-no-mostrar");
+        //                }
+        //            }
+        //        }
+        //        else {
+        //            let filasMostrar = document.getElementsByClassName("row-mostrar");
+        //            if (filasMostrar && filasMostrar.length > 0) {
+        //                for (let i = filasMostrar.length - 1; i >= 0; i--) {
+        //                    $("#" + filasMostrar[i].id).addClass("row-no-mostrar");
+        //                    $("#" + filasMostrar[i].id).removeClass("row-mostrar");
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+
+    </script>
+
+}
+
+
+
+
+

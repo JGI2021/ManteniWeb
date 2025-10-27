@@ -1,0 +1,62 @@
+﻿html{
+    height: 100%;
+}
+
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: #fff !important;
+    }
+}
+
+a:hover {
+text-decoration:none !important;
+}
+
+.cbp-spmenu1 a:hover {
+    background: #00897B;
+}
+
+
+.cbp-spmenu3 a:hover {
+    background: #E53935;
+}
+
+.cbp-spmenu4 a:hover {
+    background: #546E7A;
+}
+
+.cbp-spmenu5 a:hover {
+    background: #3949AB;
+}
+
+.cbp-spmenu6 a:hover {
+    background: #43A047;
+}
+
+
+.floatRight {
+    float: right;
+}
+
+
+.caja-datos {
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    padding: 15px 30px 35px 30px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 10px 0px;
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+.caja-datos-long {
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    padding: 15px 30px 35px 30px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 10px 0px;    
+    overflow-y: auto;
+    min-height: 800px;
+}
+
+.swal2-container {
+    zoom: 1.5;
+}

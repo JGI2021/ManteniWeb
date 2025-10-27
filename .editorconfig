@@ -1,0 +1,13 @@
+﻿[*.cs]
+
+# IDE0059: Asignación innecesaria de un valor
+csharp_style_unused_value_assignment_preference = discard_variable:none
+
+# IDE0058: El valor de la expresión no se utiliza nunca.
+csharp_style_unused_value_expression_statement_preference = discard_variable
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = none
+
+# CS8601: Posible asignación de referencia nula
+dotnet_diagnostic.CS8601.severity = silent

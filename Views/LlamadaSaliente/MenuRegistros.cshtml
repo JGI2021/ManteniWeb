@@ -1,0 +1,47 @@
+﻿@using ManteniWeb.Code
+
+<div class="visible-lg visible-md rowSeparacion15">
+    <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked">
+        <li></li>
+        <li class="RowAccionesSiempreVisibles" style="">
+            <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="NuevoRegistro();">
+                <div class="row">
+                    <div class="col-lg-2 col-sm-2">
+                        <span class="fa @EstaticosImagenes.ImagenNuevoRegistro visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-lg-10 col-sm-10">Nuevo</div>
+                </div>
+            </a>
+        </li>
+        <li class="EdicionSimple" style="display: none;">
+            <a href="#" role="button" id="OptionButtonVP_3" onclick="EditarRegistro();">
+                <div class="row">
+                    <div class="col-lg-2 col-sm-2">
+                        <span class="fa @EstaticosImagenes.ImagenEdicionRegistro visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-lg-10 col-sm-10">Editar</div>
+                </div>
+            </a>
+        </li>
+        <li class="EdicionMultiple" style="display: none;">
+            <a href="#" role="button" id="OptionButtonVP_3" onclick="EliminarRegistro();">
+                <div class="row">
+                    <div class="col-lg-2 col-sm-2">
+                        <span class="fa @EstaticosImagenes.ImagenEliminado visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-lg-10 col-sm-10">Eliminar</div>
+                </div>
+            </a>
+        </li>
+        <li class="RowAccionesSiempreVisibles" style="">
+            <a href="#" role="button" id="OptionButtonVP_15" onclick="RetrocederPaginaMVC();">
+                <div class="row">
+                    <div class="col-lg-2 col-sm-1">
+                        <span class="fa @EstaticosImagenes.ImagenVolver visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-lg-10 col-sm-11">Volver</div>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>

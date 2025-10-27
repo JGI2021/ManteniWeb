@@ -1,0 +1,1459 @@
+﻿@using ManteniWeb.Models;
+
+@model VMDbFactoryCreacionFormulario
+
+@{
+    if (String.IsNullOrEmpty(Model.NombreFormulario))
+    {
+        ViewBag.Title = "Nuevo Formulario";
+    }
+    else
+    {
+        ViewBag.Title = "Formulario \"" + Model.NombreFormulario + "\"";
+        ViewBag.Formulario = Model.NombreFormulario;
+    }
+}
+
+<link href="~/css/jquery-ui.css" rel="stylesheet" />
+
+@{ 
+    Html.RenderPartial("_Jumbotron");
+}
+
+<div class="row">
+    <div class="col-lg-2 col-md-2 col-sm-1 col-xs-1 panelPricipalCentro">
+        <div class="visible-lg visible-md">
+            <ul id='VerticalPill_opciones' class='nav nav-pills nav-stacked VerticalPillMenuRegistro'>
+                <li></li>
+                <li class="active BEdicionSimple">
+                    <a href="#" role="button" id="OptionButtonVP_1" style="background-color:#f7f9fa;margin-top:10px;" >
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-1">
+                                <span class="fa fa-trash-o ratonEncima visible-lg visible-md visible-xs"  aria-hidden="true"></span>
+                            </div>
+                            <div class="col">
+                                Eliminar formulario
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li></li>
+                <li class="active BEdicionSimple">
+                    <a href="#" role="button" id="OptionButtonVP_2" style="background-color:#f7f9fa;margin-top:10px;">
+                        <div class="row">
+                            <div class="col-lg-2 col-sm-1">
+                                <span class="fa fa-arrow-left ratonEncima visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                            </div>
+                            <div class="col">
+                                Volver
+                            </div>
+                        </div>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    
+    <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10 panelPricipalCentro" id="DivPanleDatos">
+    <form class="form-horizontal" method="post">
+            <input style="visibility:hidden" id="DatosModificados"  value="@Model.modificado" />  
+            <input style="visibility:hidden" id="FormlId"   name="FormularioId"   value="@Model.FormularioId" />
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="row rowSeparacion25">
+                        <div id="Comuna_Name" class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="visibility:visible;">
+                            <label for="txtName" id="idcampo2" name="labelCampo2" style="visibility:visible;">Identificador</label>
+                            <label id="oblig_Camo2" style="visibility:visible;color:red;">*</label>
+                            <input typeof="text" class="form-control input-sm" id="HTMLId2" name="HTMLId" required value="@Model.HTMLId" title="Nombre html/Id" style="visibility:visible;" onkeypress="DatoModificado()"  />
+                        </div>
+
+                        <div id="Comuna_Nombre" class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="visibility:visible;">
+                            <label for="txtNombre" id="idcampo1" name="labelCampo1" style="visibility:visible;">Nombre formulario</label>
+                            <label id="oblig_Camo1" style="visibility:visible;color:red;">*</label>
+                            <input typeof="text" class="form-control input-sm" id="NombreFormulario" name="NombreFormulario" required value="@Model.NombreFormulario" title="Introducir el nombre del formulario que se va a crear" onkeypress="DatoModificado()" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="row rowSeparacion25">
+                        <div id="Comuna_Name" class="col-md-6 col-sm-6 col-xs-12" style="visibility:visible;">
+                            <label for="txtLabel" id="idcampo4" name="labelCampo4" style="visibility:visible;">Etiqueta</label>
+                            <input typeof="text" class="form-control input-sm" id="EtiquetaForm" name="EtiquetaForm" value="@Model.EtiquetaForm" maxlength="50" title=""
+                                   style="width:100%; visibility:visible;" placeholder="" onkeypress="DatoModificado()" />
+                        </div>
+                        <div id="IdMetodo" class="col-md-6 col-sm-6 class-xs-12" style="text-align:right;">
+                            <button type="button" id="btnGuardar"  name="btnGuardar" onclick="OpenDlgConfirmar('guardarForm')" class="btn btn-default botonFicha" style="position:relative; bottom:-25px" >Guardar</button>
+                            <button type="button" id="btnGuardarYVolver" name="btnGuardarVolver"  onclick="OpenDlgConfirmar('guardarysalir')" class="btn btn-default botonFicha" style="position:relative; bottom:-25px" oncl>Guardar y volver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="modal fade" id="DlgConfirmar" tabindex="-1" role="dialog" aria-labelledby="myDlgConfirmar" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Atención
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div id="BodyDlgConfirmar" class="col-xs-12">
+                                Se van a actualizar los datos del formulario. ¿Desea continuar? 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="botonGrabar" class="btn btn-default botonFicha" name="guardar" value="guardarForm" style="margin:0px">Confirmar</button>
+                        <button type="button" id="botonVolverSinGuardar" class="btn btn-default botonFicha" data-dismiss="modal" >Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <div class="row" style="margin-top:25px;">
+           <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+               <fieldset>
+                   <legend class="text-info" style="font-size:17px;"><b>Añadir componentes</b></legend>
+
+                   <input type="hidden" id="FormularioId" name="FormularioId" value="@Model.FormularioId" />
+                   <input type="hidden" id="NumComponentes" name="NumComponentes" value="@Model.NumComponentes" />
+                   <input type="hidden" id="NombreFormulario2" name="NombreFormulario" value="@Model.NombreFormulario" />
+                   <input type="hidden" id="EtiquetaForm2" name="EtiquetaForm" value="@Model.EtiquetaForm" />
+                   <input type="hidden" id="HTMLId" name="HTMLId" value="@Model.HTMLId" />
+
+                   <!-- Selección de tipo de elemento -->
+                   <div class="form-group">
+                       <label class="col-md-3 control-label" for="selectElemento">Tipo de elemento</label>
+                       <div class="col-md-6">
+                           <select id="selectElemento" name="selectElemento" class="form-control" >
+                               <option value="mensaje_inicial">Seleccione el tipo de elemento</option>
+                               <option value="input_text">Input de texto</option>
+                               <option value="input_number">Input numérico </option>
+                               <option value="input_radio">Checkbox/Radio Button</option>
+                               <option value="input_date">Input de fecha </option>
+                               <option value="input_button">Botón</option>
+                               <option value="input_favoritos">Insertar desde favoritos</option>
+                           </select>
+                       </div>
+                   </div>
+
+                   <!-- Selección favoritos -->
+                   <div hidden class="form-group opcion_favoritos">
+                       <label class="col-md-3 control-label" for="selectElementoFavorito">Seleccione Elemento</label>
+                       <div class="col-md-6">
+                           <select id="selectElementoFavorito" name="selectElementoFavorito" class="form-control">
+                               <option value="mensaje_inicial">Seleccione el elemento</option>
+                               @foreach (var favorito in Model.ListaFavoritos)
+                               {
+                                   var componenteJSON = Json.Encode(favorito);
+                                   string valor;
+                                   string tipo;
+                                   if (@favorito.value.Length == 0)
+                                   {
+                                       valor = "No asignado";
+                                   }
+                                   else
+                                   {
+                                       valor = favorito.value;
+                                   }
+                                   if (@favorito.es_checkbox == "true")
+                                   {
+                                       tipo = "CheckBox";
+                                   }
+                                   else
+                                   {
+                                       tipo = favorito.tipo;
+                                   }
+                                   <option data-componente="@componenteJSON" value="@favorito.orden"> @favorito.name &nbsp;-&nbsp; value: @valor &nbsp;-&nbsp; tipo: @tipo </option>
+                               }
+                           </select>
+                       </div>
+                   </div>
+
+                   <div class="form-group">
+                       <label class="col-md-3 control-label" for="guardar"></label>
+                       <div class="col-md-6">
+                           <h5 hidden class="alert alert-info opcion_InputRadio"><span class="glyphicon glyphicon-warning-sign"></span> Si quiere que los RadioButtons/Checkboxes formen parte de un grupo, introduzca un name/id común</h5>
+                       </div>
+                   </div>
+
+                   @*Este campo se usa para guardar el identificador del componente. En name tiene el mismo vamo que en VMDbFactoryCreacionFormulario para que viaje en un post *@
+                   <input type="hidden" id="IdComponente" name="idComponente" value="" />
+                   @*Usamos este campo oculto para controlar si cuando se hace el change del Select de componentes es por una actualización de datos o si es por un alta (en este caso value=0)*@
+                   <input type="hidden" id="ActualizarComponente" value="0" />
+
+                   <!-- id/name-->
+                   <div hidden class="form-group opcion_basica">
+                       <label class="col-md-3 control-label" for="textinput">Identificador<span style="visibility:visible;color:red;font-weight:bold;"> *</span></label>
+                       <div class="col-md-6">
+                           <input id="id_name" name="id_name" type="text" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- value-->
+                   <div hidden class="form-group opcion_basica" id="form-group-value">
+                       <label class="col-md-3 control-label" for="value">Value</label>
+                       <div class="col-md-6">
+                           <input id="value" name="value" type="text" placeholder="" value="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- El valor de value pero cuando es para un campo fecha -->
+                   <div hidden class="form-group opcion_InputDate">
+                       <label class="col-md-3 control-label" for="date_max">Value</label>
+                       <div class="col-md-6">
+                           <input id="valueFecha" name="valueFecha" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+
+                   <!-- ¿Obligatorio? -->
+                   <div hidden class="form-group opcion_basica" id="opcion_obligatorio">
+                       <label class="col-md-3 control-label" for="obligatorio">¿Obligatorio?</label>
+                       <div class="col-md-6">
+                           <label class="radio-inline" for="obligatorio-0">
+                               <input type="radio" name="obligatorio" id="obligatorio-0" value="Sí">
+                               Sí
+                           </label>
+                           <label class="radio-inline" for="obligatorio-1">
+                               <input type="radio" name="obligatorio" id="obligatorio-1" value="No" checked="checked">
+                               No
+                           </label>
+                       </div>
+                   </div>
+
+                   <!-- Etiqueta-->
+                   <div hidden class="form-group opcion_basica">
+                       <label class="col-md-3 control-label" for="etiqueta">Etiqueta</label>
+                       <div class="col-md-6">
+                           <input id="etiqueta" name="etiqueta" type="text" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- ¿Es password? (para InputText) -->
+                   <div hidden class="form-group opcion_InputText">
+                       <label class="col-md-3 control-label" for="es_password">¿Password?</label>
+                       <div class="col-md-6">
+                           <label class="radio-inline" for="obligatorio-0">
+                               <input type="radio" name="es_password" id="es_password-0" value="Sí">
+                               Sí
+                           </label>
+                           <label class="radio-inline" for="obligatorio-1">
+                               <input type="radio" name="es_password" id="es_password-1" value="No" checked="checked">
+                               No
+                           </label>
+                       </div>
+                   </div>
+
+                   <!-- min (para InputNumber)-->
+                   <div hidden class="form-group opcion_InputNumber">
+                       <label class="col-md-3 control-label" for="number_min">Mínimo</label>
+                       <div class="col-md-6">
+                           <input id="number_min" name="number_min" type="number" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- max (para InputNumber)-->
+                   <div hidden class="form-group opcion_InputNumber">
+                       <label class="col-md-3 control-label" for="number_max">Máximo</label>
+                       <div class="col-md-6">
+                           <input id="number_max" name="number_max" type="number" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- min (para InputDate)-->
+                   <div hidden class="form-group opcion_InputDate">
+                       <label class="col-md-3 control-label" for="date_min">Fecha Mínima</label>
+                       <div class="col-md-6">
+                           <input id="date_min" name="date_min" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- max (para InputDate)-->
+                   <div hidden class="form-group opcion_InputDate">
+                       <label class="col-md-3 control-label" for="date_max">Fecha Máxima</label>
+                       <div class="col-md-6">
+                           <input id="date_max" name="date_max" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- ¿Es submit? (para InputButton) -->
+                   <div hidden class="form-group opcion_InputButton">
+                       <label class="col-md-3 control-label" for="es_submit">¿Envía formulario?</label>
+                       <div class="col-md-6">
+                           <label class="radio-inline" for="es_submit-0">
+                               <input type="radio" name="es_submit" id="es_submit-0" value="Sí">
+                               Sí
+                           </label>
+                           <label class="radio-inline" for="es_submit-1">
+                               <input type="radio" name="es_submit" id="es_submit-1" value="No" checked="checked">
+                               No
+                           </label>
+                       </div>
+                   </div>
+
+                   <!-- ¿Es checkbox? (para InputRadio) -->
+                   <div hidden class="form-group opcion_InputRadio">
+                       <label class="col-md-3 control-label" for="es_checkbox">Checkbox/Radio Button</label>
+                       <div class="col-md-6">
+                           <label class="radio-inline" for="es_checkbox-0">
+                               <input type="radio" name="es_checkbox" id="es_checkbox-0" value="Sí">
+                               Checkbox
+                           </label>
+                           <label class="radio-inline" for="es_checkbox-1">
+                               <input type="radio" name="es_checkbox" id="es_checkbox-1" value="No" checked="checked">
+                               RadioButton
+                           </label>
+                       </div>
+                   </div>
+
+                   <!-- ¿Checked? (para InputRadio) -->
+                   <div hidden class="form-group opcion_InputRadio">
+                       <label class="col-md-3 control-label" for="checked_radio">Checkbox/RadioButton checked</label>
+                       <div class="col-md-6">
+                           <label class="radio-inline" for="es_submit-0">
+                               <input type="radio" name="checked_radio" id="checked_radio-0" value="Sí">
+                               Sí
+                           </label>
+                           <label class="radio-inline" for="es_submit-1">
+                               <input type="radio" name="checked_radio" id="checked_radio-1" value="No" checked="checked">
+                               No
+                           </label>
+                       </div>
+                   </div>
+
+                   <!-- Texto de radiobutton o checkbox-->
+                   <div hidden class="form-group opcion_InputRadio">
+                       <label class="col-md-3 control-label" for="texto_radio">Texto</label>
+                       <div class="col-md-6">
+                           <input id="texto_radio" name="texto_radio" type="text" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+
+                   <!-- Texto de button-->
+                   <div hidden class="form-group opcion_InputButton">
+                       <label class="col-md-3 control-label" for="texto_button">Texto del botón</label>
+                       <div class="col-md-6">
+                           <input id="texto_button" name="texto_button" type="text" placeholder="" class="form-control input-md">
+                       </div>
+                   </div>
+                   <!-- Button -->
+                   <div class="row">
+                       <label class="col-md-3 control-label"></label>
+                       <div class="col-md-6" style="text-align:right;">
+                           <button id="eliminarElemento" type="button" class="btn btn-default botonFicha" onclick="OpenDlgConfirmar('eliminarComponente'); return false;" hidden>Eliminar componente</button>
+                           <button id="guardarElemento"  type="button" class="btn btn-default botonFicha" onclick="OpenDlgConfirmar('guardarComponente'); return false;" hidden>Guardar componente</button>
+                           <button id="CancelarElemento" type="button" class="btn btn-default botonFicha" hidden onclick="CancelaAccionElemento(); return false;">Cancelar</button>
+                       </div>
+                   </div>
+
+               </fieldset>
+          </div>
+       </div>            
+    </form>
+
+    <div class="collapse in" id="VistaComponentes" >
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <form class="form-horizontal" id="FormularioVistaPrevia">
+                    <fieldset id="fieldsetFormularioVistaPrevia">
+                        <legend class="text-info" style="font-size:17px;"><b>Vista formulario</b></legend>
+                        
+                        <!-- Form Name -->
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+   </div>@*<div centro>*@
+    <div class="col-lg-2 col-md-2 col-sm-1 col-xs-1 panelPrincipalDerecha">
+
+    </div>
+    </div>
+
+
+        @*Modales de borrado, fin de edición, inserción en favoritos, y aviso de nombre repetido*@
+
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Confirmar eliminación
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                Los elementos del grupo seleccionado <b>serán eliminados.</b><br>¿Continuar?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-default botonFicha" id="botonConfirmacionBorrado" style="margin:0px"> Eliminar</a>
+                        <button type="button" class="btn btn-default botonFicha" data-dismiss="modal">Cancelar</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="DlgVolver" tabindex="-1" role="dialog" aria-labelledby="myDlgVolver" aria-hidden="true">
+           <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      Volver a lista de formularios
+                  </div>
+                  <div class="modal-body">
+                     <div class="row">
+                        <div class="col-xs-12" >
+                           Hay datos que han cambiados en el formulario. ¿Desea salir sin guardar los cambios?
+                        </div>
+                     </div>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" id="botonNoSalir"          class="btn btn-default botonFicha" data-dismiss="modal"  style="margin:0px">Permanecer en la página</button>
+                     <button type="button" id="botonVolverSinGuardar" class="btn btn-default botonFicha" data-dismiss="modal" onclick="Volver()">Volver</button>
+                  </div>
+               </div>
+           </div>
+        </div>
+
+
+
+        <div class="modal fade" id="confirm-favoritos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Almacenado con éxito
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                El elemento o grupo de elementos se ha guardado con éxito en Favoritos
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="botonOKModalFavoritos" class="btn btn-default botonFicha" data-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirm-nombreInputRepetido" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Advertencia
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 textoModalBody">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default botonFicha" data-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+       <div class='modal fade' id='ModalEliminar' tabindex='111' role='dialog' aria-hidden='true'>
+         <div class='modal-dialog'>
+           <div class='modal-content'>
+               <div class='modal-header'>
+                  <h4 class='modal-title' id='Titulo_ModalEliminar'>¡Atención!</h4>
+               </div>
+               <div class='modal-body'>
+                 <p style='font: -webkit-small-control;' id='Cuerpo_ModalEliminar'>Se va a eliminar la página 'Base Web Adlantia'.¿Desea continuar?</p>
+               </div>
+               <div class='modal-footer'>
+                 <input type='button' id='Boton_Aceptar_ModalEliminar' class='btn btn-default botonFicha' value='Aceptar' onclick='FAceptar_ModalEliminar()' />
+                 <input type='hidden' id='Aceptar_ModalEliminar' name='Aceptar_ModalEliminar' value='false' />
+                 <button type='button' id='Boton_Cerrar_ModalEliminar' class='btn btn-default botonFicha' data-dismiss='modal'> Cerrar</button>
+               </div>
+           </div>
+         </div>
+       </div>
+
+      <div class='modal fade' id='ModalAceptarEliminar' tabindex='111' role='dialog' aria-hidden='true'>
+        <div class='modal-dialog'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h4 class='modal-title' id='Titulo_ModalAceptarEliminar'>¡Atención!</h4>
+                </div>
+                <div class='modal-body'>
+                    <p style='font: -webkit-small-control;' id='Cuerpo_ModalAceptarEliminar'></p>
+                </div>
+                <div class='modal-footer'>
+                    <input type='hidden' id='VolverPaginaAnterior' name='Aceptar_ModalEliminar' value='false' />
+                    <button type='button' id='Boton_Cerrar_ModalAceptarEliminar' class='btn btn-default botonFicha' data-dismiss='modal' onclick="VolverPaginaAnterior()" >Cerrar</button>
+                </div>
+            </div>
+        </div>
+      </div>
+
+    @section scripts{
+        <script src="~/Scripts/jquery-ui-1.13.3.min.js"></script>
+        <script>
+            function CambiaBoton() {
+                var val = $("#IdVerComponentes").val();
+                if (val != "down") {
+                    $("#IdVerComponentes").html("Ocultar componentes <i class='fa fa-chevron-circle-down' aria-hidden='true' style='margin-left:5px;' ></i>");
+                    $("#IdVerComponentes").val("down");
+                }
+                else {
+                    $("#IdVerComponentes").html("Mostrar componentes <i class='fa fa-chevron-circle-up' aria-hidden='true' style='margin-left:5px;' ></i>");
+                    $("#IdVerComponentes").val("up");
+                }
+
+            }
+
+            function getRutaAbsoluta() {
+                var loc = window.location;
+                var href = loc.href.trim();
+                if (href[href.length - 1] == '#')
+                    href = href.substring(0, href.length - 1);
+                var pathName = loc.pathname;
+                pathName = pathName.substring(1, pathName.length - 1);
+
+                pathName = pathName.substring(0, pathName.indexOf("/"));
+
+                href = window.location.protocol + "//" + window.location.host + "/" + pathName;
+                return href;
+            }
+
+
+            function DatoModificado() {
+                $("#DatosModificados").val("true");
+            }
+
+            // Mostramos la ventana modal de Volver a la lista de formularios
+            function VerDialogoVolver() {
+                var estaModificado = $("#DatosModificados").val();
+                // primero compruebo si se ha modificado algo, sino retorno directamente
+                if (estaModificado == "true") {
+                    $("#DlgVolver").modal("show");
+                }
+                else {
+                    Volver();
+                }
+            }
+
+            function OpenDlgConfirmar(valor) {
+                if (valor == "guardarComponente") {
+                    // Si el botón es el de actualizar cambio el valor para identificar que es una actualización y no un registro nuevo
+                    if ($("#guardarElemento").text() == "Actualizar componente")
+                        valor = "actualizarComponente";
+                    if ($("#id_name").val() == null || $("#id_name").val() == "") {
+                        $('#BodyDlgConfirmar').html('<span style=\"color:red\" >Atención debe rellenar el campo identificador del componente</span>');
+                        // Desactivo el botón de confirmar para que no pueda grabar nada
+                        $('#botonGrabar').prop("disabled", true);
+                    }
+                    else {
+                        $('#BodyDlgConfirmar').html('Se van a grabar los datos del componente. ¿Desea continuar? ');
+                        // Le pongo el nombre del botón pulsado para luego poder saber que botón se pulsó en el código del control
+                        $('#botonGrabar').val(valor);
+                        $('#botonGrabar').prop("disabled", false);
+
+                    }
+                }
+                else if (valor == "eliminarComponente") {
+                    $('#BodyDlgConfirmar').html('Se van a eliminar el componente. ¿Desea continuar? ');
+                    // Le pongo el nombre del botón pulsado para luego poder saber que botón se pulsó en el código del control
+                    $('#botonGrabar').val(valor);
+                    $('#botonGrabar').prop("disabled", false);
+                }
+                else {
+                    // validamos que los datos del identificador y el nombre del formulario estén rellenos
+                    if ($('#HTMLId').val() == '' || $('#NombreFormulario').val() == '') {
+                        $('#BodyDlgConfirmar').html('<span style=\"color:red\" >Atención debe rellenar todos los campos requeridos</span>');
+                        // Desactivo el botón de confirmar para que no pueda grabar nada
+                        $('#botonGrabar').prop("disabled", true);
+                    }
+                    else {
+                        $('#BodyDlgConfirmar').html('Se van a actualizar los datos del formulario. ¿Desea continuar? ');
+                        $('#botonGrabar').prop("disabled", false);
+                        $('#botonGrabar').val(valor);
+                    }
+                }
+
+                $('#DlgConfirmar').modal('show');
+            }
+
+            /// En el formulario modal de confirmación de la eliminación se comprueba que si todo ha ido bien volvemos a la pagina anterior
+            /// sino nos quedamos en la página actual
+            function VolverPaginaAnterior()
+            {
+                if ($('#VolverPaginaAnterior').val() == 'true')
+                    Volver();
+            }
+
+            /// Retorna a la página anterior. Antes de volver se llama a un servicio web que elimina el formulario que se usa para controlar los formularios y sus componentes
+            /// Luego se llama a la página Navegacion.aspx que es la que se encarga de pasar a la página anterior que corresponda
+            function Volver() {
+                idFormulario = $('#FormularioId').val();
+                var okllamadaelimina = "";
+                $.ajax(
+                {
+                    type: "POST",
+                    url: getRutaAbsoluta() + "/Formulario.asmx/JSONEliminaFormularioDeLista",
+                    async: false,
+                    data: 'idFormulario=' + idFormulario,
+                    //dataType: "json",
+                    success: function (data) {
+                        okllamadaelimina = "OK";
+                    }
+                });
+
+                if (okllamadaelimina == "OK")
+                {
+                    $.ajax({
+                        type: "POST",
+                        url: getRutaAbsoluta() + "/Navegacion.aspx",
+                        async: false,
+                        data: 'idSolicitud=RETROCEDER_PAGINA',
+                        success: function (data) {
+                            var respuesta = JSON.parse(data);
+                            var correcto = respuesta.Resultado;
+                            if (correcto == '1') {
+                                var URL = respuesta.Mensaje;
+                                if (URL == '') {
+                                    window.location = getRutaAbsoluta() + '/Principal.aspx';
+                                }
+                                else
+                                    window.location = getRutaAbsoluta() + '/' + URL;
+                            }
+                        }
+
+                    });
+                }
+            }
+
+            /// Se abre el formulario modal de confirmación para poder eliminar el formulario
+            function FEliminacionFilas() {
+                var contenido = "Se va a eliminar el formulario. ¿Desea continuar?";
+                $('#Cuerpo_ModalEliminar').html(contenido);
+                $('#ModalEliminar').modal({ backdrop: 'static' });
+                $('#ModalEliminar').modal('show');
+            }
+
+            /// Desde el formulario de confirmación de eliminar se ha pulsado aceptar. En este caso se hace una llamada al aspx SolicitudesBBDD que
+            /// es el que se va a encargar de eliminar los datos del formulario y sus componentes de la base de datos. Si todo va bien o falla se muestra en
+            /// una ventana modal
+            function FAceptar_ModalEliminar() {
+                $('#ModalEliminar').modal('hide');
+                var FormularioId = $('#FormularioId').val();
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: getRutaAbsoluta() + "/SolicitudesBBDD.aspx",
+                        data: 'idSolicitud=ELIMINAR_FORMULARIOCHAT&FormularioId=' + FormularioId,
+                        success: function (data) {
+                            var respuesta = JSON.parse(peticion.responseText);
+                            var correcto = respuesta.Resultado;
+                            var mensaje = respuesta.Mensaje;
+                            var mensajeDecodificado = '';
+                            var mensajeDecodificadoCaracteresEspeciales = '';
+                            try {
+                                mensajeDecodificado = utf8_decode(mensaje);
+                            }
+                            catch (err) {
+                                mensajeDecodificado = mensaje;
+                            }
+                            try {
+                                mensajeDecodificadoCaracteresEspeciales = reemplazarCaracteresEspeciales(mensaje);
+                            }
+                            catch (err) {
+                                mensajeDecodificadoCaracteresEspeciales = mensaje;
+                            }
+                            if (correcto == '1') {
+                                var mensajeOut = reemplazarCaracteresEspeciales(respuesta.Mensaje);
+                                var HTMLCorrecto = "<div class='alert alert-success'>" + mensajeOut + "</div>";
+                                $('#Cuerpo_ModalAceptarEliminar').html(HTMLCorrecto);
+                                $('#VolverPaginaAnterior').val('true');
+                                $('#ModalAceptarEliminar').modal({ backdrop: 'static' });
+                                $('#ModalAceptarEliminar').modal('show');
+                                return;
+                            }
+                            else {
+                                var mensajeOut = reemplazarCaracteresEspeciales(respuesta.Mensaje);
+                                var HTMLIncorrecto = "<div  class='alert alert-danger'>" + mensajeOut + "</div>"
+                                $('#Cuerpo_ModalAceptarEliminar').html(HTMLIncorrecto);
+                                $('#ModalAceptarEliminar').modal({ backdrop: 'static' });
+                                $('#ModalAceptarEliminar').modal('show');
+                            }
+                        }
+                    });
+            }
+
+            /// Se han desplegado las opciones del componente pero no queremos hacer nada con él. Cerramos todo y lo ponemos como al inicio
+            function CancelaAccionElemento() {
+                $("#selectElemento").val("mensaje_inicial");
+                $("#selectElemento").focus();
+                // Evento de cambio en el select
+                $("#selectElemento").change();
+                // Vuelov a ponerlo a cero para que si se hace un cambio en el Select se tome como alta de un componente
+                $("#ActualizarComponente").val("0");
+                if ($("#eliminarElemento").is(":visible"))
+                    $("#eliminarElemento").hide();
+            }
+
+
+
+            /// Se ha pulsado doble click sobre un componente. Esto hará que se puedan modificar los datos del componente.
+            /// Se llama a un servicio web que devuelve un registro con todos los campos del componente. Se harán visibles todos
+            /// los campos de modificación de componente y se rellenaran con los valores que hemos obtenido.
+            function DobleClickComponente(TipoComponente, idComponente) {
+                var idFormulario = $('#FormularioId').val();
+                $.ajax(
+                    {
+                        type: "GET",
+                        url: getRutaAbsoluta() + "/Formulario.asmx/JSONDevuelveDatosComponente",
+                        data: 'idFormulario=' + idFormulario + '&idComponente=' + idComponente,
+                        success: function (value) {
+                            var tipo = value.tipo;
+                            var orden = value.orden;
+                            var id = value.id;
+                            var es_password = value.es_password;
+                            var min = value.min;
+                            var max = value.max;
+                            var checkeado = value.checkeado;
+                            var texto_radio = value.texto_radio;
+                            var texto_button = value.texto_button;
+                            var es_checkbox = value.es_checkbox;
+                            var es_submit = value.es_submit;
+                            /// Rellenamos primero los campos comunes a todos los componentes
+                            $("#id_name").val(value.name);
+                            $("#value").val(value.value);
+                            $("#etiqueta").val(value.label);
+                            if (value.required == "true") {
+                                $("#obligatorio-0").prop("checked", true);
+                                $("#obligatorio-1").prop("checked", false);
+                            }
+                            else {
+                                $("#obligatorio-0").prop("checked", false);
+                                $("#obligatorio-1").prop("checked", true);
+                            }
+                            // Pongo en el name del nombre el valor para que luego pase como parámetro del formulario cuandose hace un post
+                            $("#guardarElemento").val("actualizarElemento");
+                            // Cambio el nombre del botón
+                            $("#guardarElemento").text("Actualizar componente");
+                            $("#IdComponente").val(idComponente);
+
+                            // Rellenamos los campos de los campos específicos de cada elemento
+                            switch (tipo) {
+                                case "InputText":
+                                    if (es_password == "true") {
+                                        $("#es_password-0").prop("checked", true);
+                                        $("#es_password-1").prop("checked", false);
+                                    }
+                                    else {
+                                        $("#es_password-0").prop("checked", false);
+                                        $("#es_password-1").prop("checked", true);
+                                    }
+                                    $("#selectElemento").val("input_text");
+                                    break;
+
+                                case "InputNumber":
+                                    $("#number_min").val(min);
+                                    $("#number_max").val(max);
+                                    $("#selectElemento").val("input_number");
+                                    break;
+
+                                case "InputDate":
+                                    $("#valueFecha").val(value.value);
+                                    $("#date_min").val(min);
+                                    $("#date_max").val(max);
+                                    $("#selectElemento").val("input_date");
+                                    break;
+
+                                case "InputButton":
+                                    if (es_submit == "true") {
+                                        $("#es_submit-0").prop("checked", true);
+                                        $("#es_sumbmi-1").prop("checked", false);
+                                    }
+                                    else {
+                                        $("#es_submit-0").prop("checked", false);
+                                        $("#es_sumbmi-1").prop("checked", true);
+                                    }
+                                    $("#texto_button").val(texto_button);
+                                    $("#selectElemento").val("input_button");
+                                    break;
+
+                                case "InputRadio":
+                                    if (checkeado == "true") {
+                                        $("#checked_radio-0").prop("checked", true);
+                                        $("#checked_radio-1").prop("checked", false);
+                                    }
+                                    else {
+                                        $("#checked_radio-0").prop("checked", false);
+                                        $("#checked_radio-1").prop("checked", true);
+                                    }
+
+                                    $("#texto_radio").val(texto_radio);
+
+                                    if (es_checkbox == "true") {
+                                        $("#es_checkbox-0").prop("checked", true);
+                                        $("#es_checkbox-1").prop("checked", false);
+                                    }
+                                    else {
+                                        $("#es_checkbox-0").prop("checked", false);
+                                        $("#es_checkbox-1").prop("checked", true);
+                                    }
+                                    $("#selectElemento").val("input_radio");
+                                    // Para los casos de redio buton y check, como pueden estar agrupados se pemite poder borrar el componente desde la modificación
+                                    $("#eliminarElemento").show();
+                                    break;
+                            }
+                            // Esto es para indicar al evento de cambio que es una actualización y no me limpie los campos
+                            $("#ActualizarComponente").val("1");
+                            // Evento de cambio en el selecy
+                            $("#selectElemento").change();
+                            // Vuelov a ponerlo a cero para que si se hace un cambio en el Select se tome como alta de un componente
+                            $("#ActualizarComponente").val("0");
+                        }
+                    });
+            }
+
+
+
+            /////////////////////
+            ///// ONREADY
+            /////////////////////
+            $(document).ready(function () {
+                //Configuración regional de datepicker de jquery-ui
+                $.datepicker.regional['es'] = {
+                    closeText: 'Cerrar',
+                    currentText: 'Hoy',
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb'],
+                    dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd/mm/yy',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: '',
+                    showButtonPanel: true,
+                    changeMonth: true,
+                    changeYear: true
+                };
+
+                $.datepicker.setDefaults($.datepicker.regional['es']);
+                //No quiero que lea de cache, quiero que repita la llamada asíncrona
+                $.ajaxSetup({ cache: false });
+
+                // Si es el formulario de favoritos no se puede cambiar los nombres ya que son fijos. Este registro se usa para obtener los datos de componente favoritos
+                if ($('#HTMLId').val().toUpperCase() == 'FAVORITOS') {
+                    $('#HTMLId').prop('readOnly', true);
+                    $('#NombreFormulario').prop('readOnly', true);
+                    $('#EtiquetaForm').prop('readOnly', true);
+                    var inputFavoritos = 'input_favoritos';
+                    $('#selectElemento option[value=' + inputFavoritos + '] ').prop('disabled', true);
+                    $('#selectElemento option[value=' + inputFavoritos + '] ').css('color', "LightGray");
+                    $('#BotonFavoritos').hide();
+                }
+
+                //Variables
+                var selectElemento = $("#selectElemento");
+                var idForm = $("#FormularioId").val();
+                //Posicion del grupo antes y después de realizar el desplazamiento
+                var posicionInicial;
+                var posicionFinal;
+
+                /// Añade un componente a la página. Se pasa como parámetro el componente que se va a añadir
+                var agregarComponente = function (value) {
+                    //value es un componente del formulario
+                    var tipo = value.tipo;
+                    var orden = value.orden;
+                    var id = value.id;
+                    var idComponente = value.pkEnBaseDatos;
+                    var name = value.name;
+                    var valor = value.value;
+                    var required = value.required;
+                    var htmlRequired = '';
+                    if (required == 'true') {
+                        htmlRequired = ' required="" ';
+                    }
+                    var label = value.label;
+                    var es_password = value.es_password;
+                    var min = value.min;
+                    var max = value.max;
+                    var checkeado = value.checkeado;
+                    var htmlCheckeado = '';
+                    if (checkeado == 'true') {
+                        htmlCheckeado = ' checked="" ';
+                    }
+                    var texto_radio = value.texto_radio;
+                    var texto_button = value.texto_button;
+                    var es_checkbox = value.es_checkbox;
+                    var es_submit = value.es_submit;
+                    var htmlSubmit = '';
+                    //if (es_submit == 'true') {
+                    //    htmlSubmit = ' type="submit" '
+                    //}
+                    //else {
+                        htmlSubmit = ' type="button"'
+/*                    }*/
+                    //Botones que permitirán subir, bajar y eliminar elementos
+                    var htmlBotonera = '';
+                    //Descomentar si se quiere reordenar mediante botones
+                    htmlBotonera += '<a href="#" class="btn-modificacion borrar btn btn-default botonFicha" data-toggle="tooltip" title="Eliminar grupo " style="margin-bottom: 0px !important;vertical-align: baseline !important; "><span class="fa fa-trash-o" aria-hidden="true"></span>  </a> ';
+                    // Se muestra el botón de favoritos si no es el formulario de favoritos
+                    if ($('#HTMLId').val().toUpperCase() != 'FAVORITOS') {
+                        htmlBotonera += '<a href="#" class="btn-modificacion favorito btn btn-default botonFicha" data-toggle="tooltip" title="Pulse para guardar como favorito" style="margin-bottom: 0px !important;vertical-align: baseline !important; "><span class="fa fa-paperclip" aria-hidden="true" ></span> </a> ';
+                    }
+                    htmlBotonera += '<a href="#" class="btn-modificacion mover btn btn-default botonFicha" data-toggle="tooltip" title="Arrastre para mover el elemento a otra posición del formulario" style="margin-bottom: 0px !important;vertical-align: baseline !important; "><span class="fa fa-arrows" aria-hidden="true" ></span> </a>';
+                    //data-elementosContenidos será un array que contendrá el número de orden de los elementos contenidos en el form-group donde irá el elemento.
+                    //Salvo en grupos de radiobutton o checkboxes contendrá un solo elemento. Lo guardaremos como data del form-group para poder identificarlos.
+                    var htmlText = "";
+                    switch (tipo) {
+                        case "InputText":
+                            if (es_password == 'true') {
+                                htmlText = '<div class="form-group" data-elementoscontenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6">' +
+                                    '<input data-orden = ' + orden + ' id="' + id + '" name="' + name + '" type="password" value="' + valor + '"' + htmlRequired + htmlCheckeado + ' ondblclick=DobleClickComponente(\"InputText\",\"' + idComponente + '\") class="form-control input-md"></div>' + htmlBotonera + '</div>';
+                            }
+                            else {
+                                htmlText = '<div class="form-group" data-elementoscontenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6">' +
+                                    '<input data-orden = ' + orden + ' id="' + id + '" name="' + name + '" type="text" value="' + valor + '"' + htmlRequired + htmlCheckeado + ' ondblclick=DobleClickComponente(\"InputText\",\"' + idComponente + '\") class="form-control input-md"/></div>' + htmlBotonera + '</div>';
+                            }
+                            $("#fieldsetFormularioVistaPrevia").append(htmlText);
+                            break;
+                        case "InputNumber":
+                            htmlText = '<div class="form-group" data-elementoscontenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6">' +
+                                '<input data-orden = ' + orden + ' id="' + id + '" name="' + name + '" type="number" value="' + valor + '" min="' + min + '" max="' + max + '"' + htmlRequired + htmlCheckeado + ' ondblclick=DobleClickComponente(\"InputNumber\",\"' + idComponente + '\") class="form-control input-md"/></div>' + htmlBotonera + '</div>';
+                            $("#fieldsetFormularioVistaPrevia").append(htmlText);
+                            break;
+                        case "InputDate":
+                            htmlText = '<div class="form-group" data-elementoscontenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6">' +
+                                '<input data-orden = ' + orden + ' id="' + id + '" name="' + name + '" type="text" value="' + valor + '" min="' + min + '" max="' + max + '"' + htmlRequired + htmlCheckeado + ' ondblclick=DobleClickComponente(\"InputDate\",\"' + idComponente + '\") class="form-control input-md"/></div>' + htmlBotonera + '</div>';
+                            $("#fieldsetFormularioVistaPrevia").append(htmlText);
+                            $("#" + id).datepicker();
+                            $("#" + id).val(valor);
+                            break;
+                        case "InputRadio"://RadioButton o CheckBox
+                            if (es_checkbox == 'true') {
+                                var checkBoxGroup = $("#checkBoxGroup_" + id);
+                                if (checkBoxGroup.length == 0) {
+                                    //Es el primer checkbox que agrego al formulario. Creo el grupo.
+                                    htmlText = '<div class="form-group" data-elementoscontenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6 checkBoxGroup" id="' + 'checkBoxGroup_' + id + '"></div>' + htmlBotonera + '</div>';
+                                    $("#fieldsetFormularioVistaPrevia").append(htmlText);
+                                }
+                                //Agrego el elemento al grupo
+                                checkBoxGroup = $("#checkBoxGroup_" + id);
+                                //Los datos están contenidos en el padre del grupo de radio buttons, que es el form-group
+                                var elementoscontenidos = checkBoxGroup.parent().data("elementoscontenidos");
+                                elementoscontenidos.push(orden);//Agrego este elemento al data del form-group
+                                checkBoxGroup.parent().data("elementoscontenidos", elementoscontenidos);
+                                var contador = checkBoxGroup.find(".checkbox").length;
+                                var elementId = id + "-" + contador;
+                                htmlText = '<div class="checkbox"><label for="' + elementId + '">' +
+                                    '<input data-orden = ' + orden + ' type="checkbox" name="' + name + '" id="' + elementId + '" value="' + valor + '" ' + htmlCheckeado + ' ondblclick=DobleClickComponente(\"InputRadio\",\"' + idComponente + '\") />' + texto_radio + '</label></div>';
+                                checkBoxGroup.append(htmlText);
+                            }
+                            else {
+                                var radioButtonGroup = $("#radioButtonGroup_" + id);
+                                if (radioButtonGroup.length == 0) {
+                                    //Es el primer radiobutton que agrego al formulario. Creo el grupo.
+                                    htmlText = '<div class="form-group" data-elementoscontenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6 radioButtonGroup" id="' + 'radioButtonGroup_' + id + '"></div>' + htmlBotonera + '</div>';
+                                    $("#fieldsetFormularioVistaPrevia").append(htmlText);
+                                }
+                                //Agrego el elemento al grupo
+                                radioButtonGroup = $("#radioButtonGroup_" + id);
+                                //Los datos están contenidos en el padre del grupo de radio buttons, que es el form-group
+                                var elementoscontenidos = radioButtonGroup.parent().data("elementoscontenidos");
+                                elementoscontenidos.push(orden);//Agrego este elemento al data del form-group
+                                radioButtonGroup.parent().data("elementoscontenidos", elementoscontenidos);
+                                var contador = radioButtonGroup.find(".radio").length;
+                                var elementId = id + "-" + contador;
+                                htmlText = '<div class="radio"><label for="' + elementId + '">' +
+                                    '<input data-orden = ' + orden + ' type="radio" name="' + name + '" id="' + elementId + '" value="' + valor + '" ' + htmlCheckeado + '  ondblclick=DobleClickComponente(\"InputRadio\",\"' + idComponente + '\") />' + texto_radio + '</label></div>';
+                                radioButtonGroup.append(htmlText);
+                            }
+                            break;
+                        case "InputButton":
+                            htmlText = '<div class="form-group" data-elementosContenidos="[' + orden + ']"><label class="col-md-3 control-label" for="' + id + '">' + label + '</label><div class="col-md-6"><button data-orden = ' + orden + ' ' + htmlSubmit + ' id="' + id + '" name="' + name + '" value="' + valor + '" text="' + texto_button + '" class="btn btn-default botonFicha"  ondblclick=DobleClickComponente(\"InputButton\",\"' + idComponente + '\")>' + texto_button + '</button></div>' + htmlBotonera + '</div>';
+                            $("#fieldsetFormularioVistaPrevia").append(htmlText);
+                            break;
+                    }
+
+                }
+
+                var mostrarVistaPreviaFormulario = function (datos, accion) {
+                    //Recibe datos de la forma { idFormulario: idForm } y solicita del servidor una lista (array)
+                    //con todos los componentes del formulario dado. Después los renderiza uno a uno.
+                    var idformulario = datos.idFormulario;
+                    $.ajax({
+                        type: "POST",
+                        url: getRutaAbsoluta() + "/Formulario.asmx/JSONFormularioDatosLista",
+                        data: 'idFormulario=' + idformulario,
+                        //dataType: "json",
+                        success: function (data) {
+                            //data será un array con los elementos del formulario
+                            if (accion == 'actualizar') {
+                                //Actualizo el data de los form-groups para que refleje la nueva ordenación y así permita reorganizar de nuevo.
+                                //Se podría conseguir lo mismo renderizando de nuevo el formulario pero eso produce un parpadeo en pantalla
+                                var arrayNuevaOrdenacion = []; // Un array de arrays. Cada posición guarda los órdenes de un grupo de elementos
+                                var arrayTipoNombre = []; //Array que identifica los cada grupo mediante tipo + name + es_checkbox (dos elementos pertenecen al mismo grupo si coinciden en esos tres datos)
+                                var cont = 0;
+                                $.each(data, function (index, value) {
+                                    var tipo = value.tipo;
+                                    var orden = value.orden;
+                                    var es_checkbox = value.es_checkbox;
+                                    var name = value.name;
+                                    var clave = tipo + name + es_checkbox;
+                                    if ((arrayTipoNombre.indexOf(clave) != -1) && (tipo == 'InputRadio')) {
+                                        // Es un nuevo radiobutton o checkbox perteneciente a un grupo existente
+                                        arrayNuevaOrdenacion[arrayTipoNombre.indexOf(clave)].push(value.orden);
+                                    }
+                                    else {
+                                        //No existe o es un input (no radio ni checkbox) con el nombre repetido. Creo una nueva entrada.
+                                        arrayTipoNombre[cont] = clave;
+                                        arrayNuevaOrdenacion[cont] = [orden];
+                                        cont++;
+                                    }
+                                });
+                                //Para un indice determinado, tengo todos los elementos que forman parte de ese form-group
+                                //Recorro todos los form-groups y actualizo con la nueva información
+                                $("#FormularioVistaPrevia").find(".form-group").each(function (index) {
+                                    var pos = index + 1;
+                                    console.log("El form-group en posición " + pos + " contenía los elementos con orden " + $(this).data("elementoscontenidos") + " y ahora contiene los elementos de orden " + arrayNuevaOrdenacion[index]);
+                                    var nuevoData = arrayNuevaOrdenacion[index];
+                                    $(this).data("elementoscontenidos", nuevoData);
+                                    console.log("data-elementoscontenidos del form-group actualizado");
+                                    $(this).find(":input").each(function (index, value) {
+                                        //Dentro del form-group habrá un input por cada valor de nuevoData
+                                        $(this).data("orden", nuevoData[index]);
+                                        $(this).attr("toggle", "tooltip");
+                                        $(this).attr("title", "orden= " + nuevoData[index] + ", name=" + $(this).attr("name"));
+                                        console.log("Tooltip: " + $(this).attr("title"));
+                                    });
+
+                                });
+                                console.log("Todos los form-group actualizados");
+                                //$("#FormularioVistaPrevia").find(".form-group").each(function (index) {
+                                //    var pos = index + 1;
+                                //    console.log("Los elementos contenidos del form-group en posición " + pos + " tienen como data-elementoscontenidos " + $(this).data("elementoscontenidos"));
+                                //});
+                            }
+                            else if (accion == 'renderizar') {
+                                $.each(data, function (index, value) {
+                                    agregarComponente(value);
+                                });
+                                $("#FormularioVistaPrevia").find(".antiguos").remove();//los elimino después de haber insertado los nuevos
+                                var count = $("#FormularioVistaPrevia").find(":input").length;
+                                $("#alertNumComponentes").html(count + " componente/s ya añadidos al formulario");
+                                $("#FormularioVistaPrevia").find(":input").each(function () {
+                                    var orden = $(this).data("orden");
+                                    $(this).attr("toggle", "tooltip");
+                                    $(this).attr("title", "orden= " + orden + ", name=" + $(this).attr("name"));
+                                });
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                };
+
+                var posicionGrupo = function (grupo) {
+                    //Devuelve la posición con base 1 de un form-group dentro del formulario de vista previa
+                    var posicion;
+                    $("#FormularioVistaPrevia").find(".form-group").each(function (index) {
+                        if ($(this).is(grupo)) {
+                            posicion = index + 1;//Posición con base 1
+                        }
+                    });
+                    console.log("Posición: " + posicion);
+                    return posicion;
+                }
+
+
+                //Eventos
+                $("#selectElemento").on("change", function () {
+                    //Dependiendo del tipo de elemento seleccionado, al usuario se le presentarán diferentes opciones
+                    //para definir el elemento
+                    var tipoElemento = selectElemento.val();
+                    // Se el campo de actualización vale cero es que es un alta de un componente por lo que limpiamos los campos
+                    if ($("#ActualizarComponente").val() == "0") {
+                        $("#id_name").val("");
+                        $("#value").val("");
+                        $("#etiqueta").val("");
+                        $("#obligatorio-0").prop("checked", false);
+                        $("#obligatorio-1").prop("checked", true);
+                        $("#es_password-0").prop("checked", false);
+                        $("#es_password-1").prop("checked", true);
+                        $("#number_min").val("");
+                        $("#number_max").val("");
+                        $("#date_min").val("");
+                        $("#date_max").val("");
+                        $("valueFecha").val("");
+                        $("#es_submit-0").prop("checked", false);
+                        $("#es_sumbmi-1").prop("checked", true);
+                        $("#texto_button").val("");
+                        $("#checked_radio-0").prop("checked", false);
+                        $("#checked_radio-1").prop("checked", true);
+                        $("#texto_radio").val("");
+                        $("#es_checkbox-0").prop("checked", false);
+                        $("#es_checkbox-1").prop("checked", true);
+                        // Pongo en el name del nombre el valor para que luego pase como parámetro del formulario cuandose hace un post
+                        $("#guardarElemento").val("guardarElemento");
+                        // Cambio el nombre del botón
+                        $("#guardarElemento").text("Guardar componente");
+                        $("#eliminarElemento").hide();
+                    }
+
+                    switch (tipoElemento) {
+                        case "mensaje_inicial":
+                            $(".opcion_basica").hide();
+                            $("#guardarElemento").hide();
+                            $("#CancelarElemento").hide();
+                            $(".opcion_InputText").hide();
+                            $(".opcion_InputNumber").hide();
+                            $(".opcion_InputDate").hide();
+                            $(".opcion_InputButton").hide();
+                            $(".opcion_InputRadio").hide();
+                            $(".opcion_favoritos").hide();
+                            break;
+                        case "input_text":
+                            $(".opcion_basica").show();
+                            $("#guardarElemento").show();
+                            $("#CancelarElemento").show();
+                            $(".opcion_InputText").show();
+                            $(".opcion_InputNumber").hide();
+                            $(".opcion_InputDate").hide();
+                            $(".opcion_InputButton").hide();
+                            $(".opcion_InputRadio").hide();
+                            $(".opcion_favoritos").hide();
+                            break;
+                        case "input_number":
+                            $(".opcion_basica").show();
+                            $("#guardarElemento").show();
+                            $("#CancelarElemento").show();
+                            $(".opcion_InputText").hide();
+                            $(".opcion_InputNumber").show();
+                            $(".opcion_InputDate").hide();
+                            $(".opcion_InputButton").hide();
+                            $(".opcion_InputRadio").hide();
+                            $(".opcion_favoritos").hide();
+                            break;
+                        case "input_date":
+                            $(".opcion_basica").show();
+                            $("#guardarElemento").show();
+                            $("#CancelarElemento").show();
+                            $(".opcion_InputText").hide();
+                            $(".opcion_InputNumber").hide();
+                            $(".opcion_InputDate").show();
+                            $(".opcion_InputButton").hide();
+                            $(".opcion_InputRadio").hide();
+                            $(".opcion_favoritos").hide();
+                            $("#form-group-value").hide();//Usaremos la fecha actual como valor por defecto
+                            break;
+                        case "input_button":
+                            $(".opcion_basica").show();
+                            $("#guardarElemento").show();
+                            $("#CancelarElemento").show();
+                            //Aunque pertenece al grupo básico, required no se aplica a botón
+                            $("#opcion_obligatorio").hide();
+                            $(".opcion_InputText").hide();
+                            $(".opcion_InputNumber").hide();
+                            $(".opcion_InputDate").hide();
+                            $(".opcion_InputButton").show();
+                            $(".opcion_InputRadio").hide();
+                            $(".opcion_favoritos").hide();
+                            break;
+                        case "input_radio":
+                            $(".opcion_basica").show();
+                            $("#guardarElemento").show();
+                            $("#CancelarElemento").show();
+                            $(".opcion_InputText").hide();
+                            $(".opcion_InputNumber").hide();
+                            $(".opcion_InputDate").hide();
+                            $(".opcion_InputButton").hide();
+                            $(".opcion_InputRadio").show();
+                            $(".opcion_favoritos").hide();
+                            break;
+                        case "input_favoritos":
+                            $(".opcion_basica").hide();
+                            $("#guardarElemento").show();
+                            $("#CancelarElemento").show();
+                            $(".opcion_InputText").hide();
+                            $(".opcion_InputNumber").hide();
+                            $(".opcion_InputDate").hide();
+                            $(".opcion_InputButton").hide();
+                            $(".opcion_InputRadio").hide();
+                            $(".opcion_favoritos").show();
+                            break;
+                        default:
+                            break;
+                    }
+                });
+
+                $("#selectElementoFavorito").on('change', function (event) {
+                    //Cargamos los datos del componente en el formulario de introducción de datos
+                    //El usuario podrá modificarlos si quiere, y pulsar Guardar cuando quiera salvar.
+                    var datosComponente = $(this).find('option:selected').data("componente");
+                    $("#id_name").val(datosComponente.name);
+                    $("#value").val(datosComponente.value);
+                    if (datosComponente.required == "true") {
+                        $("#obligatorio-0").prop("checked", true);
+                    }
+                    else {
+                        $("#obligatorio-1").prop("checked", true);
+                    }
+                    if (datosComponente.es_password == "true") {
+                        $("#es_password-0").prop("checked", true);
+                    }
+                    else {
+                        $("#es_password-1").prop("checked", true);
+                    }
+                    if (datosComponente.es_submit == "true") {
+                        $("#es_submit-0").prop("checked", true);
+                    }
+                    else {
+                        $("#es_submit-1").prop("checked", true);
+                    }
+                    if (datosComponente.es_checkbox == "true") {
+                        $("#es_checkbox-0").prop("checked", true);
+                    }
+                    else {
+                        $("#es_checkbox-1").prop("checked", true);
+                    }
+                    if (datosComponente.checkeado == "true") {
+                        $("#checked_radio-0").prop("checked", true);
+                    }
+                    else {
+                        $("#checked_radio-1").prop("checked", true);
+                    }
+                    $("#etiqueta").val(datosComponente.label);
+                    $("#number_min").val(datosComponente.min);
+                    $("#number_max").val(datosComponente.max);
+                    $("#date_min").val(datosComponente.min);
+                    $("#valueFecha").val(datosComponente.value);
+                    $("#date_max").val(datosComponente.max);
+                    $("#texto_radio").val(datosComponente.texto_radio);
+                    $("#texto_button").val(datosComponente.texto_button);
+                    switch (datosComponente.tipo) {
+                        case "InputText":
+                            selectElemento.val("input_text");
+                            break;
+                        case "InputNumber":
+                            selectElemento.val("input_number");
+                            break;
+                        case "InputDate":
+                            selectElemento.val("input_date");
+                            break;
+                        case "InputButton":
+                            selectElemento.val("input_button");
+                            break;
+                        case "InputRadio":
+                            selectElemento.val("input_radio");
+                            break;
+                        default:
+                            break;
+                    }
+                    $("#ActualizarComponente").val("1");
+                    selectElemento.change();
+                    $(".opcion_favoritos").show();
+                });
+
+
+                $("#botonConfirmacionSalida").on('click', function (event) {
+                    var sendStr = 'idSolicitud=RETROCEDER_PAGINA';
+                    var url = getRutaAbsoluta() + "/FormulariosChat.aspx";
+                    window.location = url;
+                });
+
+
+                $("#botonConfirmacionBorrado").on('click', function () {
+                    //El usuario ha confirmado que quiere borrar los datos
+                    var datos = $("#confirm-delete").data("DatosBorrado");
+                    $("#DatosModificados").val("true");
+                    $("#confirm-delete").modal('hide');
+                    var url = getRutaAbsoluta();
+                    $.post(url + "/HomeDbFactory/ModificarElementos", datos, function (data) {
+                        $("#DatosModificados").val("true");
+                        console.log(data);
+                        $("#FormularioVistaPrevia").find(".form-group").remove();
+                        mostrarVistaPreviaFormulario({ idFormulario: idForm }, 'renderizar');
+                    });
+                });
+
+                $("#botonOKModalFavoritos").on('click', function () {
+                    var url = getRutaAbsoluta();
+                    //Necesitamos volver a cargar la página para que se actualice ListaFavoritos del ViewModel
+                    window.location.href = url + "/HomeDbFactory/CreacionFormulario?id=" + idForm;
+                });
+
+                $("#guardar").on('click', function () {
+                    // Antes de guardar el elemento, nos aseguramos de que no se use un nombre repetido,
+                    // a menos que sea un InputRadio
+
+                    if (ExisteConflictoEnNombreInput()) {
+                        event.preventDefault();
+                        $("#confirm-nombreInputRepetido").modal('show');
+                    }
+                });
+
+                var ExisteConflictoEnNombreInput = function () {
+                    // Comprueba si el formulario contiene ya un elemento del mismo tipo y nombre que el elemento a insertar,
+                    // con la excepción de que sea un radiobutton o checkbox
+                    var tipoElementoAInsertar = selectElemento.val(); // input_text, input_number, etc.
+                    tipoElementoAInsertar = tipoElementoAInsertar.slice(6); // text, number, radio, etc.
+                    if (tipoElementoAInsertar == 'radio') {
+                        // ¿RadioButton o Checkbox?
+                        if ($("#es_checkbox-0").prop("checked")) {
+                            tipoElementoAInsertar = 'checkbox';
+                        }
+                    }
+                    var nombreElementoAInsertar = $("#id_name").val();
+                    var existeConflicto = false;
+                    $("#FormularioVistaPrevia :input").each(function () {
+                        var tipo = $(this).attr("type");
+                        if (tipo == 'submit') {
+                            tipo == 'button';
+                        }
+                        var nombre = $(this).attr("name");
+                        // Solamente se permite coincidir en el nombre a radio con radio y checkbox con checkbox
+                        // En cualquier otro caso existe conflicto
+                        if (nombreElementoAInsertar == nombre) {
+                            var mensaje;
+                            if ((tipoElementoAInsertar != 'radio') && (tipoElementoAInsertar != 'checkbox')) {
+                                mensaje = "Existe un conflicto al intentar insertar el elemento con nombre '" + nombreElementoAInsertar + "' (de tipo " + tipoElementoAInsertar + "). Ya existe un elemento del mismo nombre.";
+                                $("#confirm-nombreInputRepetido .textoModalBody").html(mensaje);
+                                console.log(mensaje);
+                                existeConflicto = true;
+                                return false; // salimos del each
+                            }
+                            else if (tipoElementoAInsertar != tipo) {
+                                mensaje = "Existe un conflicto al intentar insertar el elemento con nombre '" + nombreElementoAInsertar + "' (de tipo " + tipoElementoAInsertar + "). Ya existe un elemento del mismo nombre.";
+                                $("#confirm-nombreInputRepetido .textoModalBody").html(mensaje);
+                                console.log(mensaje);
+                                existeConflicto = true;
+                                return false; // salimos del each
+                            }
+                        }
+                    });
+                    return existeConflicto;
+                }
+
+                $("#FormularioVistaPrevia").on("click", ".btn-modificacion ", function (event) {
+                    //Gestiona los botones de subir, bajar, borrar y favorito
+                    var boton = $(event.target).closest("a");
+                    var formGroup = $(event.target).closest(".form-group");
+                    var elementosContenidos = formGroup.data("elementoscontenidos");//Un array con cada Orden de los elementos de ese form-group
+                    console.log("Elementos contenidos en form-group: " + elementosContenidos);
+                    var ejecutar;
+                    if (boton.hasClass("subir")) {
+                        ejecutar = 'subir';
+                    }
+                    else if (boton.hasClass("bajar")) {
+                        ejecutar = 'bajar';
+                    }
+                    else if (boton.hasClass("borrar")) {
+                        // Guardo los datos de borrado en el propio modal de confirmación
+                        $("#confirm-delete").data("DatosBorrado", { elementos: elementosContenidos, accion: "borrar", idFormulario: idForm });
+                        $("#confirm-delete").modal('show');
+                        return;
+                    }
+                    else if (boton.hasClass("favorito")) {
+                        ejecutar = "favorito";
+                    }
+                    var datos = { elementos: elementosContenidos, accion: ejecutar, idFormulario: idForm };
+                    var url = getRutaAbsoluta();
+                    $.post(url + "/HomeDbFactory/ModificarElementos", datos, function (data) {
+                        console.log(data);
+                        if (data == "favorito") {
+                            $("#confirm-favoritos").modal('show');
+                        }
+                        //Por razones estéticas, identifico los elementos del formulario con la clase "antiguos", y cambio su visibilidad a hidden para
+                        //que conserven su espacio en pantalla. Después de que mostrarVistaPreviaFormulario inserte todos los elementos los eliminará del DOM.
+                        $("#FormularioVistaPrevia").find(".form-group").addClass('antiguos');
+                        $("#FormularioVistaPrevia").find(".antiguos").css('visibility', 'hidden');//Para que conserven su espacio en pantalla
+                        $("#FormularioVistaPrevia").find(".radioButtonGroup, .checkBoxGroup").each(function () {
+                            $(this).attr("id", "XXX");//Para evitar que al añadir los elementos desde mostrarVistaPreviaFormulario, se añadan a este grupo
+                        });
+                        mostrarVistaPreviaFormulario({ idFormulario: idForm }, 'renderizar');
+                    });
+                    return false;
+                });
+
+
+                $("#FormularioVistaPrevia").on("submit", function (event) {
+                    //Muestra cuáles serían los datos que enviaría el formulario creado
+                    event.preventDefault();
+                    var datos = $("#FormularioVistaPrevia").serialize();
+                    alert("Se provocaría el envío del formulario con los siguientes datos:\n" + datos);
+                });
+
+
+                //Sentencias
+                $('#date_min').datepicker();
+                $('#date_max').datepicker();
+                $('#valueFecha').datepicker();
+                $(".opcion_basica").hide();
+                $("#guardarElemento").hide();
+                $("#CancelarElemento").hide();
+                $("#eliminarElemento").hide();
+                $(".opcion_InputText").hide();
+                $(".opcion_InputNumber").hide();
+                $(".opcion_InputDate").hide();
+                $(".opcion_InputButton").hide();
+                $(".opcion_InputRadio").hide();
+                $(".opcion_favoritos").hide();
+                if (idForm != null) {
+                    var datos = { idFormulario: idForm };
+                    mostrarVistaPreviaFormulario(datos, 'renderizar');
+                }
+
+                $("#fieldsetFormularioVistaPrevia").sortable({
+                    placeholder: "alert alert-success",
+                    items: "> .form-group",
+                    start: function (event, ui) {
+                        posicionInicial = posicionGrupo(ui.item);
+                    },
+                    stop: function (event, ui) {
+                        posicionFinal = posicionGrupo(ui.item);
+                        var desplazamiento = posicionFinal - posicionInicial;
+                        //Leo la nueva disposición del formulario y la envío al servidor para la reordenación de los elementos
+                        var ordenElementoDesplazado = ui.item.data("elementoscontenidos")[0];
+                        var arrayDatos = [];//Un array de arrays (cada form-group es un elemento del array)
+                        $("#FormularioVistaPrevia").find(".form-group").each(function () {
+                            var elementosContenidos = $(this).data("elementoscontenidos");
+                            arrayDatos.push(elementosContenidos);
+                        });
+                        var datos = { elementos: arrayDatos, ordenElementoDesplazado: ordenElementoDesplazado, desplazamiento: desplazamiento, idFormulario: idForm };
+                        console.log(datos);
+                        var url = getRutaAbsoluta();
+                        $.post(url + "/HomeDbFactory/ReordenarElementos", datos, function (data) {
+                            $("#DatosModificados").val("true");
+                            console.log(data);
+                            mostrarVistaPreviaFormulario({ idFormulario: idForm }, 'actualizar');
+                            //Podría volver a renderizar el formulario de prueba, pero para evitar el parpadeo de la imagen
+                            //actualizo el data-elementoscontenidos de cada form-group para que permita una nueva ordenación
+                        });
+
+                    }
+                });
+                //$("#fieldsetFormularioVistaPrevia").disableSelection();
+                $('#OptionButtonVP_1').click(function () {
+                    FEliminacionFilas();
+                });
+                $('#OptionButtonVP_2').click(function () {
+                    VerDialogoVolver();
+                });
+            });
+        </script>
+    }

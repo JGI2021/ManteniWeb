@@ -1,0 +1,156 @@
+﻿<table>
+
+<general
+ 	DisplayName="Parámetros de configuración"
+ 	Database="TIPHONE"
+ 	TableNameConfig="NombreTablaParamConfig">
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="Datos Generales">
+</panel>
+
+</panels>
+
+<fields>
+
+<field>
+<fattr 
+	FieldName="idflag" 
+	Panel="panelgenerales"
+	DisplayName="Código" 
+	IsKey="true"
+	EditionType="EDIT" 
+	Mandatory="true" 
+	ValidateAs="Integer"
+	ToolTip="Identificador"
+	External="false"
+	TabOrder="1">
+</fattr>		
+</field>
+
+<field>
+<fattr 
+	FieldName="flag" 
+	Panel="panelgenerales"
+	DisplayName="Flag" 
+	EditionType="Edit"	
+	MaxLen="200"
+	Mandatory="true" 
+	ValidateAs="Alpha"
+	ToolTip="Código"
+	External="false"
+  UpdateNeeded="true"
+	TabOrder="2">
+</fattr>		
+</field>
+
+
+  <field>
+    <fattr
+      FieldName="descripcionflag"
+      Panel="panelgenerales"
+      DisplayName="Descripción"
+      EditionType="Edit"
+      MaxLen="4000"
+      Mandatory="true"
+      ValidateAs="Alpha"
+      ToolTip="Descripción"
+      External="false"
+      UpdateNeeded="true"
+      TabOrder="3">
+    </fattr>
+  </field>
+
+<field>
+<fattr 
+	FieldName="estadoflag" 
+	Panel="panelgenerales"
+	DisplayName="Activo"  
+	EditionType="check" 
+	Mandatory="false" 
+	ValidateAs="boolean"
+	ToolTip="Activo"
+	External="false"
+	UpdateNeeded="true"
+	InitialValue="true"
+	TabOrder="4">
+</fattr>	
+</field>
+
+  <field>
+    <fattr
+      FieldName="dato1flag"
+      Panel="panelgenerales"
+      DisplayName="Dato 1"
+      EditionType="Edit"
+      MaxLen="200"
+      Mandatory="false"
+      ValidateAs="Alpha"
+      ToolTip="Dato 1"
+      External="false"
+      UpdateNeeded="true"
+      Linea="Dato1"
+      TabOrder="5">
+    </fattr>
+  </field>
+
+
+  <field>
+    <fattr
+      FieldName="descripciondato1flag"
+      Panel="panelgenerales"
+      DisplayName="Descripción"
+      EditionType="Edit"
+      MaxLen="4000"
+      Mandatory="false"
+      ValidateAs="Alpha"
+      ToolTip="Descripción dato 1"
+      External="false"
+      UpdateNeeded="true"
+      Linea="Dato1"
+      TabOrder="6">
+    </fattr>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="dato2flag"
+      Panel="panelgenerales"
+      DisplayName="Dato 2"
+      EditionType="Edit"
+      MaxLen="200"
+      Mandatory="false"
+      ValidateAs="Alpha"
+      ToolTip="Dato 1"
+      External="false"
+      UpdateNeeded="true"
+      Linea="Dato2"
+      TabOrder="7">
+    </fattr>
+  </field>
+
+
+  <field>
+    <fattr
+      FieldName="descripciondato2flag"
+      Panel="panelgenerales"
+      DisplayName="Descripción"
+      EditionType="Edit"
+      MaxLen="4000"
+      Mandatory="false"
+      ValidateAs="Alpha"
+      ToolTip="Descripción dato 2"
+      External="false"
+      UpdateNeeded="true"
+      Linea="Dato2"
+      TabOrder="8">
+    </fattr>
+  </field>
+  
+</fields>
+  
+  
+</table>

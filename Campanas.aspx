@@ -1,0 +1,57 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true"  EnableEventValidation = "false" CodeBehind="Campanas.aspx.cs" Inherits="ManteniWeb.Campanas" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title></title>
+    <link rel='stylesheet' href='css/style2.css' type='text/css'/>
+        
+    <style>
+        @font-face {
+            font-family: 'Roboto';
+            font-style: normal;
+            font-weight: 300;
+            src: local('Roboto Light'), local('Roboto-Light'), url(./fonts/Roboto-Light.woff2) format('woff2');
+        }
+        body {
+            font-family:'Roboto',sans-serif !important;
+        }
+        html{
+            height: 100%;
+        }
+
+        #lateralderecho {
+            display: none;
+        }   
+        
+        .Separa20Izquierda{
+            margin-left: 20px !important;
+        }
+
+        .desactiva-option {
+            display : none;
+        }
+        .activa-option {
+            display: block;
+        }
+    </style>
+    <script src="js/ListasCampana.js"></script>
+    
+</head>
+    
+  
+<body  >
+    
+    <form id="formASP" runat="server" style="height:100%;">
+    <div>
+    
+    </div>
+    </form>
+
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+﻿@using ManteniWeb.Models.Grupos
+@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.Controllers
+
+@model ModeloGrupoCanal
+
+@{
+    DatosCanalOperacionGrupo datosCanal0 = Model.lsoperacionescanal.Find(t => t.CanalId == 0);
+    TDatosGrupo grupoACD = (TDatosGrupo)ViewBag.DatosGrupoAcd;
+    List<TDatosOperationType> lsOperaciones = (List<TDatosOperationType>)ViewBag.ListaOperaciones;
+}
+
+
+
+
+@if (Model != null)
+{
+
+    if (Model.respuesta != null)
+    {
+
+        <script>
+            let respuesta =  @Html.Raw(Json.Encode(Model.respuesta));
+
+            if (respuesta.Error === "S") {
+                $('#alerta').removeClass('alert-success');
+                $('#alerta').addClass('alert-danger');
+                $('#alert-mensaje').html(respuesta.Mensaje);
+            }
+            else {
+                /// Mostramos mensaje de que todo se ha actualizado perfectamente
+                $('#alert-mensaje').html(respuesta.Mensaje);
+                $('#alerta').removeClass('alert-danger');
+                $('#alerta').addClass('alert-success');
+            }
+
+            $('#alerta').css('display', 'block');
+
+            setTimeout(function () {
+                $('#alerta').css('display', 'none');
+                // Si se ha pulsado guardar y salir
+            }, 4000);
+        </script>
+    }
+
+    foreach (DatosCanalOperacionGrupo datosCanalOperacion in Model.lsoperacionescanal)
+    {
+        <div class="row">
+            <div class="col-md-10 col-lg-10">
+                <button type="button" class="btn btn-inout-primary margen-top-15" data-toggle="collapse" data-target="#Canal_@datosCanalOperacion.NombreCanal">
+                    &#9679; Canal @datosCanalOperacion.NombreCanal
+                </button>
+
+                <div id="Canal_@datosCanalOperacion.NombreCanal" class="panel-collapse collapse in">
+                    <div class="panel-canal">
+
+                        <div class="col-md-4 col-lg-4 padding-top-8">
+                            <label for="LlamadaSalienteId" id="lb-opSalien-@datosCanalOperacion.CanalId" class="lbProgramas">Operación llamada saliente</label>
+                            <select class="form-control slProgramas" id="sl-opSalien-@datosCanalOperacion.CanalId" onchange="AsociaOperacionACanal(this.id)">
+                                <option value="0">Ninguno</option>
+                                @if (datosCanalOperacion.LlamadaSalienteOperacionId == "" && datosCanalOperacion.CanalId != 0)
+                                {
+                                    if (datosCanal0.LlamadaSalienteOperacionId != "")
+                                    {
+                                        <option value="" selected>Por defecto: @datosCanal0.LlamadaSalienteOperacionNombre</option>
+                                    }
+                                }
+                                else if (datosCanalOperacion.LlamadaSalienteOperacionId != "" && datosCanalOperacion.CanalId != 0
+                                         && datosCanalOperacion.LlamadaSalienteOperacionId != "0")
+                                {
+                                    <option value="" selected>Valor canal por defecto</option>
+                                }
+
+                                @foreach (TDatosOperationType programa in lsOperaciones)
+                                {
+                                    if (datosCanalOperacion.LlamadaSalienteOperacionId == programa.Codigo)
+                                    {
+                                        <option value="@programa.Codigo" selected>@programa.ShortName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@programa.Codigo">@programa.ShortName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 col-lg-4 padding-top-8">
+                            <label for="IdentificacionId" id="lb-opInicio-@datosCanalOperacion.CanalId" class="lbProgramas">Operación Identificación</label>
+                            <select class="form-control slProgramas" id="sl-opInicio-@datosCanalOperacion.CanalId" onchange="AsociaOperacionACanal(this.id)">
+                                <option value="">Ninguno</option>
+                                @if (datosCanalOperacion.IdentificarClienteOperacionId == "" && datosCanalOperacion.CanalId != 0)
+                                {
+                                    if (datosCanal0.IdentificarClienteOperacionId != "")
+                                    {
+                                        <option value="" selected>Por defecto: @datosCanal0.IdentificarClienteOperacionNombre</option>
+                                    }
+                                }
+                                else if (datosCanalOperacion.IdentificarClienteOperacionId != "" && datosCanalOperacion.CanalId != 0
+                                         && datosCanalOperacion.IdentificarClienteOperacionId != "0")
+                                {
+                                    <option value="" selected>Valor canal por defecto</option>
+                                }
+
+                                @foreach (TDatosOperationType programa in lsOperaciones)
+                                {
+                                    if (datosCanalOperacion.IdentificarClienteOperacionId == programa.Codigo)
+                                    {
+                                        <option value="@programa.Codigo" selected>@programa.ShortName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@programa.Codigo">@programa.ShortName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 col-lg-4 padding-top-8">
+                            <label for="LlamadaSalienteId" id="lb-opFinalz-@datosCanalOperacion.CanalId" class="lbProgramas">Operación de finalización</label>
+                            <select class="form-control slProgramas" id="sl-opFinalz-@datosCanalOperacion.CanalId" onchange="AsociaOperacionACanal(this.id)">
+                                <option value="">Ninguno</option>
+                                @if (datosCanalOperacion.FinalGestionOperacionId == "" && datosCanalOperacion.CanalId != 0)
+                                {
+                                    if (datosCanal0.FinalGestionOperacionId != "")
+                                    {
+                                        <option value="" selected>Por defecto: @datosCanal0.FinalGestionOperacionNombre</option>
+                                    }
+                                }
+                                else if (datosCanalOperacion.FinalGestionOperacionId != "" && datosCanalOperacion.CanalId != 0
+                                         && datosCanalOperacion.FinalGestionOperacionId != "0")
+                                {
+                                    <option value="" selected>Valor canal por defecto</option>
+                                }
+
+                                @foreach (TDatosOperationType programa in lsOperaciones)
+                                {
+                                    if (datosCanalOperacion.FinalGestionOperacionId == programa.Codigo)
+                                    {
+                                        <option value="@programa.Codigo" selected>@programa.ShortName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@programa.Codigo">@programa.ShortName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+

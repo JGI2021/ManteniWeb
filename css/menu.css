@@ -1,0 +1,286 @@
+﻿#pwrap {
+    height:100%;
+}
+.site-wrap {
+    overflow: hidden;
+    width: 100%;
+    height:100%;
+}
+/* Adds a transition and the resting translate state */
+.push-wrap {
+    -webkit-transition: all 300ms ease 0;
+    -moz-transition: all 300ms ease 0;
+    -o-transition: all 300ms ease 0;
+    transition: all 300ms ease 0;
+
+    -webkit-transform: translate(0, 0);
+    -moz-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    -o-transform: translate(0, 0);
+    transform: translate(0, 0);
+
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
+/* Will animate the content to the right 275px revealing the hidden nav */
+.show-nav .push-wrap {
+    -webkit-transform: translate(200px, 0);
+    -moz-transform: translate(200px, 0);
+    -ms-transform: translate(200px, 0);
+    -o-transform: translate(200px, 0);
+    transform: translate(200px, 0);
+
+    -webkit-transform: translate3d(200px, 0, 0);
+    -moz-transform: translate3d(200px, 0, 0);
+    -ms-transform: translate3d(200px, 0, 0);
+    -o-transform: translate3d(200px, 0, 0);
+    transform: translate3d(200px, 0, 0);
+}
+/* Positions the nav fixed below the push wrapper */
+nav {
+    width: 200px;
+    height:100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.site-wrap {
+  overflow: hidden;
+  width: 100%;
+  height:100%;
+}
+.push-wrap {
+  -webkit-transition: all 300ms ease 0;
+  -moz-transition: all 300ms ease 0;
+  -o-transition: all 300ms ease 0;
+  transition: all 300ms ease 0;
+  
+  -webkit-transform: translate(0, 0);
+  -moz-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  -o-transform: translate(0, 0);
+  transform: translate(0, 0);
+  
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+
+/* BASE CSS */
+body {
+  background: #e3e3e3;
+}
+
+a {
+  transition: all 300ms ease;
+}
+
+nav {
+  background: #fff;
+  text-align: left;
+  /*-webkit-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.5);*/
+  /*-moz-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.5);
+  box-shadow: inset -1.5em 0 1.5em -0.75em rgba(255, 255, 255, 1);*/
+}
+
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav ul li a {
+  display: block;
+  text-decoration: none !important;
+  height: 60px;
+  line-height: 60px;
+  font-size: 18px;
+  color: #fff;
+}
+
+nav ul li a:hover {
+  background: #4EFFFF;
+  color: #000000;
+}
+
+article h1 {
+  text-align: center;
+  margin: 40px 0 30px;
+}
+
+article p {
+  font-size: 20px;
+  line-height: 30px;
+  margin-bottom: 40px;
+}
+
+a.toggle-nav {
+  position: absolute;
+  font-size: 16px;
+  color: rgb(255, 139, 139);
+  top: 20px;
+  left: 0;
+  background: #fff;
+  width: 20px;
+  height: 20px;
+  line-height: 60px;
+  text-align: center;
+}
+
+a.toggle-nav:hover {
+  color: #000000; 
+}
+
+i {
+  color: black;
+  vertical-align:top;
+  margin-top:3px;
+}
+a:hover,a:focus {
+    color:#000000 !important;
+    text-decoration:none !important;
+}
+
+
+/*==================================================
+=            Bootstrap 3 Media Queries             =
+==================================================*/
+
+
+
+
+    /*==========  Mobile First Method  ==========*/
+
+    /* Custom, iPhone Retina */ 
+    @media only screen and (min-width : 320px) {
+        
+    }
+
+    /* Extra Small Devices, Phones */ 
+    @media only screen and (min-width : 480px) {
+        
+    }
+
+    /* Small Devices, Tablets */
+    @media only screen and (min-width : 768px) {
+        
+    }
+
+    /* Medium Devices, Desktops */
+    @media only screen and (min-width : 992px) {
+
+    }
+
+    /* Large Devices, Wide Screens */
+    @media only screen and (min-width : 1200px) {
+
+    }
+
+
+
+    /*==========  Non-Mobile First Method  ==========*/
+
+    /* Large Devices, Wide Screens */
+    @media only screen and (max-width : 1200px) {
+        
+    }
+
+    /* Medium Devices, Desktops */
+    @media only screen and (max-width : 992px) {
+       
+    }
+
+    /* Small Devices, Tablets */
+    @media only screen and (max-width : 768px) {
+        nav {
+            width: 100%;
+            height:100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .show-nav .push-wrap {
+            -webkit-transform: translate(95%, 0);
+            -moz-transform: translate(95%, 0);
+            -ms-transform: translate(95%, 0);
+            -o-transform: translate(95%, 0);
+            transform: translate(95%, 0);
+
+            -webkit-transform: translate3d(95%, 0, 0);
+            -moz-transform: translate3d(95%, 0, 0);
+            -ms-transform: translate3d(95%, 0, 0);
+            -o-transform: translate3d(95%, 0, 0);
+            transform: translate3d(95%, 0, 0);
+        }
+        #pwrap {
+          min-height: 1500px;
+          height:100%;
+        }
+    }
+
+    /* Extra Small Devices, Phones */ 
+    @media only screen and (max-width : 480px) {
+        nav {
+            width: 100%;
+            height:100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .show-nav .push-wrap {
+            -webkit-transform: translate(95%, 0);
+            -moz-transform: translate(95%, 0);
+            -ms-transform: translate(95%, 0);
+            -o-transform: translate(95%, 0);
+            transform: translate(95%, 0);
+
+            -webkit-transform: translate3d(95%, 0, 0);
+            -moz-transform: translate3d(95%, 0, 0);
+            -ms-transform: translate3d(95%, 0, 0);
+            -o-transform: translate3d(95%, 0, 0);
+            transform: translate3d(95%, 0, 0);
+        }
+         #pwrap {
+          min-height: 1500px;
+          height:100%;
+        }
+    }
+
+    /* Custom, iPhone Retina */ 
+    @media only screen and (max-width : 320px) {
+        nav {
+            width: 100%;
+            height:100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .show-nav .push-wrap {
+            -webkit-transform: translate(95%, 0);
+            -moz-transform: translate(95%, 0);
+            -ms-transform: translate(95%, 0);
+            -o-transform: translate(95%, 0);
+            transform: translate(95%, 0);
+
+            -webkit-transform: translate3d(95%, 0, 0);
+            -moz-transform: translate3d(95%, 0, 0);
+            -ms-transform: translate3d(95%, 0, 0);
+            -o-transform: translate3d(95%, 0, 0);
+            transform: translate3d(95%, 0, 0);
+        }
+         #pwrap {
+          min-height: 1500px;
+          height:100%;
+        }
+    }
+
+    
+
+   
+

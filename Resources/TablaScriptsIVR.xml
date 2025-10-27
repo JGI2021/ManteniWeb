@@ -1,0 +1,72 @@
+﻿<table>
+
+<general
+ 	DisplayName="Scripts de la IVR" 
+ 	Database="DBIVR"
+  SubsystemFieldName="subsistema"
+ 	TableName="IVR_SCRIPTS"
+  >
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="Datos Generales">
+</panel>
+</panels>
+    
+<fields>
+
+  <field>
+  <fattr 
+	  FieldName="script_id" 
+	  Panel="panelgenerales"
+	  DisplayName="Identificador" 
+	  IsKey="true"
+	  EditionType="Edit" 
+    MaxLen="30"
+	  Mandatory="true" 
+	  ValidateAs="Alpha"
+	  ToolTip="Identificador del script."
+    UpdateNeeded="true"
+    PanelInfo="true"
+	  TabOrder="1">
+  </fattr>		
+  </field>
+
+  <field>
+  <fattr 
+	  FieldName="filename" 
+	  Panel="panelgenerales"
+	  DisplayName="Fichero" 
+	  EditionType="Edit"	
+	  MaxLen="100"
+	  Mandatory="true" 
+	  ValidateAs="Alpha"
+	  ToolTip="Nombre del fichero de IVR."
+    UpdateNeeded="true"
+    PanelInfo="true"
+	  TabOrder="2">
+  </fattr>		
+  </field>
+
+  <field>
+    <fattr
+      FieldName="description"
+      Panel="panelgenerales"
+      DisplayName="Descripción "
+      EditionType="Edit"
+      MaxLen="50"
+      Mandatory="true"
+      ValidateAs="Alpha"
+      ToolTip="Teclee una descripción. Es un dato que se muestra cuando se realizan las asignaciones de scripts a grupos"
+      UpdateNeeded="true"
+      PanelInfo="true"
+      TabOrder="3">
+    </fattr>
+  </field>
+
+</fields>
+  
+
+</table>

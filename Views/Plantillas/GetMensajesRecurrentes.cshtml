@@ -1,0 +1,374 @@
+﻿
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+
+@model List<DatosMensajeRecurrenteGrupos>
+
+@*<script src="~/Scripts/bootstrap-select.min.js"></script>*@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css" />
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/AdmChatComun.css" rel="stylesheet" />
+
+
+@{
+    string title = ConfigResources.mensajecrrente;
+    List<IdiomaOperador> listadoIdiomas = ViewBag.ListadoIdiomas as List<IdiomaOperador>;
+}
+
+<link href="~/css/PlantillasMensajes.css" rel="stylesheet" />
+
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-hashtag' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-2 col-md-2">
+            @Html.Partial("MenuRegistros")
+        </div>
+
+        <div class="col-lg-8 col-md-8">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div id="alerta" class="alert" style="display:none">
+                    <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                    <p id="alert-mensaje"></p>
+                </div>
+
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-md-12 form-inline">
+                        <label style="margin-right: 30px;"> Filtros: </label>
+                        <span style="margin-left: 15px;">
+                            <input type="checkbox" id="checkActivo" />
+                            @ComunResources.chk_activo
+                        </span>
+
+
+                        <span style="margin-left: 15px;">
+                            <input type="checkbox" id="checkInactivo" />
+                            @ComunResources.chk_inactivo
+                        </span>
+
+                        <span style="margin-left: 35px;">
+                            @ComunResources.lenguaje
+                        </span>
+                        <select id="selectIdioma" class="form-control" style="margin-left: 15px;">
+                            <option value="0">Todos</option>
+                            @foreach (IdiomaOperador idioma in listadoIdiomas)
+                            {
+                                <option value="@idioma.ISOIdioma">@idioma.Idioma.Trim()</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <table id="MensajesRecurrentesTable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="no-sort"></th>
+                            <th>@ComunResources.identificador</th>
+                            <th>@ComunResources.alias</th>
+                            <th>@ConfigResources.mensajecrrente</th>
+                            <th>@ConfigResources.comandoMensajeria</th>
+                            <th>@ComunResources.lenguaje</th>
+                            <th>@ComunResources.chk_activo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (DatosMensajeRecurrenteGrupos mensaje in Model)
+                        {
+                            <tr id="tr_@mensaje.Identificador">
+                                <td id="td_@mensaje.Identificador">
+                                    <input type="checkbox" id="chk_@mensaje.Identificador" />
+                                </td>
+                                <td>@mensaje.Identificador</td>
+                                <td>
+                                    @mensaje.Alias
+                                </td>
+                                <td>
+                                    @mensaje.Mensaje
+                                </td>
+                                <td>
+                                    @mensaje.Comando
+                                </td>
+                                <td>
+                                    @Html.Raw(ObtenerIdioma(@mensaje.Language, listadoIdiomas))
+                                </td>
+                                <td>
+                                    @if ((mensaje.Activo == "1"))
+                                    {
+                                        <span class="caja-estado-activo" title="Activo" id="span_@mensaje.Identificador"> A </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="caja-estado-inactivo" title="Inactivo" id="span_@mensaje.Identificador"> I </span>
+                                    }
+                                </td>
+                                <td>@Html.Raw(GruposAsociadosAMensaje(mensaje))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GruposAsociadosAMensaje(DatosMensajeRecurrenteGrupos mensaje)
+    {
+        string resultado = "";
+        string urlActual = "Plantillas";
+        string urlSiguiente = "GrupoAtencion.aspx?id=";
+
+        foreach (RegistroNombreId grupoAsociado in mensaje.GruposACD)
+        {
+            urlSiguiente += grupoAsociado.Id;
+
+            if (resultado == string.Empty)
+            {
+                resultado = "<a class='hipervinculoAzul' onclick='return AvanzarPagina(\"" + urlActual + "\",\"" + urlSiguiente + "\")' style='cursor:pointer;'> " +
+                              grupoAsociado.Nombre +
+                            "</a> ";
+            }
+            else
+            {
+                resultado += " , <a class='hipervinculoAzul' onclick='return AvanzarPagina(\"" + urlActual + "\",\"" + urlSiguiente + "\")' style='cursor:pointer;'> " +
+                                    grupoAsociado.Nombre +
+                              "</a> ";
+            }
+        }
+
+        return resultado;
+    }
+
+    public string ObtenerIdioma(string isoIdioma, List<IdiomaOperador> idiomas)
+    {
+        var idioma = idiomas.Find(id => id.ISOIdioma == isoIdioma);
+        if (idioma != null)
+            return idioma.Idioma;
+
+        return "---";
+    }
+}
+
+@section scripts {
+
+    <script src="~/Content/DataTables/datatables.min.js" type="text/javascript"></script>
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/js/sweetalert2/dist/sweetalert2.all.min.js" type="text/javascript"></script>
+    <script src="~/js/MensajesRec.js" type="text/javascript"></script>
+
+    <script>
+
+        $(function () {
+            tableMensaje = $('#MensajesRecurrentesTable').DataTable({
+                "processing": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "@ComunResources.cargando ...",
+                    "lengthMenu": "Registros _MENU_ @ComunResources.porPagina",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "@ComunResources.pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "@ComunResources.btn_buscar",
+                    "paginate": {
+                        "first": "@ComunResources.primer",
+                        "next": "@ComunResources.siguiente",
+                        "previous": "@ComunResources.previo",
+                        "last": "@ComunResources.ultima"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "@ComunResources.todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#MensajesRecurrentesTable').css('display', 'table');
+
+            $("#MensajesRecurrentesTable").on("click", "td:not(:last-child)", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+
+                AvanzarPagina('Plantillas/GetMensajesRecurrentes', 'Plantillas/GetDatosMensajePorId?identificador=' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#MensajesRecurrentesTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+            // Filtros
+            $("#checkActivo").on('click', function () {
+                tableMensaje.draw();
+            });
+
+            $("#checkInactivo").on('click', function () {
+                tableMensaje.draw();
+            });
+
+            $("#selectIdioma").on("change", function () {
+                tableMensaje.draw();
+            })
+
+            // Custom range filtering function
+            DataTable.ext.search.push(function (settings, data, dataIndex) {
+                let checkActivo = document.getElementById('checkActivo');
+
+                let columna = data[6];
+                let valueCheckA = false;
+                let valueCheckI = false;
+                let valueSelect = false;
+
+                columna = columna.trim();
+                console.log("campo columna " + columna);
+
+                if (columna === "A" && checkActivo.checked) {
+                    valueCheckA = true;
+                }
+
+                let checkInactivo = document.getElementById('checkInactivo');
+                if (columna === "I" && checkInactivo.checked)
+                    valueCheckI = true;
+
+                let idiomaSelectValue = $("#selectIdioma").val();
+
+                if (idiomaSelectValue === "0")
+                    valueSelect = true;
+
+                let idiomaColumna = data[5];
+                let idiomaSelect = $("#selectIdioma option:selected").text();
+                console.log("idioma " + idiomaColumna.trim());
+                console.log("idioma select " + idiomaSelect.trim());
+
+                if (!valueSelect && idiomaColumna.trim() === idiomaSelect.trim()) {
+                    valueSelect = true;
+                }
+
+                if (valueCheckA && checkActivo && valueSelect && idiomaSelectValue === "0")
+                    return true;
+
+                if (valueCheckI && checkInactivo && valueSelect && idiomaSelectValue === "0")
+                    return true;
+
+                if (valueCheckA && checkActivo && valueSelect && !valueCheckI && idiomaColumna.trim() === idiomaSelect.trim())
+                    return true;
+
+                if (!valueCheckA && valueSelect && valueCheckI && checkInactivo && idiomaColumna.trim() === idiomaSelect.trim())
+                    return true;
+
+                if (!valueCheckA && !checkActivo && !valueCheckI && !checkInactivo && valueSelect && idiomaColumna.trim() === idiomaSelect.trim())
+                    return true;
+
+                return false;
+            });
+
+            // Activo el chec de Activo
+            $("#checkActivo").click();
+        });
+
+
+        function EliminarRegistro() {
+            Swal.fire({
+                title: '@ComunResources.btn_eliminar',
+                text: "@ComunResources.msg_eliminarRegistroMasContinuar",
+                icon: 'warning',
+                heightAuto: false,
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '@ComunResources.btn_eliminar',
+                cancelButtonText: '@ComunResources.btn_cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        '@ComunResources.eliminado'
+                    );
+
+                    let ids = $('#idsSeleccionados').val();
+                    let params = { 'ids': ids };
+
+                    $.post(getAbsolutePath() + "EliminarMensajes", params, function (resultado) {
+                        if (resultado !== null) {
+
+                            let respuesta = JSON.parse(resultado);
+                            MostrarMensajeRespuesta(respuesta);
+                            if (respuesta.Error === "N") {
+                                EliminaFilasTabla();
+                            }
+                        }
+
+                    });
+                }
+            });
+
+        }
+
+
+
+    </script>
+
+}

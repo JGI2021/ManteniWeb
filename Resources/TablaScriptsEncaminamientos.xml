@@ -1,0 +1,81 @@
+﻿<table>
+
+<general
+ 	DisplayName="Scripts de encaminamiento" 
+ 	Database="DBQDEVICE"
+  SubsystemFieldName="subsistema_id"
+ 	TableName="DC_PROGRAMA"
+  >
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="Datos Generales">
+</panel>
+</panels>
+    
+<fields>
+
+  <field>
+  <fattr 
+	  FieldName="programa_id" 
+	  Panel="panelgenerales"
+	  DisplayName="Identificador" 
+	  IsKey="true"
+	  EditionType="Edit" 
+    MaxLen="50"
+	  Mandatory="true" 
+	  ValidateAs="Alpha"
+	  ToolTip="Identificador del script."
+    UpdateNeeded="true"
+	  TabOrder="1">
+  </fattr>		
+  </field>
+
+  <field>
+  <fattr 
+	  FieldName="fichero" 
+	  Panel="panelgenerales"
+	  DisplayName="Fichero" 
+	  EditionType="Edit"	
+	  MaxLen="100"
+	  Mandatory="true" 
+	  ValidateAs="Alpha"
+	  ToolTip="Nombre del fichero de encaminamiento."
+    UpdateNeeded="true"
+	  TabOrder="2">
+  </fattr>		
+  </field>
+
+  <field>
+    <fattr
+      FieldName="descripcion"
+      Panel="panelgenerales"
+      DisplayName="Descripción "
+      EditionType="Edit"
+      MaxLen="200"
+      Mandatory="true"
+      ValidateAs="Alpha"
+      ToolTip="Teclee una descripción. Es un dato que se muestra cuando se realizan las asignaciones de scripts a grupos"
+      UpdateNeeded="true"
+      TabOrder="3">
+    </fattr>
+  </field>
+
+  <field>
+  <fattr 
+	  FieldName="tipo_programa_id" 
+	  Panel="panelgenerales"
+	  EditionType="NONE"	
+	  ValidateAs="Integer"
+    UpdateNeeded="false"
+    DefaultValue="0" 
+	  TabOrder="4">
+  </fattr>		
+  </field>
+
+</fields>
+  
+
+</table>

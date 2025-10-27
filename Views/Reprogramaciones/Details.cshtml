@@ -1,0 +1,247 @@
+﻿@model ManteniWeb.DatosTablas.ReposReprogramacion
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+
+
+@{
+    ViewBag.Title = "Reprogramacion " + Model.Nombre;
+    List<ReposFranjaHoraria> franjas = (List<ReposFranjaHoraria>)ViewBag.franjas;
+}
+
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+
+
+@* Cabecera del formulario *@
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+@* Inicio *@
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+    <div class="row">
+        @* MENU LATERAL *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+
+        @* Formulario  *@
+        <div id="formularioPrincipal" class="col-lg-6 col-md-6">
+            @* Panel de errores *@
+
+            <div id="alertaResultado" class="row rowSeparacion15 no-display">
+                <div class="col-lg-offset-1 col-md-10">
+                    <div id="panelResultado" class="panel ">
+                        <div class="panel-heading">
+                            <span id="panelmensajeResultado"></span>
+                            <button type="button" class="close" data-target="#copyright-wrap" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @* Datos de la reprogramación *@
+            <div class="row rowSeparacion10">
+
+                <div class="col-md-4 form-group">
+                    <label for="ReprogNombre_F">Nombre reprogramación <span class="red-text">*</span>  </label>
+                    <input type="text" class="form-control changeColor" id="ReprogNombre_F" value="@Model.Nombre" />
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label for="TotResNegativo_F">Max.  resultados negativos <span class="red-text">*</span>  </label>
+                    <input type="number" class="form-control changeColor" id="TotResNegativo_F" min="0" value="@Model.MaxLlamadasResultadoNegativo" />
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label for="SelectFranjaHoraria_F">Franja horaria </label>
+                    <div class="input-group my-group">
+                        <select id="SelectFranjaHoraria_F" class="selectpicker form-control changeColor" data-live-search="true"
+                                title="Seleccionar franja horaria..." onchange="CambiaDatosFranja()">
+                            @if (Model.IdRepoFranjaHoraria == 0)
+                            {
+                                <option value="0" selected="selected"> - Sin franja - </option>
+                            }
+                            else
+                            {
+                                <option value="0"> --- Sin franja --- </option>
+                            }
+                            @if (franjas != null && franjas.Count > 0)
+                            {
+                                foreach (ReposFranjaHoraria franja in franjas)
+                                {
+                                    if (franja.IdRepositorio == Model.IdRepoFranjaHoraria)
+                                    {
+                                        <option value="@franja.IdRepositorio" selected="selected">@franja.NombreFranja</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@franja.IdRepositorio">@franja.NombreFranja</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"
+                                    data-toggle='collapse' data-target='#panelFranjas' title="Mostrar franja horaria">
+                                <span class="fa fa-bars primary-color-text"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            @* Mostrar campañas y listas que usan la reprogramación *@
+            @if (Model.LsElementosAsociados != null && Model.LsElementosAsociados.Count > 0)
+            {
+                @Html.Partial("~/Views/Reprogramaciones/VerElementosAsociados.cshtml", Model)
+            }
+
+            @* Tabla de resultados telefónicos *@
+            <div id="VistaResultadosTelefonicos" >
+
+                @Html.Partial("~/Views/Reprogramaciones/ResultadosTelefonicos.cshtml", Model)
+            </div>
+
+
+            @* Botonera *@
+            <div id="botoneraGuardar" class="row rowSeparacion20 no-display margen-inferior-25">
+                <div class="col-sm-12">
+                    <div class="floatRight">
+                        <button id="LoadSpinner" class="btn btn-default botonFicha no-display">Guardando datos ... <span class="fa fa-spinner fa-spin mr-15"></span> </button>
+                        <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarF" onclick="GuardarDatos(0)">Guardar</button>
+                        <button type="button" class="btn btn-default botonFicha" id="BbotonAceptarGS" onclick="GuardarDatos(1)">Guardar y salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            @* Panel para el cambio de grupo de uno varis resultados seleccinados *@
+            @Html.Partial("~/Views/Reprogramaciones/PanelCambioGrupoResultado.cshtml", Model)
+
+
+            @* Panel de franjas horarias *@
+            <div id="PanelFranjasHorarias" class="row">
+                @{
+                    ReposFranjaHoraria franjaHoraria = franjas.Find(f => f.IdRepositorio == Model.IdRepoFranjaHoraria);
+                }
+                @Html.Partial("~/Views/FranjaHoraria/FranjasHorarias.cshtml", franjaHoraria, new ViewDataDictionary())
+
+            </div>
+        </div>
+    </div>
+    }
+</div>
+
+
+
+
+
+@section scripts
+{
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/js/ResultadosTelefonicos.js" type="text/javascript"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            Date.prototype.addDays = function (days) {
+                var date = new Date(this.valueOf());
+                date.setDate(date.getDate() + days);
+                return date;
+            }
+
+            Date.prototype.addHours = function (hor) {
+                this.setTime(this.getTime() + (hor * 60 * 60 * 1000));
+                return this;
+            }
+
+            Date.prototype.addMinutes = function (min) {
+                this.setTime(this.getTime() + (min * 60 * 1000));
+                return this;
+            }
+
+            Date.prototype.addSeconds = function (sec) {
+                this.setTime(this.getTime() + (sec * 1000));
+                return this;
+            }
+
+            //// Se marca un resultado para cambiar de grupo
+            $("#VistaResultadosTelefonicos").on("change", ".resultcheck", function () {
+                if (CheckResultadoMarcado(this.id)) {
+                    $("#PanelCambioDeGrupo").css('display', 'block');
+                    // Guarda y pasa el resulta.do seleccionado
+                    GuardaYMuestraSeleccionado(this.id);
+                }
+                else {
+                    DesmarcaResSeleccionado(this.id);
+                }
+            });
+
+            $("#formularioPrincipal").on("change", ".changeColor", function () {
+                id = this.id;
+                if (!$("#" + id).hasClass("blue-text")) {
+                    $("#" + id).addClass("blue-text")
+                }
+                if ($("#botoneraGuardar").hasClass("no-display")) {
+                    $("#botoneraGuardar").removeClass("no-display");
+                }
+                    
+                GuardaDatoReprogramacionModificado(id);
+            });
+
+
+
+            ReposReprogramacion = @Html.Raw(Json.Encode(Model));
+
+            window.onscroll = function (e) {
+                var vertical_position = 0;
+                if (pageYOffset)
+                    vertical_position = pageYOffset;
+                else if (document.documentElement.clientHeight)
+                    vertical_position = document.documentElement.scrollTop;
+                else if (document.body)
+                    vertical_position = document.body.scrollTop;
+
+                let pos = parseInt(vertical_position + 50) + "px";
+                $("#PanelCambioDeGrupo").css("top",pos)
+            }
+        });
+
+
+
+    </script>
+}

@@ -1,0 +1,149 @@
+﻿@using ManteniWeb.App_GlobalResources
+
+<link href="~/css/DosListas2.css" rel="stylesheet" />
+
+<style>
+    #ModalSkillsWidth {
+        width: 700px;
+    }
+
+    li.sk-noselected, li.sk-selected {
+        padding: 10px 12px 6px 25px;
+        font-size: 14px;
+        color: #555;
+        border-bottom: 2px solid #eee;
+    }
+
+        li.sk-noselected:hover, li.sk-selected:hover {
+            font-weight: 600;
+            background-color: #d2d2d2;
+        }
+
+    .left-25 {
+        left: 25px;
+    }
+
+    .modal-body-padd {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .color-cambio {
+        color: blue !important;
+    }
+</style>
+
+
+
+<div id="skillsOperador" class="tab-pane">
+    <input type="hidden" name="skillsEliminados" id="skillsEliminados" value="" />
+    <input type="hidden" name="skillsAniadidos" id="skillsAniadidos" value="" />
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 left-25">
+
+            <div id="Cuerpo_ModalSkills">
+                <div class="rowSeparacion15">
+
+                    <div class="ms-container" id="ms-DosListas_SKILL_ID" >
+                        <div class="ms-selectable">
+                            <label>No seleccionados</label>
+                            <input type="text" class="search-input" id="skillsseleccionables" autocomplete="off" placeholder="@CampanaResources.bs_buscar..."
+                                   style="margin-bottom:15px;width:100%;height:34px;padding-left:10px;"
+                                   onkeyup="BuscarSkills('seleccionables')">
+                            <ul class="ms-list" id="lista-seleccionables" tabindex="-1">
+                            </ul>
+                        </div>
+                        <div class="ms-selection">
+                            <label>Asignados</label>
+                            <input type="text" class="search-input" id="skillsseleccionados" autocomplete="off" placeholder="@CampanaResources.bs_buscar..."
+                                   style="margin-bottom:15px;width:100%;height:34px;padding-left:10px;"
+                                   onkeyup="BuscarSkills('seleccionados')">
+                            <ul class="ms-list" id="lista-seleccionados" tabindex="-1">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="DivAlert_SKILL_ID" class="alert alert-danger alert-dismissible" style="display:none;" role="alert"><div id="DivAlertText_SKILL_ID"></div></div>
+            </div>
+            <p></p>
+        </div>
+
+
+        @*<div class="modal in" id="ModalSkills" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog ModalSkillsWidth">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="Titulo_ModalSkills">Skills del operador</h4>
+                        </div>
+                        <div class="modal-body modal-body-padd">
+                            <div id="Cuerpo_ModalSkills">
+                                <div class="rowSeparacion15">
+
+                                    <div class="ms-container" id="ms-DosListas_SKILL_ID">
+                                        <div class="ms-selectable">
+                                            <label>No seleccionados</label>
+                                            <input type="text" class="search-input" autocomplete="off" placeholder="Buscar..." style="margin-bottom:15px;width:100%;height:34px;padding-left:10px;">
+                                            <ul class="ms-list" id="lista-seleccionables" tabindex="-1">
+                                            </ul>
+                                        </div>
+                                        <div class="ms-selection">
+                                            <label>Seleccionados</label>
+                                            <input type="text" class="search-input" autocomplete="off" placeholder="Buscar..." style="margin-bottom:15px;width:100%;height:34px;padding-left:10px;">
+                                            <ul class="ms-list" id="lista-seleccionados" tabindex="-1">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="skillsEliminados" id="skillsEliminados" value="">
+                                    <input type="hidden" name="skillsAniadidos" id="skillsAniadidos" value="">
+                                </div>
+                                <div id="DivAlert_SKILL_ID" class="alert alert-danger alert-dismissible" style="display:none;" role="alert"><div id="DivAlertText_SKILL_ID"></div></div>
+                            </div>
+                            <p></p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" id="Boton_Aceptar_ModalSkills" class="btn btn-default botonFicha" value="Aceptar">
+                            <input type="hidden" id="Aceptar_ModalSkills" name="Aceptar_ModalSkills" value="false">
+                            <input type="button" id="Boton_Cerrar_ModalSkills" class="btn btn-default botonFicha" value="Cancelar cambios" style="">
+                            <input type="hidden" id="Cerrar_ModalSkills" name="Cerrar_ModalSkills" value="false">
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+    </div>
+
+</div>
+
+
+
+
+
+
+<script>
+
+    $('#Boton_Aceptar_ModalSkills').on('click', function () {
+        GuardaFormulario_SKILL_ID();
+    });
+
+
+
+
+
+    $('#Boton_Cerrar_ModalSkills').on('click', function () {
+        CancelaGuardaFormulario_SKILL_ID();
+    });
+
+    function GuardaFormulario_SKILL_ID() {
+
+        $('#skillsEliminados').val('');
+        $('#skillsAniadidos').val('');
+        $('#ModalSkills').modal('hide');
+    }
+
+    function CancelaGuardaFormulario_SKILL_ID() {
+        $('#skillsEliminados').val('');
+        $('#skillsAniadidos').val('');
+        $('#ModalSkills').modal('hide');
+    }
+
+</script>

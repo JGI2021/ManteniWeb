@@ -1,0 +1,112 @@
+﻿<table>
+
+  <general
+    DisplayName="Direcciones bloqueadas"
+    Database="TIPHONE"
+    TableName="CHAT_DIRECCIONES_BLOQUEADAS">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Dirección boloqueada">
+    </panel>
+  </panels>
+
+  <fields>
+    <field>
+      <fattr
+        FieldName="FechaAlta"
+        Panel="panelgenerales"
+        DisplayName="Fecha"
+        EditionType="Date"
+        MaxLen="50"
+        Mandatory="true"
+        ValidateAs="datetime"
+        DefaultValue="Today"
+        ToolTip="Fecha de alta"
+        External="false"
+        ReadOnly="true"
+        UpdateNeeded="false"
+        Linea="L1"
+        TabOrder="1">
+      </fattr>
+    </field>    
+
+    <field>
+      <fattr
+        FieldName="OP_ALIAS"
+        Panel="panelgenerales"
+        DisplayName="Alias operador"
+        EditionType="Edit"
+        Mandatory="true"
+        ReadOnly="true"
+        ValidateAs="Alpha"
+        DefaultValue="0.0.0.0"
+        ToolTip="Operador que da de alta la dirección"
+        External="false"
+        InsertNeeded="false"        
+        UpdateNeeded="false"
+        TabOrder="2"
+        Linea="L1"
+        MaxLen="200">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="DIRECCIONIP"
+        Panel="panelgenerales"
+        DisplayName="Dirección IP"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Dirección IP que se va a bloquear"
+        External="false"
+        UpdateNeeded="false"
+        IsKey="true"
+        TabOrder="3"
+        Linea="L1"
+        MaxLen="200"
+      >
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="COMENTARIO"
+        Panel="panelgenerales"
+        DisplayName="Comentario"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Comentario indicando la razón del bloqueo de la dirección"
+        External="false"
+        UpdateNeeded="true"
+        TabOrder="4"
+        Linea="L3"
+        MaxLen="200"
+      >
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="OP_CODE"
+        Panel="panelgenerales"
+        DisplayName=""
+        EditionType="Edit"
+        Mandatory="true"
+        ReadOnly="true"
+        ValidateAs="Alpha"
+        ToolTip=""
+        External="false"
+        UpdateNeeded="false"
+        TabOrder="5"
+        Linea="L4"
+        Visible="false"
+        MaxLen="200">
+      </fattr>
+    </field>    
+  </fields>
+</table>

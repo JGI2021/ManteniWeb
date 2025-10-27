@@ -1,0 +1,383 @@
+﻿@model  List<NivelesOrganizacion>
+
+@using ManteniWeb.Models;
+
+
+@{
+    ViewBag.Title = "Niveles de Organización";
+    string msgError = (string)ViewBag.MsgError;
+    int hayError = 0;
+    if (msgError != "")
+    {
+        hayError = 1;
+    }
+}
+
+<link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+
+
+<link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+<link href="~/css/MyTreeView.css" rel="stylesheet" />
+
+<link href="~/css/Organizacion.css" rel="stylesheet" />
+
+
+@functions{
+
+    public string DisplaySubOrganizaciones(List<NivelesOrganizacion> niveles, int i)
+    {
+        string s = "";
+
+        NivelesOrganizacion nivel = niveles[i];
+        s += "<ul>";
+        //        i++;
+        string color = "ColorNormal";
+
+        try
+        {
+            if (nivel.TablaTiphone != "ASESORES")
+            {
+                s += "<li>";
+
+                s += "<span class='tree-nivel-padre " + color + "'>";
+                //          s += "<i class='glyphicon glyphicon-menu-down' ></i>";
+                s += nivel.Nombre;
+                s += "<label id='nivel'" + nivel.IdNivelOrganizacion + "' class='colorBlue-nivel'>( Nivel " + nivel.Orden.ToString() + " )</label> ";
+                s += "</span> ";
+            }
+            else
+            {
+                s += "<li style='display:none;'><span class='tree-nivel-hoja node-item " + color + "'> " + nivel.Nombre + " </span>  ";
+            }
+
+            i++;
+            if (i < niveles.Count)
+            {
+                s += DisplaySubOrganizaciones(niveles, i);
+            }
+            s += "  </li>";
+            s += "</ul>";
+        }
+
+        catch (Exception ex)
+        {
+            s += "Grossen peten " + ex.Message;
+        }
+
+
+        return s;
+    }
+
+
+    public string Display()
+    {
+        var niveles = (List<NivelesOrganizacion>)Model;
+        if (niveles == null || niveles.Count == 0)
+            return "";
+
+        var nivel = niveles[0];
+        string s = "<ul>";
+        string color = "ColorNormal";
+
+        s += "<li>";
+
+        s += "<span class='tree-nivel-padre " + color + "'>";
+        //        s += "<i class='glyphicon glyphicon-menu-down'></i>";
+        s += nivel.Nombre;
+        s += "<label class='colorBlue-nivel'>( Nivel " + nivel.Orden.ToString() + " )</label> ";
+        s += "</span> ";
+
+        //int i = 0;
+        try
+        {
+            if (niveles.Count > 1)
+            {
+                s += DisplaySubOrganizaciones(niveles, 1);
+            }
+            s += "</li>";
+            s += "</ul>";
+
+
+        }
+        catch (Exception ex)
+        {
+
+            s += "Peten " + ex.Message;
+        }
+
+
+        return s;
+    }
+}
+
+
+
+
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <input type="hidden" id="msg-error" value="@msgError " />
+
+    <div class="row rowSeparacion20">
+        @* Panel izquierdo, donde se coloca el menú *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+        @* Panel central donde se muestra la tabla con los equipos*@
+        <div class="col-lg-10 col-md-10">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="row alinea-boton">
+                        <button type="button" class="btn btn-default botonFicha" onclick="AnadeNuevoNivel()"><b>Nuevo nivel</b> </button>
+                    </div>
+
+                    <ul class="responsive-table">
+                        <li class="table-header" disabled>
+                            <div class="col col-1">Nivel</div>
+                            <div class="col col-2">Nombre nivel</div>
+                            <div class="col col-3">Descripción</div>
+                            <div class="col col-4">Acción</div>
+                        </li>
+                        @foreach (NivelesOrganizacion nivel in Model)
+                        {
+                            <li class="table-row">
+                                <div class='col col-1'>@nivel.Orden</div>
+                                <div class='col col-2'>
+                                    <input type="text" class="input-no-activo" id="nombre-@nivel.IdNivelOrganizacion" value="@nivel.Nombre" />
+                                </div>
+                                <div class='col col-3'>
+                                    <input type="text" class="input-no-activo" id="descr-@nivel.IdNivelOrganizacion" value="@nivel.Descripcion" />
+                                </div>
+                                <div class='col col-4'>
+                                    @if (nivel.TablaTiphone != "EQUIPO" && nivel.TablaTiphone != "OP_TABLE")
+                                    {
+                                        <span class="fa fa-pencil-square-o espacio-span-10" tite="Modifica nombre de nivel" onclick="ModificaDatosNivel(@nivel.IdNivelOrganizacion, @nivel.Orden,'M');">  </span>
+                                        <span class="fa fa-trash-o espacio-span-10" title="Elimina nivel" onclick="ModificaDatosNivel(@nivel.IdNivelOrganizacion, @nivel.Orden,'B');"> </span>
+                                    }
+                                </div>
+                            </li>
+
+                        }
+                    </ul>
+
+                </div>
+
+                @* *@
+                <div class="col-lg-6 col-md-6">
+                    <div class="row">
+                        <div class="tree-nivel">
+                            @Html.Raw(Display())
+                        </div>
+
+                        <div class="panel no-visible" id="panel-nivel">
+                            <div class="panel-heading  panel-head">
+                                <a data-toggle="collapse" href="#test" class="close">&times;</a>
+                                <h2 class="panel-head" id="panel-title"></h2>
+                            </div>
+                            <div class="panel-body" id="panel-body">
+                                <form method="post" action="@Url.Action("ModificarNivelOrganizacion", "Organizacion")">
+                                    <div class="form-group">
+                                        <label for="nombrenivel">Nombre</label>
+                                        <input type="text" class="form-control" required
+                                               id="nombrenivel" name="nombrenivel" vaue=""
+                                               maxlength="49" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="descripcionnivel">Descripción</label>
+                                        <input type="text" class="form-control" required
+                                               id="descripcionnivel" name="descripcionnivel" value=""
+                                               maxlength="149" />
+                                    </div>
+
+                                    <div class="form-inline">
+                                        @{
+                                            string maxnivel = (Model.Count - 2).ToString();
+                                        }
+                                        <label for="nivelvalue">Nivel en organización  </label>
+                                        <input type="number" class="form-control" required
+                                               id="nivelvalue" value="" max="@maxnivel" min="1"
+                                               maxlength="2" style="margin-left: 10px" />
+                                        <input type="hidden" id="orden" name="orden" value="0" />
+                                        <input type="hidden" id="idnivel" name="idnivel" value="" />
+                                        <input type="hidden" id="accion" name="accion" value="" />
+                                    </div>
+
+
+                                    <div class="margen-top-20 text-right">
+                                        <button type="submit" id="btn-guardar" class="btn btn-info">Guardar</button>
+                                        <button type="button" class="btn btn-default" onclick="CerrarPanel()">Salir</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="panelwarning" class="row rowSeparacion15 no-visible">
+                        <div class="panel panel-warning">
+                            <div id="panelwarning-head" class="panel-heading"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-lg-1 col-md-1">
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts {
+    <script>
+        let maxNiveles = 0;
+        $(document).ready(function () {
+            let bhayerror = @hayError;
+            maxNiveles = @Model.Count();
+            console.log(('Arranca crear organizacion'));
+            if (bhayerror) {
+                const msgError = $('#msg-error').val();
+                if ($('#panelwarning').hasClass('no-visible')) {
+                    $('#panelwarning').removeClass('no-visible');
+                    $('#panelwarning').addClass('panelwrn-visible');
+                    $('#panelwarning-head').html("<h5><p>ERROR ----  " + msgError + "</p></h5>");
+                }
+            }
+        });
+
+
+        // -----------------------------------------------------
+        // Se activa para eliminar o modificar el nivel.
+        // Permite cambios sobre los datos del nivel
+        // -----------------------------------------------------
+        function ModificaDatosNivel(id, orden, accion) {
+
+            // Ocultamos el árbol de nivel
+            $('.tree-nivel').css('display', 'none');
+            // Preparamos para mostrar el panel de modificación
+            const nombreId = 'nombre-' + id;
+            const descrId = 'descr-' + id;
+
+            MostrarPanelDatosNivel(accion);
+
+            const nombre = $('#' + nombreId).val();
+            const descr = $('#' + descrId).val();
+
+            if (accion === 'M') {
+                $('#panel-title').html('Modificar datos nivel ' + nombre);
+                $('#btn-guardar').text('Guardar');
+                $('#btn-guardar').css('background', '#5bc0de');
+            }
+            else if (accion === 'B') {
+                $('#panel-title').html('Eliminar el nivel ' + nombre + '?');
+                $('#btn-guardar').text('Eliminar');
+                $('#btn-guardar').css('background', '#f0ad4e');
+            }
+
+            $('#nombrenivel').val(nombre);
+            $('#descripcionnivel').val(descr);
+            $('#nivelvalue').val(orden);
+            $('#orden').val(orden);
+            $('#nivelvalue').prop('disabled', false);
+            $('#idnivel').val(id);
+            $('#accion').val(accion); // Modificación o baja
+        }
+
+        // Cierra el panel de modificación
+        function CerrarPanel() {
+            // Cierro el panel
+            if ($('#panel-nivel').hasClass('panel-visible')) {
+                $('#panel-nivel').removeClass('panel-visible');
+                $('#panel-nivel').addClass('no-visible');
+            }
+
+            // muetro el panel de organización
+            $('.tree-nivel').css('display', 'block');
+        }
+
+        // -----------------------------------------
+        // Añade un nuevo nivel al árbol organizatvo
+        // -----------------------------------------
+        function AnadeNuevoNivel() {
+
+            MostrarPanelDatosNivel('A');
+
+            $('#btn-guardar').text('Añadir');
+            $('#btn-guardar').css('background', '#0275d8');
+            $('#panel-title').html('Nuevo nivel ');
+            $('#nombrenivel').val('');
+            $('#descripcionnivel').val('');
+            $('#nivelvalue').val((maxNiveles - 1));
+            $('#orden').val((maxNiveles - 1));
+            $('#nivelvalue').prop('disabled', true);
+
+            $('#idnivel').val('0');
+            $('#accion').val('A'); // Alta de nivel
+        }
+
+
+        /// --------------------------------------
+        //  Muestra el panel de datos de nivel
+        /// --------------------------------------
+        function MostrarPanelDatosNivel(accion) {
+            // Ocultamos el árbol de nivel
+            $('.tree-nivel').css('display', 'none');
+
+            // Muestra el panel
+            if ($('#panel-nivel').hasClass('no-visible')) {
+                $('#panel-nivel').removeClass('no-visible');
+                $('#panel-nivel').addClass('panel-visible');
+            }
+
+            if (accion === 'M' || accion === 'A') {
+                if (accion === 'M') {
+                    $('.panel-head').css('background', '#5bc0de');
+                }
+                else {
+                    $('.panel-head').css('background', '#0275d8');
+                }
+                if ($('#panelwarning').hasClass('panelwrn-visible')) {
+                    $('#panelwarning').removeClass('panelwrn-visible');
+                    $('#panelwarning').addClass('no-visible');
+                }
+            }
+            else if (accion == 'B') {
+                $('.panel-head').css('background', '#f0ad4e');
+                if ($('#panelwarning').hasClass('no-visible')) {
+                    $('#panelwarning').removeClass('no-visible');
+                    $('#panelwarning').addClass('panelwrn-visible');
+                    $('#panelwarning-head').html("<h5>ATENCIÓN! Si elimina el nivel se eliminará todas las relaciones entre organiaciones y equipos desde ese nivel</h5>");
+                }
+            }
+        }
+    </script>
+}
+

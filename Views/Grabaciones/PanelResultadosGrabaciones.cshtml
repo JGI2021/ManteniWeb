@@ -1,0 +1,68 @@
+﻿@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+@using ManteniWeb.Code;
+
+
+@model DatosFormGrabaciones
+
+<div class='row' id="panelResultados" style="padding: 5px 25px 20px 25px;">
+    <div class='col-lg-12 col-md-12 col-sm-12 col-xs-12' style='text-align:left;'>
+        <div class="btn-group" role="group" style="left: 90px; top: 5px;">
+            <button type='button' id='BotonBuscar' class='btn btn-default btn-inout-primary' title='Buscar' onClick='BuscarMVC()'>
+                <span class='fa @EstaticosImagenes.ImagenBusqueda'> @ComunResources.btn_buscar</span>
+            </button>
+
+            <button type='button' id='ExportarGrabaciones' class='btn btn-inout-primary' hidden title='@ComunResources.gr_exportarGrabaciones' onclick='AbrirModalGrabaciones();'>
+                <span class='fa fa-file-archive-o'> @ComunResources.exportar</span>
+            </button>
+            <button type="button" id="CopiarRegistros" class="btn btn-inout-primary" hidden onclick="ExportarGrabacionesMVC('CPY');">
+                <span class="fa fa-files-o"> @ComunResources.btn_copiar </span>
+            </button>
+            <button type="button" id="RegistorsACSV" class="btn btn-inout-primary" hidden onclick="ExportarGrabacionesMVC('CSV')">
+                <span class="fa fa-file-text-o"> CSV </span>
+            </button>
+            <button type="button" class="btn btn-inout-primary" hidden onclick="ExportarAFichero('XLS', 'C')">
+                <span class="fa fa-file-excel-o"> Excel </span>
+            </button>
+            <button type='button' id='BotonMostrarOcultarOpcionesB' class='btn btn-default btn-inout-primary' style="margin-left:15px;"
+                    title='Ocultar opciones de búsqueda' onclick="MostrarOcultarOpcionesBusqueda()">
+                <span class='fa fa-angle-double-up' />
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <hr class="hr" />
+</div>
+
+<div class="row rowSeparacion10">
+    <div class='col-lg-12' style="font-size: 15px; padding: 25px 35px;">
+        <table id='tblGrabaciones' class="table table-condensed table-striped table-responsive" style="width:100%; margin-bottom: 25px;">
+            <thead>
+                <tr>
+                    <th class="th no-sort"><input type="checkbox" id="checkTodos" value="" style="margin-left: 10px;" onclick="CheckTodos()" /></th>
+                    <th class="th">@ComunResources.FechaHora</th>
+                    <th class="th">@ComunResources.usuario</th>
+                    <th class="th">@ComunResources.cliente</th>
+                    <th class="th">@ComunResources.gr_origen</th>
+                    <th class="th">@ComunResources.gr_destino</th>
+                    <th class="th">@ComunResources.GrupoACD</th>
+                    <th class="th">@ComunResources.tipificacion</th>
+                    <th class="th">@ComunResources.tipificacionSecundaria</th>
+                    <th class="th">@ComunResources.pr_campanas</th>
+                    <th class="th">@ComunResources.listas</th>
+                    <th class="th">@ComunResources.IdLlamada</th>
+                    <th class="th">@ComunResources.IdGrabacion</th>
+                    <th class="th">@ComunResources.Tipo</th>
+                    <th class="th">@ComunResources.duracion</th>
+                    <th class="th">@ComunResources.accion</th>
+                </tr>
+            </thead>
+            <tbody id="bodyTblGrabaciones">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

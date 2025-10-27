@@ -1,0 +1,305 @@
+﻿@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.ClasesDeDatos
+@using ManteniWeb.Models
+@using ManteniWeb.App_GlobalResources
+
+@model TDatosOperador
+
+@{
+    TUsuario usuario = EstaticosUsuario.GetUsuario(HttpContext.Current);
+    List<TDatosGrupo> gruposAtencion = ViewBag.GruposAcd as List<TDatosGrupo>;
+    List<string> gruposAsignadosOperador = ViewBag.GruposAsignadosOperador as List<string>;
+    List<NivelesOperador> nivelesOperador = ViewBag.NivelesDeOperador as List<NivelesOperador>;
+
+    List<DatosOrganizacion> organizaciones = null;
+
+    if (WebConfigParams.AplicarModeloOrganizativo)
+    {
+        organizaciones = ViewBag.Organizacion as List<DatosOrganizacion>;
+    }
+
+    List<TDatosConjuntoOperadores> lsConjuntosOperadores = ViewBag.ConjuntosOperadores as List<TDatosConjuntoOperadores>;
+    bool hayConjuntoOperadores = lsConjuntosOperadores.Count > 0 ? true : false;
+
+    string selectedAs = "";
+    string display = "";
+
+    bool esAlta = false;
+    if (string.IsNullOrEmpty(Model.Codigo) || Model.Codigo == "0")
+    {
+        esAlta = true;
+    }
+}
+
+<div id="datosOperador" class="tab-pane active">
+    <div class="row rowSeparacion25">
+        <div class="col-lg-2 col-md-2">
+            <label for="operadorId">@ComunResources.identificador <span class="red-text"> * </span></label>
+            <input type="text" id="operadorId" readonly class="form-control" name="Codigo" value="@Model.Codigo" />
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <label for="aliasOp">@ComunResources.alias <span class="red-text"> * </span></label>
+            <input type="text" id="aliasOp" class="form-control" value="@Model.Alias" name="Alias" maxlength="10" autocomplete="off"/>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <label for="tipoOp">@ComunResources.tipoOperador<span class="red-text"> * </span></label>
+            <select id="tipoOp" class="form-control" name="TipoOperador" onchange="ActivaDesactivaEquiposSegunNivelAgente(@WebConfigParams.AplicarModeloOrganizativo)">
+                @foreach (NivelesOperador nivel in nivelesOperador)
+                {
+                    if (Model.OpLevel == nivel.idNivel)
+                    {
+                        <option value="@nivel.idNivel" selected="selected">@nivel.tipoOperador</option>
+                    }
+                    else
+                    {
+                        <option value="@nivel.idNivel">@nivel.tipoOperador</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            @{
+                string estado = "ACTIVO";
+                string claseEstado = "darkgreen-text";
+                if (Model.Activo == "0")
+                {
+                    estado = "INACTIVO";
+                    claseEstado = "red-text";
+                }
+                else if (Model.Activo == "99")
+                {
+                    estado = "ELIMINADO";
+                    claseEstado = "red-text";
+                }
+            }
+            <label for="tipoOp">@ComunResources.estado</label>
+            <label id="estadoOp" class="form-control @claseEstado" style="font-size:16px;font-weight:600;">@estado</label>
+        </div>
+
+    </div>
+
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-5 col-md-5">
+            <label for="nombreOp">@ComunResources.lb_nombre <span class="red-text"> * </span></label>
+            <input type="text" id="nombreOp" class="form-control" name="Nombre" value="@Model.Nombre" maxlength="50" />
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <label for="loginOp">Login</label>
+            <input type="text" id="loginOp" class="form-control" name="LoginWindows" value="@Model.LoginWindows" maxlength="100" autocomplete="off" />
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <label for="ldapOp">Login LDAP</label>
+            <input type="text" id="ldapOp" class="form-control" LDAP="LDAP" value="@Model.LDAP" name="LDAP" maxlength="50" autocomplete="off" />
+        </div>
+    </div>
+
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-5 col-md-5">
+            <label for="aliaschatOp">Chat @ComunResources.alias</label>
+            <input type="text" id="aliaschatOp" class="form-control" value="@Model.ChatName" name="ChatName" maxlength="50" />
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <label for="telefonopersonal">@ComunResources.op_telefonoPersonal</label>
+            <input type="text" id="telefonopersonal" class="form-control" value="@Model.TelefonoPersonal" name="TelefonoPersonal"
+                   maxlength="50" title="@ComunResources.op_msgTelefonoPersonal" />
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <label for="nifOp">@ComunResources.op_nif</label>
+            <input type="text" id="nifOp" class="form-control" value="@Model.Nif" name="Nif" maxlength="50" />
+        </div>
+
+    </div>
+
+    @*
+        No se está usando.
+        <div class="row rowSeparacion25">
+        <div class="col-lg-5 col-md-5 form-inline pos-checkbox">
+            <label for="monitCuentaOfficce" class="margen-derecho-15">
+                Monitorizar cuenta officce
+            </label>
+            @if (Model.MonitorizarCuentaOffice == "1")
+            {
+                <input type="checkbox" id="monitCuentaOfficce" class="checkbox" name="MonitorizarCuentaOffice" checked="checked" />
+            }
+            else
+            {
+                <input type="checkbox" id="monitCuentaOfficce" class="checkbox" name="MonitorizarCuentaOffice" />
+            }
+
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+            <label for="cuentaofficce">@ComunResources.op_cuentaoffice</label>
+            <input type="text" id="cuentaofficce" class="form-control" value="@Model.CuentaOffice" name="CuentaOffice" maxlength="150" />
+        </div>
+
+    </div>*@
+
+    <div class="row rowSeparacion25">
+        <div class="col-lg-5 col-md-5 form-inline pos-checkbox">
+            <label for="llamadasAdminis" class="margen-derecho-15">
+                Llamadas en administrativo
+            </label>
+            @if (Model.FlagAtenderEnAdministrativo == "1")
+            {
+                <input type="checkbox" id="llamadasAdminis" class="checkbox" checked="checked"
+                       name="FlagAtenderEnAdministrativo" onchange="MostrarOcultarAtenderEnAdministrativo()" />
+            }
+            else
+            {
+                <input type="checkbox" id="llamadasAdminis" class="checkbox"
+                       name="FlagAtenderEnAdministrativo" onchange="MostrarOcultarAtenderEnAdministrativo()" />
+            }
+        </div>
+
+        @if (Model.FlagAtenderEnAdministrativo == "1")
+        {
+            display = "mostrar-elem-blk";
+        }
+        else
+        {
+            display = "ocultar-elem";
+        }
+        <div class="col-lg-6 col-md-6 @display" id="comboSeleccionGrupos">
+            <label for="gruposAtencion">@ComunResources.op_grupoEnAdministrativo</label>
+            <select id="gruposAtencion" class="form-control selectpicker" multiple
+                    data-actions-box='true' title='@ComunResources.seleecioneGrupo ...' data-val='true' data-val-requiered='@ComunResources.seleecioneGrupo'
+                    name="GruposAtencionSeleccionados">
+                @foreach (TDatosGrupo grupo in gruposAtencion)
+                {
+                    if (!usuario.PermisosUsuario.AdministraGrupoId(grupo.Codigo))
+                    {
+                        continue;
+                    }
+
+                    selectedAs = "";
+                    if (gruposAsignadosOperador.Contains(grupo.Codigo))
+                    {
+                        selectedAs = "selected";
+                    }
+
+
+                    if (grupo.FlagAtenderEnAdministrativo == "1")
+                    {
+                        <option value='@grupo.Codigo' @selectedAs style='font-weight:600'>@grupo.Alias</option>
+                    }
+                    else
+                    {
+                        <option value='@grupo.Codigo' @selectedAs disabled style='background:#f2f2f2;font-style: italic;'>@grupo.Alias</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    @if (hayConjuntoOperadores)
+    {
+        <div class="row rowSeparacion25">
+            <div class="col-lg-5 col-md-5" id="panelConjuntoOperadores">
+                <label for="conjuntoOPeradores">@ComunResources.op_conjuntoOperadores</label>
+                <select id="conjuntoOPeradores" class="form-control selectpicker" data-actions-box='true' title='@ComunResources.seleccioneGrupoOperadores ...' data-val='true' data-val-requiered="Select operators' group" 
+                        name="AsignacionConjuntoOperadores" multiple >
+                    @foreach (TDatosConjuntoOperadores conjuntoOperadores in lsConjuntosOperadores)
+                    {
+                        if (Model.ConjuntoOperadores != null && Model.ConjuntoOperadores.Find(o => o.Id == conjuntoOperadores.Id) != null)
+                        {
+                            <option value='@conjuntoOperadores.Id' selected> @conjuntoOperadores.Nombre</option>
+                        }
+                        else
+                        {
+                            <option value='@conjuntoOperadores.Id'> @conjuntoOperadores.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    }
+
+    @if (WebConfigParams.AplicarModeloOrganizativo)
+    {
+        string disabled = "";
+        string disableOption = "";
+        string styleOption = "";
+        //if (!usuario.PermisosUsuario.AdministraOrganizacion)
+        //{
+        //    disabled = " disabled='disabled' ";
+        //}
+
+        <div class="row rowSeparacion25">
+            <div class="col-lg-5 col-md-5" id="panelOrganizacion">
+                <label for="organizacionjerarquica">Nivel en organización</label>
+                <select id="organizacionjerarquica" class="form-control" data-actions-box='true' title='Seleccione un nivel ...' data-val='true' data-val-requiered='Debe seleccionar un nivel'
+                        name="AsignacionJerarquica" @disabled  >
+                    <option value="" disabled selected>@ComunResources.seleccioneUnNivel ...</option>
+                    @foreach (DatosOrganizacion organizacion in organizaciones)
+                    {
+                        disableOption = "";
+                        styleOption = "";
+
+                        if ((usuario.NivelOperador == (int)TipoDeOperador.opAgente || usuario.NivelOperador == (int)TipoDeOperador.opAgenteAvanzado))
+                        {
+                            disableOption = "disabled";
+                            styleOption = "color: #e2e2e2 !important;";
+                        }
+
+                        if (Model.OpLevel < (int)TipoDeOperador.opCoordinador && !organizacion.NivelOrganizacion.ToUpper().Contains("EQUIPO"))
+                        {
+                            disableOption = "disabled";
+                            styleOption = "color: #e2e2e2 !important;";
+                        }
+
+                        if (!string.IsNullOrEmpty(Model.Codigo) && Model.Codigo != "0" && Model.AsignacionJerarquica == organizacion.IndiceJerarquico)
+                        {
+
+                            <option value = '@organizacion.IndiceJerarquico' selected @disableOption style = "@styleOption" > @organizacion.Ruta &nbsp; &nbsp; &nbsp; (@organizacion.NivelOrganizacion) </option >
+
+                        }
+                        else
+                        {
+                            <option value = '@organizacion.IndiceJerarquico' @disableOption style = "@styleOption" > @organizacion.Ruta &nbsp; &nbsp; &nbsp; (@organizacion.NivelOrganizacion) </option >
+                        }
+                    }
+
+                </select>
+            </div>
+        </div>
+    }
+
+
+
+    @if (esAlta)
+    {
+        <div class="row rowSeparacion25">
+            <div class="col-lg-5 col-md-5 form-inline pos-checkbox">
+                <label for="cambiarPassword" class="margen-derecho-15">
+                    El operador tiene que cambiar la contraseña
+                </label>
+                <input type="checkbox" id="cambiarPassword" name="CambiarPawdPrimeraVez" class="checkbox" checked="checked" />
+
+            </div>
+
+            <div class="col-lg-3 col-md-3 ">
+                <label for="contrasena">@ComunResources.contraseña <span class="red-text"> * </span></label>
+                <input type="password" id="contrasena" class="form-control" value="" name="Password" maxlength="25" autocomplete="off"/>
+                <i class="fa fa-eye-slash verPsswd" id="togglePassword" onclick="MostrarOcultarPassword(this.id,'contrasena')"></i>
+            </div>
+
+            <div class="col-lg-3 col-md-3">
+                <label for="confirmContrasena">@ComunResources.confirmaContrasena <span class="red-text"> * </span></label>
+                <input type="password" id="confirmContrasena" class="form-control" value="" maxlength="25" autocomplete="off" />
+                <i class="fa fa-eye-slash  verPsswd" id="confirmTogglePassword" onclick="MostrarOcultarPassword(this.id, 'confirmContrasena')"></i>
+            </div>
+
+        </div>
+    }
+</div>

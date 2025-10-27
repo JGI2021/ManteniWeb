@@ -1,0 +1,240 @@
+﻿
+@using ManteniWeb.Code
+@using ManteniWeb.DatosTablas
+@using ManteniWeb.ClasesDeDatos
+
+@model DatosContacto
+
+
+
+@{
+    List<TDatosRdoNegocio> lsResultados = (List<TDatosRdoNegocio>)ViewBag.ResultadosNegocio;
+    Layout = null;
+    TUsuario usuario = ViewBag.Usuario as TUsuario;
+    List<DatosRegistroContacto> regitros = ViewBag.Registros as List<DatosRegistroContacto>;
+    string idCampana = ViewBag.CampanaSeleccionada as string;
+    string idRegistro = ViewBag.IdRegistro as string;
+}
+
+@Styles.Render("~/FicherosCss")
+@Styles.Render("~/FicherosCssPropios")
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href='~/Content/bootstrap-select.min.css' rel='stylesheet' />
+<link href="~/Content/Datatables/Select-1.4.0/css/select.bootstrap.min.css" rel="stylesheet" />
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/FuncionesJS")
+
+
+<script src="~/Content/Datatables/datatables.min.js"></script>
+<script src='~/Scripts/bootstrap-select.js' type='text/javascript'></script>
+<script src="~/Content/Datatables/Select-1.4.0/js/select.bootstrap.min.js"></script>
+<script src="~/js/EdicionContacto.js"></script>
+<script src="~/js/sweetalert2/dist/sweetalert2.all.min.js" type="text/javascript"></script>
+
+
+<script>
+
+    let g_datosContacto;
+
+    $(document).ready(function () {
+        g_datosContacto = @Html.Raw(Json.Encode(Model));
+    });
+
+</script>
+
+<style>
+    tbody#bodyTelefonos tr:hover {
+        cursor: pointer;
+    }
+
+    th {
+        background: #778899 !important;
+        color: white !important;
+        font-weight: 300 !important;
+    }
+
+
+    .panel-reprogramacion {
+        top: 20px;
+        position: relative;
+        border-top: 1px solid #d2d2d2;
+        border-bottom: 1px solid #d2d2d2;
+        display: none;
+    }
+
+    .posiciona-label {
+        margin-right: 10px;
+        top: 10px;
+        position: relative;
+    }
+
+    .bodySize {
+        height: 666px;
+        width: 1408px;
+    }
+</style>
+
+<body class="bodySize">
+    <input type="hidden" id="idCampana" value="@idCampana" />
+    <input type="hidden" id="idRegistro" value="@idRegistro" />
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="btnGuardarDatos" class="" onclick="GuardarDatos();">
+                            <div class="row" style="display:inline-flex">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa fa-save visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Guardar</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    @if (usuario.NivelOperador >= (int)TipoDeOperador.opSupervisor)
+                    {
+                        <li class="RowAccionesSiempreVisibles" >
+                            <a href="#" role="button" id="btnNuevoTelefono" class="" onclick="NuevoTelefonoRegistros();" style="display: none;">
+                                <div class="row" style="display:inline-flex">
+                                    <div class="col-lg-2 col-sm-1">
+                                        <span class="fa fa-plus visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-11">Nuevo teléfono</div>
+                                </div>
+                            </a>
+                        </li>
+
+
+                        <li class="RowAccionesSiempreVisibles" style="">
+                            <a href="#" role="button" id="btnEliminarRegistro" class="" onclick="EliminarRegistro();">
+                                <div class="row" style="display:inline-flex">
+                                    <div class="col-lg-2 col-sm-1">
+                                        <span class="fa fa-trash visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-11">Eliminar</div>
+                                </div>
+                            </a>
+                        </li>
+                    }
+
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_16" onclick="CierraModal()">
+                            <div class="row" style="display:inline-flex">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-close visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Salir</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        <div class="col-lg-10 col-md-10 col-sm-10">
+
+            @Html.Partial("_MensajesError")
+
+            @*<div class="panel panel-default">
+                <div class="panel-heading ">*@
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active">
+                    <a href="#datosContacto" aria-controls="one" role="tab" data-toggle="tab">Datos cliente</a>
+                </li>
+                <li role="presentation">
+                    <a href="#telefonos" aria-controls="two" role="tab" data-toggle="tab">Teléfonos</a>
+                </li>
+                <li role="presentation">
+                    <a href="#historico" aria-controls="three" role="tab" data-toggle="tab">Histórico</a>
+                </li>
+            </ul>
+            @*</div>
+                <div class="panel-body">*@
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="datosContacto">
+                    @Html.Partial("PanelDatosContacto")
+                </div>
+
+                <div role="tabpanel" class="tab-pane fade" id="telefonos" style="margin-top: 25px;" >
+                    <table id="TablaTelefonos" class="table table-condensed table-striped" style="width:100%; margin-bottom: 25px;">
+                        <thead>
+                            <tr>
+                                <th>Teléfono</th>
+                                <th>Estado</th>
+                                <th>Inicio - Fin</th>
+                                <th>Sig. llamada</th>
+                                <th>Prioridad</th>
+                                <th>Peso</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyTelefonos">
+                            @foreach (DatosTelefonoContacto telefono in Model.Telefonos)
+                            {
+                                <tr id="rg_@telefono.Telefono">
+                                    <td>@telefono.Telefono</td>
+                                    <td>@telefono.EstadoTfno</td>
+                                    <td>@telefono.FechahoraInicio.ToString(WebConfigParams.FormatDate) - @telefono.FechahoraFin.ToString(WebConfigParams.FormatDate)</td>
+                                    <td>@Html.Raw(ObtenerFechaHoraProxLlamada(telefono.FechahoraProxLlamada))</td>
+                                    <td>@telefono.PrioridadTelefono</td>
+                                    <td>@telefono.PesoTelefono</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="historico" style="margin-top: 25px;">
+                    <table id="tablaRegistros" class="table table-condensed table-striped" style="width: 100%; margin-bottom: 25px;">
+                        <thead>
+                            <tr>
+                                <th>Fecha hora</th>
+                                <th>Teléfono</th>
+                                <th>Resultado llamada</th>
+                                <th>Lista</th>
+                                <th>Operador</th>
+                                <th>Acción</th>
+                                <th>Rs. Negocio</th>
+                                <th>Id </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (DatosRegistroContacto registro in regitros)
+                            {
+                                <tr>
+                                    <td>@registro.FechahoraServido.ToString(WebConfigParams.FormatDateTime)</td>
+                                    <td>@registro.NumeroTelefono</td>
+                                    <td>@registro.DescripResultadoLlamada</td>
+                                    <td>@registro.AliasLista</td>
+                                    <td>@registro.OperadorNombre</td>
+                                    <td>@registro.DescripcionRegistro</td>
+                                    <td>@registro.ResultadoNegocio</td>
+                                    <td>@registro.IdRegistro</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+@functions {
+    public string ObtenerFechaHoraProxLlamada(DateTime? fecha)
+    {
+        if (fecha == null)
+            return "";
+        else
+            return fecha.Value.ToString(WebConfigParams.FormatDate);
+    }
+}

@@ -1,0 +1,250 @@
+﻿<table>
+
+  <general
+    DisplayName="Posición"
+    Database="TIPHONE"
+    SubsystemFieldName="subsistema"
+    TableName="POSITIONS"
+    TableName2="POSITIONS_CHANNELS"
+    CrossField="POSITION_ID">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Datos Generales">
+    </panel>
+    <panel
+      id="reglasgrabacion"
+      DisplayName="Reglas grabación">
+    </panel>
+  </panels>
+
+  <fields>
+
+    <field>
+      <fattr
+        FieldName="position_id"
+        Panel="panelgenerales"
+        DisplayName="Identificador"
+        ReadOnly="false"
+        IsKey="true"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Identificador de la posición."
+        External="false"
+        Visible="true"
+        UpdateNeeded="false"
+        AuxTable="2"
+        TabOrder="1"
+        Linea="L1">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="phone"
+        Panel="panelgenerales"
+        DisplayName="Extensión Asterisk"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Introduzca una extensión. Si es de tipo satélite el formato debe ser XXXXXX@dominio"
+        MaxLen="100"
+        External="false"
+        Visible="true"
+        UpdateNeeded="true"
+        AuxTable="2"
+        TabOrder="2"
+        Linea="L1">
+      </fattr>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="type"
+        AuxTable="false"
+        Panel="panelgenerales"
+        DisplayName="Tipo"
+        EditionType="Combo"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Tipo de posición"
+        External="true"
+        UpdateNeeded="true"
+        DefaultValue="12"
+        Visible="true"
+        TabOrder="3"
+        Linea="L2">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+             key="12"
+             value="Aerisk interno">
+          </collectionitem>
+          <collectionitem
+             key="14"
+             value="Satélite con paleta">
+          </collectionitem>
+          <collectionitem
+             key="15"
+             value="Satélite sin paleta">
+          </collectionitem>
+        </collection>
+      </external>      
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="nombre"
+        Panel="panelgenerales"
+        DisplayName="Nombre"
+        EditionType="Edit"
+        Mandatory="false"
+        AuxTable="false"
+        ValidateAs="Alpha"
+        ToolTip="Introduzca el nombre."
+        MaxLen="50"
+        External="false"
+        UpdateNeeded="true"
+        Visible="true"
+        TabOrder="4"
+        Linea="L2">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="EXTENSION"
+        Panel="panelgenerales"
+        DisplayName="Extensión"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Extension"
+        External="false"
+        UpdateNeeded="false"
+        Visible="false"
+        DefaultValueField="position_id"
+        AuxTable="2"
+        Linea="L6"
+        TabOrder="6">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="Capability"
+        Panel="panelgenerales"
+        DisplayName="Es WebRTC"
+        EditionType="Check"
+        Mandatory="false"
+        ValidateAs="boolean"
+        ToolTip="¿Es WebRTC?"
+        External="false"
+        AuxTable="2"
+        UpdateNeeded="true"
+        DefaultValue="0"
+        TabOrder="6"
+        Linea="L3">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="EXTENSION_DOMAIN"
+        Panel="panelgenerales"
+        DisplayName="Dominio de la extensión"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Indique el dominio de la extensión"
+        External="false"
+        dependencies="true"
+        UpdateNeeded="true"
+        Visible="true"
+        AuxTable="2"
+        TabOrder="7"
+        MaxLen="50"
+        Linea="L4">
+      </fattr>
+      <dependencies>
+        <dependencie
+            FieldDependency="Capability"
+            ValueDependency="true"
+            Visible="true"
+            Mandatory="true">
+        </dependencie>
+        <dependencie
+            FieldDependency="Capability"
+            ValueDependency="false"
+            Visible="false"
+            Mandatory="false">
+        </dependencie>
+      </dependencies>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="EXTENSION_PWD"
+        Panel="panelgenerales"
+        DisplayName="Password de la extensión"
+        EditionType="Password"
+        Mandatory="true"
+        ValidateAs="pwd2"
+        ToolTip="Indique la password de la extensión"
+        External="false"
+        dependencies="true"
+        UpdateNeeded="true"
+        Visible="true"
+        AuxTable="2"
+        MaxLen="50"
+        RequiereConfirmacion="false"
+        TabOrder="8"
+        Linea="L4">
+      </fattr>
+      <dependencies>
+        <dependencie
+          FieldDependency="Capability"
+          ValueDependency="true"
+          Visible="true"
+          Mandatory="true">
+        </dependencie>
+        <dependencie
+          FieldDependency="Capability"
+          ValueDependency="false"
+          Visible="false"
+          Mandatory="false">
+        </dependencie>
+      </dependencies>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="channel_type"
+        Panel="panelgenerales"
+        DisplayName="Tipo de canal"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Extension"
+        External="false"
+        UpdateNeeded="false"
+        Visible="false"
+        DefaultValue="1"
+        AuxTable="2"
+        TabOrder="7">
+      </fattr>
+    </field>
+
+
+
+
+  </fields>
+</table>

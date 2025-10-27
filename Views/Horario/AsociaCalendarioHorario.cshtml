@@ -1,0 +1,113 @@
+﻿@using ManteniWeb.Code
+@using ManteniWeb.SQLServices
+
+@model Horario
+
+@{
+    List<AsociacionHorarioCalendario> lsAsocHorarioCalendarios = (List<AsociacionHorarioCalendario>)ViewBag.CalendariosAsociados;
+}
+<link href="~/css/Calendarios.css" rel="stylesheet" />
+
+
+<input type="hidden" value="@Model.CodigoHorario" id="hidd_idhorario" />
+
+<div class='row rowSeparacion25'>
+    <div class='col-md-5 col-sm-5'>
+
+        <div class='row'>
+
+            <div class='col-lg-2 col-md-2 form-check'>
+                <input type='checkbox' value='' id='IdCheckNoAsignados_cl' class='PosCheckBoxTodos' onclick='CheckTodosCaja(this.id, "ul_noasociados_cl");' />
+
+            </div>
+            <div class='col-md-10 col-lg-10'>
+
+                <h5><b> Calendarios no asignados al horario </b></h5>
+                <input type='text' id='myInputGroupNo_cl' class='form-control' onkeyup='BuscaGruposSinAsociarEnLista("_cl")' placeholder='Buscar calendarios ...' title='Escribir un nombre ' />
+
+            </div>
+
+        </div>
+        <div class='CajaElementos500px'>
+
+            <ul id='ul_noasociados_cl' class='list-group'>
+
+                @if (lsAsocHorarioCalendarios != null)
+                {
+                    foreach (AsociacionHorarioCalendario asoc in lsAsocHorarioCalendarios)
+                    {
+                        if (Model.CodigoHorario != asoc.IdHorario)
+                        {
+                            foreach (Calendario calendario in asoc.LsCalendarios)
+                            {
+
+                                <li id='li_cl_@calendario.IdCalendario' class='list-group-item'>
+
+                                    <input type='checkbox' id='chk_cl_@calendario.IdCalendario' name='chk_cl_@calendario.IdCalendario' onclick='CheckLiNoAsociado(this.id, "_cl");' />
+                                    &nbsp;&nbsp;
+                                    <span id='spn_cl_@calendario.IdCalendario'><b>   @calendario.NombreCalendario</b></span>
+                                    <span> ( @asoc.NombreHorario) </span>
+
+                                </li>
+                            }
+                        }
+                    }
+                }
+
+            </ul>
+        </div>
+    </div>
+
+
+    <div class='col-md-2 CajaElementos500pxSinScroll'>
+
+        <div class='center'>
+            <button type='button' class='btn btn-default' style='width:100%;' onclick='AsignaSeleccionados("_cl");'>
+                Asignar &nbsp; <span class='fa fa-angle-double-right'> </span>
+            </button>
+            <button type='button' class='btn btn-default' style='width:100%;top:59%;' onclick='DesasignaSeleccionados("_cl");'>
+
+                <span class='fa fa-angle-double-left'> &nbsp; Desasignar</span>
+
+            </button>
+        </div>
+    </div>
+
+    <div class='col-md-5 col-sm-5'>
+        <div class='row'>
+            <div class='col-lg-2 col-md-2 form-check'>
+                <input type='checkbox' value='' class='PosCheckBoxTodos' id='IdCheckAsignados_cl' onclick='CheckTodosCaja(this.id, "ul_siasociados_cl");' />
+            </div>
+            <div class='col-md-10 col-lg-10'>
+                <h5><b> Calendarios asignados al horario </b></h5>
+                <input type='text' id='myInputGroupSi_cl' class='form-control' onkeyup='BuscaGruposAsociadosEnLista("_cl")' placeholder='Buscar calendarios ...' title='Escribir un nombre '>
+
+            </div>
+        </div>
+        <div class='CajaElementos500px'>
+            <ul id='ul_siasociados_cl' class='list-group'>
+
+                @if (lsAsocHorarioCalendarios != null)
+                {
+                    foreach (AsociacionHorarioCalendario asoc in lsAsocHorarioCalendarios)
+                    {
+                        if (Model.CodigoHorario == asoc.IdHorario)
+                        {
+                            foreach (Calendario calendario in asoc.LsCalendarios)
+                            {
+                                <li id='li_cl_@calendario.IdCalendario' class='list-group-item'>
+
+                                    <input type='checkbox' id='chk_cl_@calendario.IdCalendario' name='chk_cl_@calendario.IdCalendario' onclick='CheckLiNoAsociado(this.id, "_cl");' />
+                                    &nbsp;&nbsp;<span id='spn_cl_@calendario.IdCalendario'><b>   @calendario.NombreCalendario</b></span>
+
+                                </li>
+                            }
+                        }
+                    }
+                }
+            </ul>
+
+        </div>
+    </div>
+</div>
+

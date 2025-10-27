@@ -1,0 +1,88 @@
+﻿<table>
+
+<general
+ 	DisplayName="Mensajes de encaminamientos" 
+ 	Database="DBQDEVICE"
+ 	SubsystemFieldName="subsistema_id"
+ 	TableName="DC_MENSAJE">
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="Datos Generales">
+</panel>
+</panels>
+
+<fields>
+
+<field>
+<fattr 
+	FieldName="mensaje" 
+	Panel="panelgenerales"
+	DisplayName="Alias" 
+	IsKey="true"
+	ReadOnly="false"
+	EditionType="Edit" 
+  MaxLen="50"
+	Mandatory="true" 
+	ValidateAs="Alpha"
+	ToolTip="Alias."
+	External="false"
+  UpdateNeeded="true"
+	TabOrder="1">
+</fattr>		
+</field>
+
+  <field>
+    <fattr
+      FieldName="Fichero"
+      Panel="panelgenerales"
+      DisplayName="Nombre del fichero"
+      EditionType="Edit"
+      MaxLen="100"
+      Mandatory="false"
+      ValidateAs="Alpha"
+      ToolTip="Nombre del fichero"
+      UpdateNeeded="true"
+      TabOrder="2">
+    </fattr>
+  </field>
+  
+<!--<field>
+<fattr 
+	FieldName="Fichero" 
+	Panel="panelgenerales"
+	DisplayName="Seleccionar fichero..." 
+	EditionType="FicheroModal"	
+	MaxLen="100"
+	Mandatory="false" 
+	ValidateAs="Alpha"
+	ToolTip="Seleccione un fichero."
+	External="false"
+  UpdateNeeded="true"
+	TabOrder="2">
+</fattr>		
+
+</field>
+-->
+
+<field>
+<fattr 
+	FieldName="texto_mensaje" 
+	Panel="panelgenerales"
+	DisplayName="Texto del mensaje" 
+	EditionType="EditArea" 	
+  
+	MaxLen="512"
+	Mandatory="false" 
+	ValidateAs="Alpha"
+	ToolTip="Introduzca un texto."
+	External="false"
+  UpdateNeeded="true"
+	TabOrder="3">
+</fattr>	
+</field>
+
+</fields>
+</table>

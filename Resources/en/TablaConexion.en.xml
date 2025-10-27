@@ -1,0 +1,104 @@
+﻿<table>
+
+  <general
+    DisplayName="Conexión de base de datos"
+    Database="GENERAL"
+    SubsystemFieldName="subsistema"
+    TableName="DATABASE_CONNECTION">
+  </general>
+
+
+
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Generales">
+    </panel>
+  </panels>
+
+  <fields>
+    <field>
+      <fattr
+        FieldName="id_connection"
+        Panel="panelgenerales"
+        DisplayName="Id de conexión"
+        IsKey="true"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Identificador de la conexión."
+        External="false"
+        Linea="primera"
+        InsertedNeeded="true"
+        UpdateNeeded="false"
+        MaxLen="50"
+        TabOrder="1">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="description"
+        Panel="panelgenerales"
+        DisplayName="Descripción"
+        EditionType="Edit"
+        MaxLen="255"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="Descripción de la conexión. "
+        External="false"
+        UpdateNeeded="true"        
+        Linea="primera"
+        TabOrder="2">
+      </fattr>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="instance_id"
+        Panel="panelgenerales"
+        DisplayName="Instancia"
+        EditionType="combo"
+        ValidateAs="integer"
+        ToolTip="Instancia de base de datos."
+        Linea="segunda"
+        UpdateNeeded="true"
+        Mandatory="true"
+        Visible="true"
+        External="true"
+        TabOrder="3">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="GENERAL"
+          TableName="DATABASE_INSTANCE"
+          FieldKey="instance_id"
+          FieldValue="name"
+          DefaultKey="NULL"
+          DefaultValue="Ninguno"
+          OrderBy="name">
+        </table>
+      </external>
+    </field>
+    
+  
+    <field>
+      <fattr
+        FieldName="Persistent"
+        Panel="panelgenerales"
+        DisplayName="Persistente"
+        EditionType="check"
+        ValidateAs="Boolean"
+        ToolTip="Acceder con usuario de windows"
+        External="false"
+        Linea="segunda"
+        UpdateNeeded="true"
+        DefaultValue="0"       
+        TabOrder="6">
+      </fattr>
+    </field>
+  </fields>
+</table>

@@ -1,0 +1,622 @@
+﻿@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.Code;
+
+
+@model DatosFormGrabaciones
+
+@{
+
+    string title = ComunResources.gr_buscadorGrabaciones;
+
+    List<TDatosOperador> operadores = ViewBag.Operadores as List<TDatosOperador>;
+    List<TDatosCampaign> campanasAsignadas = ViewBag.CampanasAsignadas as List<TDatosCampaign>;
+    List<TDatosGrupo> gruposACDAsignados = ViewBag.GruposAsignados as List<TDatosGrupo>;
+    string securityToken = ViewBag.SecurityToken as string;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href='~/Content/bootstrap-select.min.css' rel='stylesheet' />
+<link href="~/Content/Datatables/Select-1.4.0/css/select.bootstrap.min.css" rel="stylesheet" />
+<link href="~/css/datepicker3.css" rel="stylesheet" />
+<link href="~/css/MyDataTables.css" rel="stylesheet" />
+
+<style>
+    .th {
+        background: #778899 !important;
+        color: white !important;
+        font-weight: 300 !important;
+    }
+
+    input[type="search"] {
+        height: 20px !important;
+    }
+
+    div.dt-buttons {
+        position: relative;
+        top: 1px;
+        left: 30px;
+    }
+
+    div.dataTables_length {
+        display: inline-block;
+        float: left;
+        margin-right: 45px;
+        position: relative;
+        top: 6px;
+    }
+
+
+    .panel-menu {
+        padding: 20px 50px;
+        margin-bottom: 75px;
+    }
+
+    .list-group-item {
+        user-select: none;
+    }
+
+    .list-group input[type="checkbox"] {
+        display: none;
+    }
+
+        .list-group input[type="checkbox"] + .list-group-item {
+            cursor: pointer;
+        }
+
+            .list-group input[type="checkbox"] + .list-group-item:before {
+                content: "\2713";
+                color: transparent;
+                margin-right: 1em;
+            }
+
+        .list-group input[type="checkbox"]:checked + .list-group-item {
+            background-color: #0275D8;
+            color: #FFF;
+        }
+
+            .list-group input[type="checkbox"]:checked + .list-group-item:before {
+                color: inherit;
+            }
+
+    .btn-inout-primary {
+        color: #0275D8;
+        border: 1px solid;
+        font-size: 15px !important;
+    }
+
+        .btn-inout-primary:hover {
+            background-color: #a7c1d8 !important;
+            color: white !important;
+        }
+
+    .campoBusqueda {
+        font-size: 14px !important;
+    }
+
+    .subindice {
+        font-size: 11px;
+        font-weight: 400;
+    }
+
+    .hr {
+        margin-top: 10px;
+        margin-bottom: 0px;
+        border: 0;
+        border-top: 1px solid #d2d2d2;
+        margin-right: 25px;
+        margin-left: 25px;
+    }
+
+    .CampanaInactiva {
+        color: darkred !important;
+    }
+</style>
+
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-hashtag' aria-hidden="true"></i>
+            <span style='margin-left: 1em;' id="titlePage">@title</span>
+        </h2>
+    </div>
+</div>
+
+@* Campos ocultos *@
+<input type='hidden' id='TotalGrabaciones' name='TotalGrabaciones' value='0'>
+<a href='#' download='Grabaciones.zip' id='downloadGrabacion' hidden></a>
+<input type='hidden' id='TipoDeBusqueda' value='@Model.TipoDeBusqueda' name='TipoDeBusqueda' />
+<input type='hidden' id='TipificacionPrimaria' value='@Model.TipificacionPrimariaSel' name='TipificacionPrimaria' />
+<input type='hidden' id='TipificacionSecundaria' value='@Model.TipificacionSecundariaSel' name='TipificacionSecundaria' />
+<input type="hidden" id="BearerToken" value="@securityToken" />
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-2 col-md-2">
+            @Html.Partial("MenuBuscador")
+        </div>
+
+        <div class="col-lg-9 col-md-9 col-sm-10">
+
+            <div id='GlobalOpcionesDeBusqueda' style="font-size: 14px !important;">
+                @Html.Partial("PanelCamposBusqueda")
+            </div> @* fin id='GlobalOpcionesDeBusqueda' *@
+
+            @* Formularios de búsqueda por Ids *@
+            <div id='OpcionBusquedaPorID' style="font-size: 15px !important;top: 25px; margin-top: 25px; display: none">
+                <div class='col-lg-11 col-md-11col-sm-11 col-xs-12'>
+                    <div class='form-group row'>
+                        <label for='IdGrabacion' class='col-sm-3 control-label EstiloEtiquetaForm'>Identificador(es) de grabación</label>
+                        <div class='col-sm-9'>
+                            <input type='text' class='form-control input-sm' id='inpIdGrabacion' name='IdGrabacion' value='@Model.IdsGrabacion'>
+                        </div>
+                        <span style='display:none;' class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span>
+                    </div>
+                    <div class='row'>
+                        <div class='col-lg-3'></div>
+                        <div class='col-lg-2'>
+                            <label for='idgrabacionlbl'>
+                                <input type='radio' id='idgrabacionbl' checked name='grabacionporid' value='1' onclick="CambiaTipoIdGrabacion(1)" /> Id grabación
+                            </label>
+                        </div>
+                        <div class='col-lg-2'>
+                            <label for='idllamadalbl'>
+                                <input type='radio' id='idllamadalbl' name='grabacionporid' value='2' onclick="CambiaTipoIdGrabacion(2)" /> Id llamada
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div> @* fin id='OpcionBusquedaPorID' *@
+
+
+            @Html.Partial("PanelResultadosGrabaciones")
+
+
+        </div> @* Fin panel 8 *@
+
+
+        @* Modal de exportar grabaciones *@
+        <div class='modal fade' id='ModalGrabaciones' tabindex='111' role='dialog' aria-hidden='true' data-keyboard='false' style="top:100px;">
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h4 class='modal-title' style='font-weight: bold;'>@ComunResources.gr_exportarGrabaciones</h4>
+                    </div>
+
+                    <div class='modal-body' style='font-weight:400;'>
+                        <p><label style='font-weight:400;' id='NumeroGrabacionesLabel'>@ComunResources.gr_msgExportarGrabacionesContinuar </label><p>
+                        <p>Contraseña para el fichero de salida &nbsp;(opcional)<input type='text' class="form-control" id='contrasena' name='contasena' value='' />  <p>
+                    </div>
+                    <div class='modal-footer'>
+                        <div style='font-size:small;float:left;'>
+                            <input type='checkbox' id='CheckDescargaGrabaciones' checked='checked' value='1' /> @ComunResources.gr_descargarFichero
+                        </div>
+                        <button type='button' class='btn btn-default botonFicha' onclick='ExportarGrabacionesMVC("F");' id='BtnExportarModal'>
+                            Exportar
+                            <span id='spinExportar' style='display:none;' class='fa fa-spinner fa-spin btnspin'></span>
+                        </button>
+                        <button type='button' class='btn btn-default botonFicha' data-dismiss='modal'>@ComunResources.btn_cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div> @* fin modal exportar grabaciones *@
+
+    </div>   @* Container-fluid *@
+</div>
+
+
+
+
+
+@section scripts {
+
+    <script src="~/Scripts/jquery-ui-1.13.3.min.js"></script>
+    <script src="~/Content/Datatables/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.3.1/i18nextHttpBackend.min.js"></script>
+    <script src="~/js/i18next/i18next.min.js" type="text/javascript"></script>
+    <script src='~/Scripts/bootstrap-select.js' type='text/javascript'></script>
+    <script src="~/Content/Datatables/Select-1.4.0/js/select.bootstrap.min.js"></script>
+    <script src="~/jquery/bootstrap-datepicker.js"></script>
+
+    <script src="~/js/Grabaciones.js" type="text/javascript"></script>
+
+    <script>
+
+        let g_operadores = [];
+        let g_campanas = [];
+        let g_gruposAcd = [];
+        var g_SeHaPuldadoBuscar = false;
+        let g_tablaGrabaciones = null;
+        let g_datosForm = null;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            g_operadores = @Html.Raw(Json.Encode(operadores));
+            g_campanas = @Html.Raw(Json.Encode(campanasAsignadas));
+            g_gruposAcd = @Html.Raw(Json.Encode(gruposACDAsignados));
+            g_datosForm = @Html.Raw(Json.Encode(Model));
+            let language = '@WebConfigParams.AppLanguage';
+            g_SeHaPuldadoBuscar = false;
+
+            g_datosForm.Campanas = null;
+            g_datosForm.Grupos = null;
+
+            $('#Campanas').css('display', 'none');
+            $('#Listas').css('display', 'none');
+
+            $('.selectpicker').selectpicker("refresh");
+
+            $('.input-group.date').datepicker({
+                format: '@WebConfigParams.FormatDate.ToLower()',
+                language: 'es',
+                orientation: 'top left',
+                autoclose: true,
+                todayHighlight: true,
+                calendarWeeks: false,
+                clearBtn: true,
+                todayBtn: true
+            });
+
+            i18next.use(i18nextHttpBackend).init({
+                lng: language,
+                debug: true,
+                fallbackLng: "en",
+                backend: {
+                    loadPath: '../locales/{{lng}}.json'
+                }
+            });
+
+
+            /// -------------------------------------------------------------------
+            //  DATATABLE: Parámetros de configuración de la tabla de registros
+            /// -------------------------------------------------------------------
+            g_tablaGrabaciones = $('#tblGrabaciones').DataTable({
+                scrollX: true,
+                scrollY: 5050,
+                deferRender: true,
+                scrollCollapse: true,
+                searching: false,
+                pagingType: 'full_numbers',
+                fixedHeader: true,
+                lengthMenu: [
+                    [15, 30, 50, 75, 100, 200, 500, 1000, -1],
+                    [15, 30, 50, 75, 100, 200, 500, 1000, "@CampanaResources.cmp_todos"],
+                ],
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: getRutaAbsolutaMVC() + "/Grabaciones/CargarGrabaciones",
+                    type: "POST",
+                    timeout: 600000,
+                    datatype: "json",
+                    data: function (d) {
+                            d.Desde = g_datosForm.Desde,
+                            d.Hasta = g_datosForm.Hasta,
+                            d.Agente = JSON.stringify(g_datosForm.Agente),
+                            d.Cliente = g_datosForm.Cliente,
+                            d.GrupoAcdSeleccionado = g_datosForm.GrupoAcdSeleccionado,
+                            d.Origen = g_datosForm.Origen,
+                            d.Destino = g_datosForm.Destino,
+                            d.seHaPuldadoBuscar = g_SeHaPuldadoBuscar,
+                            d.TipoDeBusqueda = g_datosForm.TipoDeBusqueda,
+                            d.Canal = g_datosForm.Canal,
+                            d.CampaniaSeleccionada = g_datosForm.CampaniaSeleccionada,
+                            d.ListaSeleccionada = JSON.stringify(g_datosForm.ListaSeleccionada),
+                            d.ResultadoDeNegocioSeleccionado = JSON.stringify(g_datosForm.ResultadoDeNegocioSeleccionado),
+                            d.FiltroOperadores = g_datosForm.FiltroOperadores,
+                            d.OpcionBusqueda = g_datosForm.OpcionBusqueda,
+                            d.TipoLlamada = g_datosForm.TipoLlamada,
+//                            d.TipoDeBusqueda = g_datosForm.TipoDeBusqueda,
+                            d.TipoIdGrabacion = g_datosForm.TipoIdGrabacion,
+                            d.IdsGrabacion = g_datosForm.IdsGrabacion
+                    }
+                },
+                orderMulti: false, // for disable multiple column at once
+                pageLength: 15,
+
+                columns: [
+                    {
+                        "render": function (data, type, row) { return '<input class="checksGrabaciones" type="checkbox" id="rg_' + row.IdLlamada + '" style="margin-left:10px;" onclick="RegistroSeleccionado(this.id)" />'; }
+                    },
+                    { data: "FechaHora", name: "FechaHora", autoWidth: true },
+                    { data: "Agente", name: "Agente", autoWidth: true },
+                    { data: "Cliente", name: "Cliente", autoWidth: true },
+                    { data: "Origen", name: "Origen", autoWidth: true },
+                    { data: "Destino", name: "Destino", autoWidth: true },
+                    { data: "Grupo", name: "Grupo", autoWidth: true },
+                    { data: "Tipificacion", name: "Tipificacion", autoWidth: true },
+                    { data: "SubTipificacion", name: "SubTipificacion", autoWidth: true },
+                    { data: "Campana", name: "Campana", autoWidth: true },
+                    { data: "Lista", name: "Lista", autoWidth: true },
+                    { data: "IdLlamada", name: "IdLlamada", autoWidth: true },
+                    { data: "Grabacion", name: "Grabacion", autoWidth: true },
+                    { data: "TipoLlamada", name: "TipoLlamada", autoWidth: true },
+                    { data: "Duracion", name: "Duracion", autoWidth: true },
+                    { data: "Accion", name: "Accion", autoWidth: true }
+                ],
+                dom: 'Blpfrti',
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        text: '<i class="fa fa-th" style="color: #0275D8;"> @CampanaResources.bs_mostarOcultaColumnas</i>',
+                        className: 'btn btn-default',
+                        titleAttr: '@CampanaResources.bs_seleccionarColumnas'
+                    }
+                ],
+                "columnDefs": [
+                    { "orderable": false, "targets": [0,15] },
+                    { "orderable": true, "targets": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14] }
+                ],
+                language: {
+                    "decimal": ",",
+                    "emptyTable": "@CampanaResources.bs_noHayRegistros",
+                    "info": "@CampanaResources.bs_infoTotalRegs",
+                    "infoEmpty": "@CampanaResources.bs_infoEmpty",
+                    "infoFiltered": "@CampanaResources.bs_infoFiltered",
+                    "infoPostFix": "",
+                    "thousands": ".",
+                    "lengthMenu": "@CampanaResources.bs_lengthMenu",
+                    "loadingRecords": "@CampanaResources.bs_loadingRecords",
+                    "processing": "@CampanaResources.bs_procesando",
+                    "search": "@CampanaResources.bs_buscar",
+                    "zeroRecords": "@CampanaResources.bs_zeroRecords",
+                    "paginate": {
+                        "first": "@CampanaResources.bs_primero",
+                        "last": "@CampanaResources.bs_ultimo",
+                        "next": "@CampanaResources.bs_siguiente",
+                        "previous": "@CampanaResources.bs_anterior"
+                    },
+                    "aria": {
+                        "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                    },
+                    "buttons": {
+                        "copy": "@CampanaResources.bs_copiar",
+                        "colvis": "@CampanaResources.bs_visibilidad",
+                        "collection": "@CampanaResources.bs_coleccion",
+                        "colvisRestore": "@CampanaResources.bs_restaurarVisibilidad",
+                        "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/>   <br \ /> Para cancelar, haga clic en este mensaje o presione escape.",
+                        "copySuccess": {
+                            "1": "@CampanaResources.bs_copy1Fila",
+                            "_": "@CampanaResources.bs_copyMultiFilas"
+                        },
+                        "copyTitle": "@CampanaResources.bs_copiarAlPortapapeles",
+                        "csv": "CSV",
+                        "excel": "Excel",
+                        "pageLength": {
+                            "-1": "@CampanaResources.bs_mostrarTodasFilas",
+                            "_": "@CampanaResources.bs_mostrarFilas"
+                        },
+                        "pdf": "PDF",
+                        "print": "Imprimir",
+                        "renameState": "@CampanaResources.bs_cambiarNombre",
+                        "updateState": "@CampanaResources.bs_Actualizar",
+                        "createState": "@CampanaResources.bs_crearEstado",
+                        "removeAllStates": "@CampanaResources.bs_removerEstados",
+                        "removeState": "@CampanaResources.bs_remover",
+                        "savedStates": "@CampanaResources.bs_EstadosGuardados",
+                        "stateRestore": "@ComunResources.estado %d"
+                    },
+                },
+            });
+
+            // Quitamos las columnas de campaña y lista y tipificación. No se mostrarán slavo que se elija campaña
+            g_tablaGrabaciones.column(7).visible(true);   // Tipificación
+            g_tablaGrabaciones.column(8).visible(true);   // Subtipificación
+            g_tablaGrabaciones.column(9).visible(false);  // Campaña
+            g_tablaGrabaciones.column(10).visible(false);  // Lista
+
+            $(".campoBusqueda").on("change", function () {
+                let id = this.id;
+                g_SeHaPuldadoBuscar = false;
+
+                switch (id) {
+                    case "Desde":
+                        g_datosForm.Desde = $("#" + id).val();
+                        break;
+                    case "Hasta":
+                        g_datosForm.Hasta = $("#" + id).val();
+                        break;
+                    case "Agente":
+                        g_datosForm.Agente = $("#" + id).val();
+                        break;
+                    case "Cliente":
+                        g_datosForm.Cliente = $("#" + id).val();
+                        break;
+                    case "Grupo":
+                        g_datosForm.GrupoAcdSeleccionado = $("#" + id).val();
+                        break;
+                    case "Origen":
+                        g_datosForm.Origen = $("#" + id).val();
+                        break;
+                    case "Tipo":
+                        g_datosForm.TipoLlamada = $("#" + id).val();
+                        break;
+                    case "Canal":
+                        g_datosForm.Canal = $("#" + id).val();
+                        break;
+                    case "Destino":
+                        g_datosForm.Destino = $("#" + id).val();
+                        break;
+                    case "SelCampanas":
+                        g_datosForm.CampaniaSeleccionada = $("#" + id).val();
+                        break;
+                    case "SelListas":
+                        g_datosForm.ListaSeleccionada = $("#" + id).val();
+                        break;
+                    case "SelResultadosNegocio":
+                        g_datosForm.ResultadoDeNegocioSeleccionado = $("#" + id).val();
+                        break;
+                    case "SelTipificaciones":
+                        g_datosForm.TipificacionSecundariaSel = $("#" + id).val();
+                        break;
+                    case "opcionBusqueda":
+                        let opcBusqueda = parseInt($("#" + id).val());
+
+                        if (opcBusqueda === 0)  // Grupos ACD
+                        {
+                            g_datosForm.OpcionBusqueda = 0;
+                            g_tablaGrabaciones.column(7).visible(true);       // Tipificación
+                            g_tablaGrabaciones.column(8).visible(true);       // SubTipificación
+                            g_tablaGrabaciones.column(9).visible(false);       // Campaña
+                            g_tablaGrabaciones.column(10).visible(false);       // Lista
+                            g_tablaGrabaciones.column(6).visible(true);        // Grupo ACD
+                            $('#GruposAcd').css('display', 'block');
+                            $('#Campanas').css('display', 'none');
+                            $("#Listas").html('');
+                            $('#SelListas').css('display', 'none');
+                            $('#SelResultadosNegocio').html('');
+                            $('#ResultadosNgcio').css('display', 'none');
+                        }
+                        else if (opcBusqueda === 1)  // Campañas
+                        {
+                            g_tablaGrabaciones.column(6).visible(true);     // Grupo ACD
+                            g_tablaGrabaciones.column(7).visible(false);    // Tipificación
+                            g_tablaGrabaciones.column(8).visible(false);    // Subtipificación
+                            g_tablaGrabaciones.column(9).visible(true);     // Campaña
+                            g_tablaGrabaciones.column(10).visible(true);     // Lista
+                            $('#GruposAcd').css('display', 'none');
+                            $('#Campanas').css('display', 'block');
+                            $('#SelTipificaciones').html('');
+                            $('#TipificacioneGrupos').css('display', 'none');
+
+                            g_datosForm.OpcionBusqueda = 1;
+                        }
+                        else {
+                            g_datosForm.OpcionBusqueda = 2;
+                            $('#GruposAcd').css('display', 'none');
+                            g_tablaGrabaciones.column(6).visible(true);        // Grupo ACD
+                            g_tablaGrabaciones.column(7).visible(true);       // Tipificación
+                            g_tablaGrabaciones.column(8).visible(true);       // subtipificación
+                            g_tablaGrabaciones.column(9).visible(true);        // Campaña
+                            g_tablaGrabaciones.column(10).visible(true);       // Lista
+
+                            $('#GruposAcd').css('display', 'none');
+                            $('#Campanas').css('display', 'none');
+                            $("#Listas").html('');
+                            $('#SelListas').css('display', 'none');
+                            $('#SelResultadosNegocio').html('');
+                            $('#ResultadosNgcio').css('display', 'none');
+                            $('#SelTipificaciones').html('');
+                            $('#TipificacioneGrupos').css('display', 'none');
+                        }
+                        break;
+                }
+            });
+        });
+
+
+        function ExportarGrabacionesMVC(tipoExportacion)
+        {
+            $('#spinExportar').css('display', 'block');
+            $('#BtnExportarModal').prop('disabled', true);
+            g_datosForm.Password = $('#contrasena').val();
+
+            let checkboxesMarcados = document.querySelectorAll('.checksGrabaciones:checked');
+            let idsRegistros = '';
+            g_datosForm.IdsGrabacion = '';
+            if (checkboxesMarcados && checkboxesMarcados.length > 0) {
+                checkboxesMarcados.forEach((item, indice) => {
+                    if (idsRegistros === '')
+                        idsRegistros = item.id.substr(3);
+                    else
+                        idsRegistros += ',' + item.id.substr(3);
+                });
+                g_datosForm.IdsGrabacion = idsRegistros;
+            } else if (g_datosForm.TipoDeBusqueda === "I") {
+                g_datosForm.IdsGrabacion = $("#inpIdGrabacion").val();
+            }
+
+            let datosForm = { "datos": g_datosForm, "tipoExportacion": tipoExportacion };
+            let url = getRutaAbsolutaMVC() + "/Grabaciones/ExportarGrabaciones";
+
+            $.ajax({
+              type: 'POST',
+                url: url,
+                data: JSON.stringify(datosForm),
+                contentType: "application/json; charset=utf-8",
+                success: function (datos) {
+                    let respuesta = JSON.parse(datos);
+                    if (tipoExportacion === "F") {
+                        ExportarDatosAFichero(respuesta);
+                    }
+                    else if (tipoExportacion === 'CSV') {
+                        DescargaDatosACSVMVC(respuesta);
+                    }
+                    else if (tipoExportacion === 'CPY') {
+                        copyTextToClipboardMVC(respuesta)
+                    }
+
+                },
+                error: function (e) {
+                    console.log(e);
+                    $('#spinExportar').css('display', 'none');
+                    $('#BtnExportarModal').prop('disabled', false);
+                }
+           });
+        }
+
+
+        function ExportarDatosAFichero (respuesta) {
+            $('#spinExportar').css('display', 'none');
+            $('#BtnExportarModal').prop('disabled', false);
+
+            if (respuesta.Error == 'N') {
+                var ruta = respuesta.Mensaje;
+                if ($('#CheckDescargaGrabaciones').is(':checked') ) {
+                    window.location.href = getRutaAbsolutaMVC() + '/Grabaciones/DescargaFicheroDeGrabaciones?idSolicitud=DESCARGA_FICHERO_GRABACION&filename=' + encodeURIComponent(ruta);
+                }
+                else
+                    alert('El fichero de grabaciones se ha generado correctamente');
+                $('#ModalGrabaciones').modal('hide');
+            }
+            else {
+
+                alert('No se han podido exportar las grabaciones a fichero: ' + respuesta.Mensaje);
+                $('#ModalGrabaciones').modal('hide');
+                $('#BtnExportarModal').prop('disabled', false);
+            }
+        }
+
+        function CheckTodos() {
+            const todos = document.getElementById("checkTodos");
+            if (todos) {
+                const registros = document.getElementsByClassName("checksGrabaciones");
+                if (registros && registros.length > 1) {
+                    for (let i = 0; i < registros.length; i++) {
+                        const registro = registros[i];
+                        if (registro)
+                            registro.checked = todos.checked;
+                    }
+                }
+            }            
+        }
+
+        function RegistroSeleccionado(id) {
+            if (id) {
+                const idreg = id.substr(3);   // Tiene el prefijo tr_
+                const marcado = document.getElementById(id);
+                if (marcado && marcado.checked) {
+                    const registros = document.getElementsByClassName("checksGrabaciones");
+                    if (registros) {
+                        const checkboxesMarcados = document.querySelectorAll('.checksGrabaciones:checked');
+                        const valores = Array.from(checkboxesMarcados).map(cb => cb.value);
+                        if (valores.length === registros.length) {
+                            const todos = document.getElementById("checkTodos");
+                            todos.checked = true;
+                        }
+                    }
+                }
+                else {
+                    const todos = document.getElementById("checkTodos");
+                    if (todos)
+                        todos.checked = false;
+                }
+            }
+
+        }
+    </script>
+}

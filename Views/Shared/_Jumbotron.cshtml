@@ -1,0 +1,35 @@
+﻿@using ManteniWeb.Code;
+@using System.Collections;
+
+
+<div class="jumbotron" style="padding:4px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-comments-o' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+
+        </h2>
+        @{
+            TUsuario usuario = EstaticosUsuario.GetUsuario(HttpContext.Current);
+            ArrayList arrCaminos = usuario.LCaminos;
+            KeyValuePair<string, string> camino = (KeyValuePair<string, string>)arrCaminos[arrCaminos.Count - 1];
+        }
+
+        <ol class='breadcrumb breadcrumbModified'>
+            @foreach (KeyValuePair<string, string> kpar in arrCaminos)
+            {
+                <li><a class='ratonEncima' onClick='onClickBreadCrumb("@kpar.Key")'> @kpar.Value </a></li>
+            }
+            <li class='active'>  @ViewBag.Formulario </li>
+        </ol>
+        <br/>
+    </div>
+</div>
+
+
+<script>
+    function onClickBreadCrumb(hrefNext)
+    {
+        AvanzarPagina('" + URLActual+ "', hrefNext);
+    }
+</script>

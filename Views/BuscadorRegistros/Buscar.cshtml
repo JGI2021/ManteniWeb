@@ -1,0 +1,519 @@
+﻿@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+@using Newtonsoft.Json;
+@using ManteniWeb.App_GlobalResources;
+
+@model List<CampoParaFiltro>
+
+@{
+
+    ViewBag.Title = CampanaResources.bs_msgBuscadorRegistros;
+
+    // Lista de campañas
+    List<TDatosCampaign> lsCampanas = (List<TDatosCampaign>)ViewBag.lsCampanas;
+    string CampaniaSelected = (string)ViewBag.CampaniaSelected;
+
+    string jsListasCampanas = (string)ViewBag.ListasCampana;
+    List<EKeyValor> listasCampana = new List<EKeyValor>();
+    string tablaTmktCampanaSelected = "";
+    if (CampaniaSelected != "0")
+    {
+        listasCampana = JsonConvert.DeserializeObject<List<EKeyValor>>(jsListasCampanas);
+        if (lsCampanas.Count > 0)
+        {
+            tablaTmktCampanaSelected = lsCampanas.Find(ob => ob.Codigo == CampaniaSelected).TableName;
+        }
+    }
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/css/Operadores.css" rel="stylesheet" />
+<link href='~/Content/bootstrap-select.min.css' rel='stylesheet' />
+<link href="~/Content/Datatables/Select-1.4.0/css/select.bootstrap.min.css" rel="stylesheet" />
+<link href="~/css/BuscarRegistros.css" rel="stylesheet" />
+
+<div class="jumbotron my-jumbotron">
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md" style=" top: 15px; position: relative;">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        <div class='col-lg-8 col-md-8'>
+            <h3 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+                <i class='fa fa-search' aria-hidden="true"></i>
+                <span style='margin-left: 1em;'>@ViewBag.Title</span>
+            </h3>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 panel-buscar" id="contenido">
+            <div class="row">
+                <div class='col-lg-3 col-md-3 colSeparacionDependienteDelTamano'>
+                    <label for='ComboCampanas'>@CampanaResources.cmp_campana <span class="text-danger"> * </span></label>
+                    <select class='form-control selectpicker' title='@CampanaResources.cmp_seleccionarCampana' id='ComboCampana' name='ComboCampana' onchange='CambiaCampana();'
+                            data-val='true' data-val-requiered='@CampanaResources.cmp_seleccionarCampana'>
+                        @{
+                            string nombreCampana = string.Empty;
+                            string claseInactivo = string.Empty;
+                            List<TDatosCampaign> campanasOrdenadas = null;
+
+                            if (WebConfigParams.MostrarDescripcion)
+                            {
+                                campanasOrdenadas = lsCampanas.OrderByDescending(o => o.Activo).ThenBy(o => o.Descripcion).ToList();
+                            }
+                            else
+                            {
+                                campanasOrdenadas = lsCampanas.OrderByDescending(o => o.Activo).ThenBy(o => o.Alias).ToList();
+                            }
+                        }
+
+                            @foreach (TDatosCampaign campana in campanasOrdenadas)
+                            {
+                                if (WebConfigParams.MostrarDescripcion)
+                                {
+                                    nombreCampana = campana.Descripcion;
+                                }
+                                else
+                                {
+                                    nombreCampana = campana.Alias;
+                                }
+
+                                if (campana.Activo == 0)
+                                {
+                                    claseInactivo = "CampanaInactiva";
+                                }
+                            
+                                if (CampaniaSelected == campana.Codigo)
+                                {
+                                    <option class="@claseInactivo" value="@campana.Codigo" selected> @nombreCampana </option>
+                                }
+                                else
+                                {
+                                    <option class="@claseInactivo" value="@campana.Codigo"> @nombreCampana </option>
+                                }
+                            }
+
+                    </select>
+                    <input type="checkbox" id="SoloActivos" value="" onclick="MuestraOcultaDatosCampana()" /> <label class="subindice">@CampanaResources.cmp_soloActivas</label>
+
+                </div>
+                <div class='col-lg-3 col-md-3 colSeparacionDependienteDelTamano'>
+                    <label for='ListasCampanas'>@CampanaResources.ls_lista</label>
+                    <select class='form-control selectpicker' title='@CampanaResources.cmp_seleccionarLista' id='ListasCampanas' name='ListasCampanas' data-val='true'
+                            data-val-requiered='@CampanaResources.cmp_seleccionarLista'>
+                        @{ 
+                            List<EKeyValor> listaOrdenada = listasCampana.OrderByDescending(o => o.Value2).ThenBy(o => o.Value).ToList();
+                        }
+                        @if (CampaniaSelected != "0")
+                        {
+                            <option value='0' selected> -- @CampanaResources.cmp_todos -- </option>
+
+                            foreach (EKeyValor dato in listaOrdenada)
+                            {
+                                claseInactivo = string.Empty;
+                                if (dato.Value2 == "N")
+                                {
+                                    claseInactivo = "CampanaInactiva";
+                                }
+                                <option value="@dato.Key" class="@claseInactivo" >@dato.Value</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class='col-lg-2 col-md-2 colSeparacionDependienteDelTamano'>
+                    <label for='TotalRegistros'>@CampanaResources.bs_totalRegistrosBuscar</label>
+                    <input type="number" class="form-control" value="250" id="TotalRegistros" />
+                </div>
+
+                <div class='col-lg-4 col-md-4 colSeparacionDependienteDelTamano' style="display: -webkit-inline-box;">
+                    <div class="posiciona-check margin-right-1 ">
+                        <input type="checkbox" id="CheckSoloCliente" value="" onclick="CheckSoloCliente()" />
+                        <label><b> @CampanaResources.bs_soloCliente </b></label>
+                    </div>
+
+                    <div>
+                        <button class="btn btn-default btn-inout-primary margin-right-1 posiciona-boton" onclick="BuscarRegistros()">
+                            <span class="fa fa-search"> @ComunResources.btn_buscar </span>
+                        </button>
+
+                        <div class="btn-group" role="group">
+                            <button type="button" id="CopiarRegistros" class="btn btn-default btn-inout-primary posiciona-boton hidden" onclick="ExportarAFichero('CPY', 'C');">
+                                <span class="fa fa-files-o"> @ComunResources.btn_copiar </span>
+                            </button>
+                            <button type="button" id="RegistorsACSV" class="btn btn-default btn-inout-primary posiciona-boton hidden" onclick="ExportarAFichero('CSV', 'C')">
+                                <span class="fa fa-file-text-o"> CSV </span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-inout-primary posiciona-boton hidden" onclick="ExportarAFichero('XLS', 'C')">
+                                <span class="fa fa-file-excel-o"> Excel </span>
+                            </button>
+                        </div>
+                        <span class="fa fa-spinner fa-spin spinner-pos OptionSpinnerNoVisible" id="SpinnerBuscar"></span>
+                    </div>
+                    <div class="checkTodosLosRegistros hidden" id="divExportarTodo">
+                        <input type="checkbox" id="exportarTodo" value="" onclick="ExportarTodoCheck()" />
+                        <label class="subindice" style="color: #3B71CA; ">Todos los registros</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" style="display: -webkit-inline-box;">
+                    <button id="AddFiltro" class="btn btn-default  btn-inout-primary"
+                            href="javascript:void(0)" onclick="AddFiltro()">
+                        <span class="fa fa-plus"></span> &nbsp; @CampanaResources.cmp_filtros
+                    </button>
+
+                    <button id="MuestraOcultaFiltros" class="btn btn-default margin-right-1  btn-inout-primary"
+                            href="javascript:void(0)" onclick="MuestraOcultaPanelFiltros()" style="display: none;">
+                        <span class="fa fa-angle-double-up"></span>
+                    </button>
+                    <input type='hidden' id='panelfiltroUpDown' value='0' />
+                </div>
+            </div>
+
+            @* Panel de los filtros *@
+            <div class="row panel-filtros no-display" id="rowFiltros">
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 panel-registros" id="contenido">
+            <table id="TablaRegistros" class="table table-condensed table-striped table-responsive" style="width:100%; margin-bottom: 25px;">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="Check_Todos" value="" style="margin-left: 10px;" onclick="CheckTodos()" /></th>
+                        <th>Id</th>
+                        <th>@ComunResources.estado</th>
+                        <th>@CampanaResources.cmp_nombre</th>
+                        <th>@CampanaResources.cmp_direccion</th>
+                        <th>@CampanaResources.cmp_localidad</th>
+                        <th>@CampanaResources.cmp_provincia</th>
+                        <th>@CampanaResources.cmp_codPostal</th>
+                        <th>@CampanaResources.cmp_pais</th>
+                        <th>Valor1</th>
+                        <th>Valor2</th>
+                        <th>Literal1</th>
+                        <th>Literal2</th>
+                        <th>@CampanaResources.cmp_prioridad</th>
+                        <th>@CampanaResources.cmp_peso</th>
+                        <th>Total llamadas</th>
+                        <th>@CampanaResources.cmp_operadorPref</th>
+                        <th>@CampanaResources.cmp_resultado</th>
+                        <th>@CampanaResources.cmp_fechaAlta</th>
+                        <th>@CampanaResources.cmp_telefono</th>
+                        <th>@CampanaResources.cmp_estadoTelefono</th>
+                        <th>@CampanaResources.cmp_sigLlamada</th>
+                        <th>@CampanaResources.cmp_prioridad</th>
+                        <th>@CampanaResources.cmp_peso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class='modal fade' id='modalEdicionRegistro' tabindex='10' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' style='display:none'>
+        <div class='modal-dialog' id='modalDialog'>
+            <div class='modal-content' style='left:-350px;top:30px;width:1480px;height:800px;'>
+                <div class='modal-header'>
+                    <button type='button' id="closeModalEdicion" class='close' data-dismiss='modal'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+                    <h5 class='modal-title' id='myModalTitle' style='font-weight:600;'><span class='fa " + EstaticosImagenes.ImagenConceptoCampanas + "'></span> Edición registro </h5>
+                </div>
+                <div class='modal-body' id='contentModalBody'>
+                    <div>
+                        <div id='spinner'>
+                            <div>
+                                <img src='~/images/cargandoPaginaWeb.gif' />
+                            </div>
+                        </div>
+                        <iframe id='IdIframe' src='' style='overflow:hidden; width:1440px;height:710px;border:none;' onload="$('#spinner').css('display','none');" onunload='window.parent.alert("unload");'></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section scripts {
+    <script src="~/Content/Datatables/datatables.min.js"></script>
+    <script src='~/Scripts/bootstrap-select.js' type='text/javascript'></script>
+    <script src="~/Content/Datatables/Select-1.4.0/js/select.bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.3.1/i18nextHttpBackend.min.js"></script>
+    <script src="~/js/i18next/i18next.min.js" type="text/javascript"></script>
+    <script src="~/js/NBuscadorRegistros.js"></script>
+
+
+    <script>
+    // Variables globales. También se usan en NBuscadorRegistros.js
+
+        // pluggin  Datatable
+        let tablaReg;
+        // Campos por los que se realiza la búsqueda
+        let camposBusqueda = [];
+        // Campaña seleccionada
+        let g_campanaId = @Html.Raw(CampaniaSelected);
+        // Nombre del prefijo de la tabla de telemarketer de la campaña seleccionada
+        let g_tablaTmkt = "";
+
+        // Resultados de negocio de la campaña seleccionada
+        let g_resultadosNegocio = "";
+        // Total registros
+        let g_totalRegistros = 100;
+        // Lista seleccionada
+        let g_listaSeleccionada = "";
+        // Array con todos los operadores lógicos que van a usar los filtros
+        let g_operadoresLogicos = [];
+        // Array de filtros
+        var g_arrFiltros = [];
+        // Identificador único del filtro
+        var idFiltro = 0;
+        // Exportar todos los registros que devuelve la búsqueda
+        var g_exportarTodos = false;
+        //
+        var g_solocliente = false;
+        // Indica si se ha pulsado buscar, para que solo cargue datos si se ha pulsado el botón
+        var g_SeHaPuldadoBuscar = "false";
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+            var language = '@WebConfigParams.AppLanguage';
+
+            i18next.use(i18nextHttpBackend).init({
+
+                lng: language,
+                debug: true,
+                fallbackLng: "es",
+                backend: {
+                    loadPath: '../locales/{{lng}}.json'
+                }
+            });
+
+
+            // Creamos la clase de busqueda en Javascript
+            camposBusqueda = @Html.Raw(Json.Encode(@Model));
+
+            g_operadoresLogicos = @Html.Raw(Json.Encode(DatosEstaticosFiltros.OperadoresLogicos));
+
+            g_lscampana = @Html.Raw(Json.Encode(lsCampanas));
+
+            // Cuando se cambia el valor de un campo de filtro
+            $('.on-change-campo').on('change', function () {
+                let idElem = this.id;
+                let campo = camposBusqueda.find(f => f.Id === idElem);
+                // Si lo ha encontrado le aplico el valor de este campo
+                if (campo) {
+                    campo.Valor = $('#' + idElem).val();
+                    if (campo.Valor !== '') {
+                        campo.Activo = true;
+                    }
+                    else {
+                        campo.Activo = false;
+                    }
+                }
+            });
+
+
+            $('#TablaRegistros').on('click', 'td:not(:first-child)', function () {
+                let value = $(this).closest('tr')
+                let id = value[0].id;
+                // Obtener id del registro tr_id
+                let idRegistro = id.substr(3);
+                // Obtengo el id de la campaña
+                let idcampana = $('#ComboCampana').val();
+                CargaDialogoDatosRegistro(idRegistro, idcampana);
+            });
+
+            /// -------------------------------------------------------------------
+            //  DATATABLE: Parámetros de configuración de la tabla de registros
+            /// -------------------------------------------------------------------
+            tablaReg = $('#TablaRegistros').DataTable({
+                scrollX: true,
+                scrollY: 5050,
+                deferRender: true,
+                scrollCollapse: true,
+                searching: false,
+                fixedHeader: true,
+                lengthMenu: [
+                    [10, 25, 50, 75, 100, 200, 500, 1000, -1],
+                    [10, 25, 50, 75, 100, 200, 500, 1000, "@CampanaResources.cmp_todos"],
+                ],
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: getRutaAbsolutaMVC() + "/BuscadorRegistros/CargarRegistros",
+                    type: "POST",
+                    timeout: 60000,
+                    datatype: "json",
+                    data: function (d) {
+                        d.tablaTmkt = g_tablaTmkt;
+                        d.totalRegistros = g_totalRegistros;
+                        d.arrFiltros = JSON.stringify(g_arrFiltros);
+                        d.listaSeleccionada = g_listaSeleccionada;
+                        d.solocliente = g_solocliente;
+                        d.seHaPuldadoBuscar = g_SeHaPuldadoBuscar;
+                    }
+                },
+                orderMulti: false, // for disable multiple column at once
+                pageLength: 10,
+
+                columns: [
+                    {
+                        "render": function (data, type, row) { return '<input type="checkbox" id="rg_' + row.ClienteId + '" style="margin-left:10px;" onclick="SeleccionaRegistro(this.id)" />'; }
+                    },
+                    { data: "ClienteId", name: "ClienteId", autoWidth: true },
+                    { data: "Estado", name: "Estado", autoWidth: true },
+                    { data: "Nombre", name: "Nombre", autoWidth: true },
+                    { data: "Direccion", name: "Direccion", autoWidth: true },
+                    { data: "Ciudad", name: "Ciudad", autoWidth: true },
+                    { data: "Provincia", name: "Provincia", autoWidth: true },
+                    { data: "CodigoPostal", name: "CodigoPostal", autoWidth: true },
+                    { data: "Pais", name: "Pais", autoWidth: true },
+                    { data: "Valor1", name: "Valor1", autoWidth: true },
+                    { data: "Valor2", name: "Valor2", autoWidth: true },
+                    { data: "Literal1", name: "Literal1", autoWidth: true },
+                    { data: "Literal2", name: "Literal2", autoWidth: true },
+                    { data: "Prioridad", name: "Prioridad", autoWidth: true },
+                    { data: "Peso", name: "Peso", autoWidth: true },
+                    { data: "TotalLlamadas", name: "TotalLlamadas", autoWidth: true },
+                    { data: "OperadorPreferidoName", name: "OperadorPreferidoName", autoWidth: true },
+                    { data: "ResultadoNegocio", name: "ResultadoNegocio", autoWidth: true },
+                    { data: "FechaAlta", name: "FechaAlta", autoWidth: true },
+                    { data: "Telefono", name: "Telefono", autoWidth: true },
+                    { data: "EstadoTfno", name: "EstadoTfno", autoWidth: true },
+                    { data: "FechahoraProxLlamada", name: "FechahoraProxLlamada", autoWidth: true },
+                    { data: "PrioridadTelefono", name: "PrioridadTelefono", autoWidth: true },
+                    { data: "PesoTelefono", name: "PesoTelefono", autoWidth: true },
+                ],
+                dom: 'Blpfrti',
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        text: '<i class="fa fa-th" style="color: #0275D8;"> @CampanaResources.bs_mostarOcultaColumnas</i>',
+                        className: 'btn btn-default',
+                        titleAttr: '@CampanaResources.bs_seleccionarColumnas'
+                    }
+                ],
+                language: {
+                    "decimal": ",",
+                    "emptyTable": "@CampanaResources.bs_noHayRegistros",
+                    "info": "@CampanaResources.bs_infoTotalRegs",
+                    "infoEmpty": "@CampanaResources.bs_infoEmpty",
+                    "infoFiltered": "@CampanaResources.bs_infoFiltered",
+                    "infoPostFix": "",
+                    "thousands": ".",
+                    "lengthMenu": "@CampanaResources.bs_lengthMenu",
+                    "loadingRecords": "@CampanaResources.bs_loadingRecords",
+                    "processing": "@CampanaResources.bs_procesando",
+                    "search": "@CampanaResources.bs_buscar",
+                    "zeroRecords": "@CampanaResources.bs_zeroRecords",
+                    "paginate": {
+                        "first": "@CampanaResources.bs_primero",
+                        "last": "@CampanaResources.bs_ultimo",
+                        "next": "@CampanaResources.bs_siguiente",
+                        "previous": "@CampanaResources.bs_anterior"
+                    },
+                    "aria": {
+                        "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                    },
+                    "buttons": {
+                        "copy": "@CampanaResources.bs_copiar",
+                        "colvis": "@CampanaResources.bs_visibilidad",
+                        "collection": "@CampanaResources.bs_coleccion",
+                        "colvisRestore": "@CampanaResources.bs_restaurarVisibilidad",
+                        "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/>   <br \ /> Para cancelar, haga clic en este mensaje o presione escape.",
+                        "copySuccess": {
+                            "1": "@CampanaResources.bs_copy1Fila",
+                            "_": "@CampanaResources.bs_copyMultiFilas"
+                        },
+                        "copyTitle": "@CampanaResources.bs_copiarAlPortapapeles",
+                        "csv": "CSV",
+                        "excel": "Excel",
+                        "pageLength": {
+                            "-1": "@CampanaResources.bs_mostrarTodasFilas",
+                            "_": "@CampanaResources.bs_mostrarFilas"
+                        },
+                        "pdf": "PDF",
+                        "print": "Imprimir",
+                        "renameState": "@CampanaResources.bs_cambiarNombre",
+                        "updateState": "@CampanaResources.bs_Actualizar",
+                        "createState": "@CampanaResources.bs_crearEstado",
+                        "removeAllStates": "@CampanaResources.bs_removerEstados",
+                        "removeState": "@CampanaResources.bs_remover",
+                        "savedStates": "@CampanaResources.bs_EstadosGuardados",
+                        "stateRestore": "@ComunResources.estado %d"
+                    },
+                },
+
+                columnDefs: [{
+                    orderable: false,
+                    targets: 0
+                }],
+                order: [
+                    [1, 'asc']
+                ],
+
+                fnCreatedRow: function (nRow, aData, iDataIndex) {
+                    $(nRow).attr('data-id', aData.ClienteId); // or whatever you choose to set as the id
+                    $(nRow).attr('id', 'id_' + aData.ClienteId); // or whatever you choose to set as the id
+                },
+            });
+
+            $('.selectpicker').selectpicker("refresh");
+
+            // Le asigno el valor después de la configuración de la tabla porque sino me cargaría los datos nada más entrar si hay campaña seleccionada
+            g_tablaTmkt = '@Html.Raw(tablaTmktCampanaSelected)';
+            // Si viene una campaña seleccionada hay que cargar sus resultados
+            if (g_tablaTmkt !== "") {
+                RecargaComboResultados();
+            }
+
+            $('#modalEdicionRegistro').on('hidden.bs.modal', function () {
+                // Recarga la tabla con los nuevo parámetros
+                let info = tablaReg.page.info();
+                tablaReg.page(info.page).draw(false);
+                if ($('#Check_Todos').is(':checked')) {
+                    $('#Check_Todos').prop('checked', false);
+                }
+                //tablaReg.ajax.reload();
+            });
+
+            function MostrarModalEspera() {
+                $('#MensajeEspera').modal('show');
+            }
+            function OcultarModalEspera() {
+                $('#MensajeEspera').modal('hide');
+            }
+        });
+
+
+    </script>
+
+}

@@ -1,0 +1,60 @@
+﻿<tr>
+    <td>
+        <select type="text" id="DiaDelaSemana_N" class="form-control changeColor" value="" placeholder="Seleccionar día...">
+            <option value="-1" disabled selected>Seleccionar día ...</option>
+            @for (int i = 0; i < 7; i++)
+            {
+                <option value="@i">@DameDiaSemana(i)</option>
+            }
+        </select>
+    </td>
+    <td><input type="time" id="HoraDesde_N" class="form-control changeColor" value="" /></td>
+    <td><input type="time" id="HoraHasta_N" class="form-control changeColor" value="" /></td>
+    <td>
+        <select type="text" id="DiaProximaLlamada_N" class="form-control changeColor">
+            <option value="-1" disabled selected>Seleccionar día ...</option>
+            @for (int i = 0; i < 7; i++)
+            {
+                <option value="@i">@DameDiaSemana(i)</option>
+            }
+        </select>
+    </td>
+    <td>
+        <input type="time" id="SiguieneHora_N" class="form-control changeColor" value="" />
+    </td>
+    <td>
+        @if (Model.IdRepositorio != 0)
+        {
+            <button class="btn btn-default" onclick="AddDetalleFranja()"> <span class="fa fa-plus margen-top-20 primary-color-text"></span></button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-default" onclick="AddFranja()"> <span class="fa fa-plus margen-top-20 primary-color-text"></span></button>
+        }
+    </td>
+</tr>
+
+@functions {
+    public string DameDiaSemana(int dia)
+    {
+        switch (dia)
+        {
+            case 0:
+                return "Domingo";
+            case 1:
+                return "Lunes";
+            case 2:
+                return "Martes";
+            case 3:
+                return "Miércoles";
+            case 4:
+                return "Jueves";
+            case 5:
+                return "Viernes";
+            case 6:
+                return "Sábado";
+            default:
+                return dia.ToString();
+        }
+    }
+}

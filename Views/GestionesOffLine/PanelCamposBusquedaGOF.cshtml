@@ -1,0 +1,220 @@
+﻿@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+@using System.Text;
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.Code;
+
+
+@model DCBuscadorGrabaciones
+
+
+@{
+
+    List<DCCodeValorParaCombo> lsoperadores = ViewBag.Operadores as List<DCCodeValorParaCombo>;
+    List<DCCodeValorParaCombo> lsgrupos = ViewBag.Grupos as List<DCCodeValorParaCombo>;
+    List<DCCodeValorParaCombo> lsestados = ViewBag.Estados as List<DCCodeValorParaCombo>;
+    string selectedStyle = string.Empty;
+}
+
+<div style='clear:both;'></div>
+<div class='row rowSeparacion20 form-horizontal'>
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='ComboCanal' class='col-sm-3 control-label EstiloEtiquetaForm'>Canal</label>\n");
+                <div class='col-sm-9' id='sandbox-container'>
+                    <select class='form-control' title='Se necesita valor' id='ComboCanal' name='ComboCanal' value=''>
+                        @Html.Raw(OpcionesComboCanales(Model.IdCanal));
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='F_INICIO_GESTION_1' class='col-sm-3 control-label EstiloEtiquetaForm'>Desde</label>
+                <div class='col-sm-9' id='sandbox-container'>
+                    <div class='input-group date'>
+                        <input type='text' class='form-control input-sm' id='F_INICIO_GESTION_1' name='F_INICIO_GESTION_1' value='@Model.FechaInicioStr' />
+                        <span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='ComboOperadores' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.operador</label>
+                <div class='col-sm-9' id='sandbox-container'>
+                    <select class='form-control' title='Se necesita valor' id='ComboOperadores' name='ComboOperadores' value=''>
+                        @Html.Raw(ComboDeOperadores(Model.IdOperador, Model.NombreOperador, lsoperadores))
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3 col-sm-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='Origen' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.gr_origen</label>
+                <div class='col-sm-9'>
+                    <input type='text' class='form-control campoBusqueda' id='Origen' name='Origen' placeholder='Origen' value='@Model.Origen'>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@* FILA 2 *@
+<div class='row form-horizontal'>
+
+
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='ComboGrupos' class='col-sm-3 control-label EstiloEtiquetaForm'>Grupos</label>
+                <div class='col-sm-9' id='sandbox-container'>
+                    <select class='form-control' title='Grupos ACD' id='ComboGrupos' name='ComboGrupos' value=''>
+                        <option value='TODOS'>@ComunResources.todos</option>
+                        @foreach (var grupo in lsgrupos)
+                        {
+                            if (grupo.IdCode == Model.IdGrupo)
+                            {
+                                selectedStyle = " selected='selected' ";
+                            }
+                            else
+                            {
+                                selectedStyle = "";
+                            }
+
+                            <option value="@grupo.IdCode" @selectedStyle> @grupo.Nombre</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='F_INICIO_GESTION_2' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.fechaHasta</label>
+                <div class='col-sm-9' id='sandbox-container2'>
+                    <div class='input-group date'>
+                        <input type='text' class='form-control input-sm' id='F_INICIO_GESTION_2' name='F_INICIO_GESTION_2' value='@Model.FechaFinStr'>
+                        <span class='input-group-addon'><i class='glyphicon glyphicon-th'></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='ComboEstadosRegistros' class='col-sm-3 control-label EstiloEtiquetaForm'>Estado</label>
+                <div class='col-sm-9' id='sandbox-container'>
+
+                    <select class='form-control' title='Se necesita valor' id='ComboEstadosRegistros' name='ComboEstadosRegistros' value='' onChange='ComprobarCheckDescartados()'>
+                        <option value='TODOS'>Todos</option>
+                        @Html.Raw(EstadosRegistros(Model.CampoFinalizacion, lsestados))
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class='col-lg-3 col-md-3'>
+        <div class='form-horizontal'>
+            <div class='form-group'>
+                <label for='Origen' class='col-sm-3 control-label EstiloEtiquetaForm'>@ComunResources.gr_destino</label>
+                <div class='col-sm-9' id='sandbox-container'>
+                    <input type='text' class='form-control' id='Destino' name='Destino' value='@Model.Destino' title='Destino'>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> @* Fin fila 2 *@
+
+
+    <div class='row rowSeparacion'>
+   
+   
+</div>
+
+
+
+
+@functions {
+
+    private string OpcionesComboCanales(TipoCanalGestionOffLine canal)
+    {
+        StringBuilder html = new StringBuilder();
+        string selected = canal == TipoCanalGestionOffLine.Abandonadas ? "selected='selected'" : "";
+        html.Append("      <option value='" + (int)TipoCanalGestionOffLine.Abandonadas + "' " + selected + ">Abandonadas</option> \n");
+        selected = canal == TipoCanalGestionOffLine.Chat ? "selected='selected'" : "";
+        html.Append($"      <option value='" + (int)TipoCanalGestionOffLine.Chat + "' " + selected + ">Chat</option>\n");
+        selected = canal == TipoCanalGestionOffLine.Mail ? "selected='selected'" : "";
+        html.Append($"      <option value='" + (int)TipoCanalGestionOffLine.Mail + "' " + selected + ">Mail</option> \n");
+        selected = canal == TipoCanalGestionOffLine.VoiceMail ? "selected='selected'" : "";
+        html.Append($"      <option value='" + (int)TipoCanalGestionOffLine.VoiceMail + "' " + selected + ">VoiceMail</option>\n");
+
+        return html.ToString();
+    }
+
+
+    private string ComboDeOperadores(string idOperador, string nombreOperador, List<DCCodeValorParaCombo> dcoperadores)
+    {
+        StringBuilder html = new StringBuilder();
+        string selected = "";
+        if (idOperador == "T")
+        {
+            html.Append("<option value='TODOS' >Todos los operadores</option>");
+        }
+        foreach (DCCodeValorParaCombo valorCombo in dcoperadores)
+        {
+            if (valorCombo.IdCode == idOperador)
+            {
+                selected = " selected='selected' ";
+            }
+            html.Append("<option value='" + idOperador + "' " + selected + ">" + nombreOperador + "</option>");
+        }
+
+        return html.ToString();
+    }
+
+    private string EstadosRegistros(string idEstado, List<DCCodeValorParaCombo> estados)
+    {
+        string selectedStyle = string.Empty;
+        string html = string.Empty;
+
+        foreach (var estado in estados)
+        {
+            selectedStyle = string.Empty;
+
+            if (estado.IdCode == idEstado)
+                selectedStyle = " selected='selected' ";
+
+            html += "<option value='" + estado.IdCode + "' " + selectedStyle + ">" + estado.Nombre + "</option> ";
+        }
+
+        return html;
+    }
+
+
+}

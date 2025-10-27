@@ -1,0 +1,85 @@
+﻿
+@{
+    int AdministrarOrganizacion = (int)ViewBag.AdministraOrganizacion;
+}
+
+
+@*   MENU LATERAL PARA VOLVER A LA PAGINA ANTERIOR  *@
+
+<div class="visible-lg visible-md rowSeparacion15">
+    <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked">
+        <li></li>
+        @if (AdministrarOrganizacion > 0)
+        {
+            <li class="RowAccionesSiempreVisibles" id="btnCrear" style="">
+                <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="MuestraVentana('A');">
+                    <div class="row">
+                        <div class="col-lg-2 col-sm-1">
+                            <span class="fa fa-plus visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                        </div>
+                        <div class="col-lg-10 col-sm-11">Crear organización</div>
+                    </div>
+                </a>
+            </li>
+
+            <li class="RowAccionesSiempreVisibles" id="btnActualizar" style="display:none">
+                <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="AbrirPanelUpdate();">
+                    <div class="row">
+                        <div class="col-lg-2 col-sm-1">
+                            <span class="fa fa-edit visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                        </div>
+                        <div class="col-lg-10 col-sm-11">Actualizar organización</div>
+                    </div>
+                </a>
+            </li>
+
+            <li class="RowAccionesSiempreVisibles" id="btneliminar" style="display:none">
+                <a href="#" role="button" id="OptionButtonVP_15" onclick="EliminarSeleccionado();">
+                    <div class="row">
+                        <div class="col-lg-2 col-sm-1">
+                            <span class="fa fa-trash visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                        </div>
+                        <div class="col-lg-10 col-sm-11">Eliminar</div>
+                    </div>
+                </a>
+            </li>
+        }
+
+        @if (AdministrarOrganizacion >= 0)
+        {
+            <li class="RowAccionesSiempreVisibles" id="btnCoordinadores">
+                <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="AsignarCoordinadores();">
+                    <div class="row">
+                        <div class="col-lg-2 col-sm-1">
+                            <span class="fa fa-user-o visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                        </div>
+                        <div class="col-lg-10 col-sm-11">Coordinadores</div>
+                    </div>
+                </a>
+            </li>
+
+            <li class="RowAccionesSiempreVisibles" id="btnAsesores" style="display:none">
+                <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="MuestraPanelAsesores();">
+                    <div class="row">
+                        <div class="col-lg-2 col-sm-1">
+                            <span class="fa fa-users visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                        </div>
+                        <div class="col-lg-10 col-sm-11">Asesores</div>
+                    </div>
+                </a>
+            </li>
+        }
+
+        <li class="RowAccionesSiempreVisibles" style="">
+            <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                <div class="row">
+                    <div class="col-lg-2 col-sm-1">
+                        <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-lg-10 col-sm-11">Volver</div>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
+

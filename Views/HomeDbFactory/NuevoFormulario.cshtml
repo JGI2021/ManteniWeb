@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "Nuevo Formulario";
+    ViewBag.Formulario = "(Nuevo)";
+}
+
+@{
+    Html.RenderPartial("_Jumbotron");
+}
+<!-- Form Name -->
+<legend class="text-info"></legend>
+
+<form class="form-horizontal" method="post">
+        <div class="container">
+            <div class="row">
+                <div class="row rowSeparacion25">
+                    <div id="Comuna_Nombre" class="col-md-1"></div>
+                    <div id="Comuna_Nombre" class="col-md-9">
+                        <label for="txtNombre" id="idcampo1" name="labelCampo1" style="visibility:visible;">Nombre formulario</label>
+                        <label id="oblig_Camo1" style="visibility:visible;color:red;font-weight:bold;">*</label>
+                        <input typeof="text" class="form-control input-sm" id="txtNombre" name="txtNombre" required value="" title="Introducir el nombre del formulario que se va a crear" style="visibility:visible;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row rowSeparacion25">
+                    <div id="Comuna_Nombre" class="col-md-1"></div>
+                    <div id="Comuna_Nombre" class="col-md-9">
+                        <label for="txtName" id="idcampo2" name="labelCampo2" style="visibility:visible;">Nombre html</label>
+                        <label id="oblig_Camo2" style="visibility:visible;color:red;font-weight:bold;">*</label>
+                        <input typeof="text" class="form-control input-sm" id="txtName" name="txtName" value="" required title="Nombre html/Id" style="visibility:visible;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row rowSeparacion25">
+                    <div id="Comuna_Nombre" class="col-md-1"></div>
+                    <div id="Comuna_Nombre" class="col-md-9">
+                        <label for="txtLabel" id="idcampo4" name="labelCampo4" style="visibility:visible;">Etiqueta</label>
+                        <input typeof="text" class="form-control input-sm" id="txtLabel" name="txtLabel" value="" maxlength="50" title="" style="width:100%; visibility:visible;" placeholder="" />
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Button -->
+            <div class="row rowSeparacion25">
+                <div class="col-md-10" style="text-align:right;margin-top:5px;margin-right:0px">
+                    <button id="btnGuardar" name="btnGuardar" class="btn btn-default botonFicha">Crear formulario</button>
+                    <button type="button" id="btnVolver" name="btnVolver" onclick="Volver()" class="btn btn-default botonFicha" style="margin-left:5px; text-align:center">Volver</button>
+                </div>
+            </div>
+        </div>
+
+        @section scripts {
+            <script>
+                function getRutaAbsoluta() {
+                    var loc = window.location;
+                    var href = loc.href.trim();
+                    if (href[href.length - 1] == '#')
+                        href = href.substring(0, href.length - 1);
+                    var pathName = loc.pathname;
+                    pathName = pathName.substring(1, pathName.length - 1);
+
+                    pathName = pathName.substring(0, pathName.indexOf("/"));
+                    href = window.location.protocol + "//" + window.location.host + "/" + pathName;
+                    return href;
+                }
+
+                function Volver() {
+                    var params = 'idSolicitud=RETROCEDER_PAGINA';
+                    var url = getRutaAbsoluta() + "/Navegacion.aspx";
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: params,
+                        success: function(datos)
+                        {
+                            var respuesta = JSON.parse(datos);
+                            var correcto = respuesta.Resultado;
+                            if (correcto == '1') {
+                                var URL = respuesta.Mensaje;
+                                if (URL == '') {
+                                    window.location = '../Principal.aspx';
+                                }
+                                else
+                                    window.location = '../' + URL;
+                            }
+                        }
+                    });
+                }
+
+            </script>
+        }
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,140 @@
+﻿<table>
+
+  <general
+    DisplayName="Reprogramación"
+    Database="TIPHONE"
+    SubsystemFieldName="subsistema"
+    TableName="RT_RESULTADOS_TELEFONICO">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Datos Generales">
+    </panel>
+    <panel
+      id="RESULTADOSTELEFONICOS"
+      DisplayName="Resultados asociados">
+    </panel>
+  </panels>
+
+  <fields>
+
+    <field>
+      <fattr
+        FieldName="ID_REPOSITORIO"
+        Panel="panelgenerales"
+        DisplayName="Identificador de reprogramación"
+        ReadOnly="true"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Integer"
+        IsKey="true"
+        ToolTip="Identificador del resultado."
+        External="false"
+        Visible="false"
+        TabOrder="1"
+        Linea="1">
+      </fattr>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="ID_RESULTADO_TELEFONICO"
+        Panel="panelgenerales"
+        DisplayName="Identificador"
+        ReadOnly="true"
+        IsKey="true"
+	 
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Integer"
+        ToolTip="Identificador del resultado."
+        External="false"	  
+        Visible="true"
+        TabOrder="1"
+        Linea="11">
+      </fattr>
+    </field>
+
+
+    <field>
+      <fattr
+         FieldName="motivo"
+         Panel="panelgenerales"
+         DisplayName="Resultado telefónico"
+         EditionType="Edit"
+         ReadOnly="true"
+         Mandatory="true"
+         ValidateAs="Alpha"
+         ToolTip="Resultado telefónico"
+         External="false"	      
+         UpdateNeeded="false"
+         Inserted="false"
+         Visible="true"
+         DefaultValue="0"
+         TabOrder="2"
+         Linea="11">
+      </fattr>
+    </field>
+
+    
+    <field>
+      <fattr
+        FieldName="NUEVO_PESO_TELEFONO"
+        Panel="panelgenerales"
+        DisplayName="Peso"
+	 
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Introduzca el peso."
+        MaxLen="1"
+        External="false"
+	  
+        UpdateNeeded="true"
+        Visible="true"
+        TabOrder="4"
+        Linea="4">
+      </fattr>
+
+    </field>
+    <field>
+      <fattr
+        FieldName="MAX_LLAMADAS"
+        AuxTable="false"
+        Panel="panelgenerales"
+        DisplayName="Intentos para cancelar"
+	 
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Intentos para cancelar"
+        External="false"	  
+        UpdateNeeded="true"
+        Rango="-10-9"
+         MaxLen="2"
+        TabOrder="5"
+        Linea="4">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="TIEMPO_RELLAMADA"
+        Panel="panelgenerales"
+        DisplayName="Tiempo de rellamada"
+        EditionType="datetime"
+        Mandatory="false"
+        ValidateAs="datetime"
+        ToolTip="Indique el tiempo de rellamada."
+        MaxLen="4"
+        External="false"
+        Visible="true"
+        UpdateNeeded="true"
+        TabOrder="6">
+      </fattr>
+    </field>
+  </fields>
+</table>

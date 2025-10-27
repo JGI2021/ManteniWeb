@@ -1,0 +1,244 @@
+﻿<table>
+
+	<general
+			DisplayName="Teléfono"
+			Database="TELEMARKETER"
+			TableName="*PREFIJOTABLA*_TELEFONO"
+			RelationType="1-N"
+>
+	</general>
+
+	<panels>
+		<panel
+			id="panelDatosGenerales"
+			DisplayName="Datos Generales">
+		</panel>
+	</panels>
+
+
+
+
+	<fields>
+		<field>
+			<fattr
+				FieldName="cliente_id"
+				Panel="panelDatosGenerales"
+				DisplayName="Código del registro"
+				IsKey="true"
+				ReadOnly="true"
+				Visible="true"
+				EditionType="Edit"
+				Mandatory="true"
+				ValidateAs="Alpha"
+				ToolTip="Código del registro."
+				External="false"
+				UpdateNeeded="false"
+				TabOrder="0"
+        Linea="Linea0"
+      >
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+				FieldName="numero_telefono"
+				Panel="panelDatosGenerales"
+				DisplayName="Teléfono"
+				IsKey="true"
+				ReadOnly="false"
+				EditionType="Edit"
+				Mandatory="true"
+				ValidateAs="Alpha"
+				ToolTip="Teléfono"
+				External="false"
+				UpdateNeeded="true"
+				Linea="Linea0"
+        MaxLen="20"
+				TabOrder="1">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+				FieldName="estado"
+				Panel="panelDatosGenerales"
+				DisplayName="Estado"
+				EditionType="Combo"
+				Mandatory="true"
+				ValidateAs="Combo"
+				ToolTip="Estado."
+				External="true"
+				UpdateNeeded="true"
+				Linea="Linea0"
+				TabOrder="2">
+			</fattr>
+			<external>
+				<type tipo="collection"/>
+				<collection>
+					<collectionitem
+					 key="A"
+					 value="Activo">
+					</collectionitem>
+					<collectionitem
+					   key="C"
+					   value="Cancelado">
+					</collectionitem>
+					<collectionitem
+					   key="E"
+					   value="Eliminado">
+					</collectionitem>
+				</collection>
+			</external>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="prioridad"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Prioridad"
+			   
+			  Visible="true"
+			  EditionType="Edit"
+			  Mandatory="true"
+			  ValidateAs="Integer"
+			  ToolTip="Prioridad."
+			  External="false"
+			    
+			  UpdateNeeded="true"
+			  MaxLen="5"
+			  dependencies="false"
+			  Linea="Linea1"
+        PosColumn2="2"
+			  TabOrder="3">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+				FieldName="peso"
+				Panel="panelDatosGenerales"
+				DisplayName="Peso"
+				EditionType="Edit"
+				Mandatory="true"
+				ValidateAs="Integer"
+				ToolTip="Peso."
+				External="false"
+				UpdateNeeded="true"
+				Linea="Linea1"
+				PosColumna="2"
+				TabOrder="4">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+				FieldName="valor1"
+				Panel="panelDatosGenerales"
+				DisplayName="Valor 1"
+				EditionType="Edit"
+				MaxLen="10"
+				Mandatory="false"
+				ValidateAs="integer"
+				ToolTip="Valor 1."
+				External="false"
+				UpdateNeeded="true"
+				Linea="Linea1"
+				PosColumna="2"
+				TabOrder="5">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="valor2"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Valor 2"
+			  Visible="true"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="integer"
+			  ToolTip="Valor 2"
+			  External="false"
+			  MaxLen="10"
+			  UpdateNeeded="true"
+              PosColumna="2"
+			  Linea="Linea1"
+			  TabOrder="6">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+				FieldName="fechahora_ultima_llamada"
+				Panel="panelDatosGenerales"
+				DisplayName="Fecha Hora Ult.Llamada"
+				 
+				EditionType="Edit"
+				Mandatory="false"
+				ReadOnly="true"
+				ValidateAs="Alpha"
+				ToolTip="Fecha y hora última llamada."
+				External="false"
+				PosColumna="4"
+				UpdateNeeded="false"
+				Linea="Linea1"
+				TabOrder="7">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="fechahora_proxima_llamada"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Fecha Hora próx.llamada"
+			  EditionType="DateTime2"
+			  Mandatory="false"
+			  ValidateAs="DateTime"
+			  ToolTip="Fecha y hora de la próxima llamada."
+			  External="false"
+			  UpdateNeeded="true"
+			  MaxLen="50"
+			  Linea="fechaHoraProxLlamada"
+        DefaultValue="NULL"
+			  TabOrder="8">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="fechahora_inicio"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Fecha Hora Inicio"
+			   
+			  EditionType="DateTime2"
+			  Mandatory="false"
+			  ValidateAs="DateTime"
+			  ToolTip="Fecha y hora de inicio."
+			  External="false"
+			    
+			  UpdateNeeded="true"
+			  MaxLen="50"
+			  Linea="Linea6"
+			  TabOrder="9">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="fechahora_fin"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Fecha Hora Fin"
+			  EditionType="DateTime2"
+			  Mandatory="false"
+			  ValidateAs="DateTime"
+			  ToolTip="Fecha y hora fin."
+			  External="false"
+			  UpdateNeeded="true"
+			  MaxLen="50"
+			  Linea="Linea7"
+			  TabOrder="10">
+			</fattr>
+		</field>
+	</fields>
+
+</table>

@@ -1,0 +1,390 @@
+﻿<table>
+
+	<general
+		DisplayName="Registros de la campaña"
+		Database="TELEMARKETER"
+		TableName="*PREFIJOTABLA*_CLIENTE"
+		TableName2="*PREFIJOTABLA*_TELEFONO"
+		CrossField2="CLIENTE_ID"
+		RelationType="1-N"
+>
+	</general>
+
+	<panels>
+		<panel
+		  id="panelDatosGenerales"
+		  DisplayName="Datos Generales">
+		</panel>
+
+		<panel
+		  id="panelTelefonos"
+		  DisplayName="Teléfonos">
+		</panel>
+
+		<panel
+		  id="panelHistorial"
+		  DisplayName="Historial">
+		</panel>
+	</panels>
+
+	<fields>
+
+
+
+		<field>
+			<fattr
+			  FieldName="cliente_id"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Código"
+			  IsKey="true"
+			  ReadOnly="true"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Código del registro."
+			  MaxLen="50"
+			  External="false"
+			  UpdateNeeded="false"
+			  PosColumna="4"
+			  TabOrder="1"
+			  Linea="Linea1">
+			</fattr>
+		</field>
+
+
+
+
+		<field>
+			<fattr
+			  FieldName="nombre"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Nombre"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Nombre del registro."
+			  MaxLen="100"
+			  External="false"
+			  UpdateNeeded="true"
+			  PosColumna="4"
+			  TabOrder="1"
+			  Linea="Linea1">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="direccion"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Dirección"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Dirección del registro."
+			  MaxLen="100"
+			  External="false"
+			  UpdateNeeded="true"
+			  TabOrder="1"
+			  PosColumna="4"
+			  Linea="Linea1">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="ciudad"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Ciudad"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Ciudad registro."
+			  MaxLen="100"
+			  External="false"
+			  UpdateNeeded="true"
+			  TabOrder="1"
+			  PosColumna="4"
+			  Linea="Linea2">
+			</fattr>
+		</field>
+
+
+		<field>
+			<fattr
+			  FieldName="provincia"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Provincia"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Provincia del registro."
+			  MaxLen="30"
+			  External="false"
+			  UpdateNeeded="true"
+			  TabOrder="1"
+			  PosColumna="3"
+			  Linea="Linea2">
+			</fattr>
+		</field>
+
+
+		<field>
+			<fattr
+			  FieldName="codigo_postal"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Código postal"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Código postal del registro."
+			  MaxLen="100"
+			  External="false"
+			  UpdateNeeded="true"
+			  TabOrder="1"
+			  PosColumna="2"
+			  Linea="Linea2">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="pais"
+			  Panel="panelDatosGenerales"
+			  DisplayName="País"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="País del registro."
+			  MaxLen="50"
+			  External="false"
+			  UpdateNeeded="true"
+			  TabOrder="1"
+			  PosColumna="3"
+			  Linea="Linea2">
+			</fattr>
+		</field>
+
+
+		<field>
+			<fattr
+			  FieldName="prioridad"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Prioridad"
+		   
+			  Visible="true"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Integer"
+			  ToolTip="Prioridad."
+			  External="false"
+		    
+			  UpdateNeeded="true"
+			  dependencies="false"
+			  Linea="Linea3"
+			  PosColumna="3"
+			  TabOrder="2">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="peso"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Peso"
+			 
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Integer"
+			  ToolTip="Peso."
+			  External="false"
+			  
+			  UpdateNeeded="true"
+			  Linea="Linea3"
+			  PosColumna="3"
+			  TabOrder="3">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="valor1"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Valor 1"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Integer"
+			  ToolTip="Valor 1."
+			  External="false"
+	  
+			  UpdateNeeded="true"
+			  Linea="Linea3"
+			  PosColumna="3"
+			  TabOrder="4">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="valor2"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Valor 2"
+			  Visible="true"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Integer"
+			  ToolTip="Valor 2"
+			  External="false"
+			  PosColumna="3"
+			  UpdateNeeded="true"
+			  Linea="Linea3"
+			  TabOrder="5">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="literal1"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Literal 1"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Litera 1."
+			  External="false"
+			  UpdateNeeded="true"
+			  MaxLen="50"
+			  Linea="Linea4"
+			  PosColumna="4"
+			  TabOrder="6">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="literal2"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Literal 2"
+			  EditionType="Edit"
+			  Mandatory="false"
+			  ValidateAs="Alpha"
+			  ToolTip="Literal 2."
+			  External="false"
+			  UpdateNeeded="true"
+			  MaxLen="50"
+			  Linea="Linea4"
+			  PosColumna="4"
+			  TabOrder="7">
+			</fattr>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="estado_registro"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Estado"
+			  EditionType="Combo"
+			  Mandatory="true"
+			  ValidateAs="Combo"
+			  ToolTip="Estado del registro"
+			  External="true"
+			  UpdateNeeded="true"
+			  Linea="Linea4"
+			  PosColumna="4"
+			  TabOrder="9">
+			</fattr>
+			<external>
+				<type tipo="collection"/>
+				<collection>
+					<collectionitem
+					 key="A"
+					 value="Anulado">
+					</collectionitem>
+					<collectionitem
+					   key="C"
+					   value="Cancelado">
+					</collectionitem>
+					<collectionitem
+					   key="R"
+					   value="Reprogramado">
+					</collectionitem>
+					<collectionitem
+					   key="S"
+					   value="Para supervisión">
+					</collectionitem>
+					<collectionitem
+					   key="F"
+					   value="Finalizado">
+					</collectionitem>
+					<collectionitem
+						 key="N"
+						 value="No tocado">
+					</collectionitem>
+				</collection>
+			</external>
+		</field>
+
+
+		<field>
+			<fattr
+			  FieldName="operador_preferido"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Operador Preferido"
+			  PosColumna="4"
+			  EditionType="Combo"
+			  Mandatory="False"
+			  ValidateAs="Integer"
+			  ToolTip="Operador preferido."
+			  External="true"
+			  UpdateNeeded="true"
+			  Linea="Linea6"
+			  DefaultValue=""
+			  dependencies="false"
+			  TabOrder="8">
+			</fattr>
+			<external>
+				<type tipo="table"/>
+				<table
+				  DatabaseName="TIPHONE"
+				  DBDot=".."
+				  TableName="OP_TABLE"
+				  FieldKey="op_code"
+				  FieldValue="op_alias"
+				  DefaultKey="NULL"
+					DefaultValue=""
+					FilterValuesTable="ACTIVO2:1,2:int;" >
+				</table>
+			</external>
+		</field>
+
+		<field>
+			<fattr
+			  FieldName="resultado_negocio"
+			  Panel="panelDatosGenerales"
+			  DisplayName="Resultado negocio"
+			  EditionType="Combo"
+			  Mandatory="false"
+			  ValidateAs="Integer"
+			  ToolTip="Resultado negocio."
+			  External="true"
+			  PosColumna="4"
+			  UpdateNeeded="true"
+			  Linea="Linea6"
+			  DefaultValue=""
+			  dependencies="false"
+			  TabOrder="10">
+			</fattr>
+			<external>
+				<type tipo="table"/>
+				<table
+				  DatabaseName="TELEMARKETER"
+				  DBDot=".."
+				  TableName="*PREFIJOTABLA*_RESULTADO_NEGOCIO"
+				  FieldKey="resultado_negocio"
+				  FieldValue="descripcion"
+				  DefaultKey="NULL">
+				</table>
+			</external>
+		</field>
+	</fields>
+
+</table>

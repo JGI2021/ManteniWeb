@@ -1,0 +1,55 @@
+﻿<table>
+
+  <general
+    DisplayName="Direcciones bloqueadas"
+    Database="DBCHAT"
+    TableName="CHAT_DOMINIOS_CONFIANZA">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="General Data">
+    </panel>
+  </panels>
+
+  <fields>
+    <field>
+      <fattr
+        FieldName="Direccion"
+        Panel="panelgenerales"
+        DisplayName="Trusted Domain"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip="IP or address"
+        External="false"
+        IsKey="true"
+        Linea="L1"
+        MaxLen="100"
+        UpdateNeeded="true"      
+        StrPattern="[a-zA-Z0-9 .:/]{1,1000}"
+        TabOrder="1">
+      </fattr>
+    </field>    
+
+    <field>
+      <fattr
+        FieldName="descripcion"
+        Panel="panelgenerales"
+        DisplayName="Description"
+        EditionType="Edit"
+        Mandatory="true"
+        ValidateAs="Alpha"
+        ToolTip=""
+        External="false"
+        UpdateNeeded="true"
+        TabOrder="2"
+        Linea="L1"
+        MaxLen="200"
+      >
+      </fattr>
+    </field>
+
+  </fields>
+</table>

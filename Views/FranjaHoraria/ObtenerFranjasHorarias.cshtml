@@ -1,0 +1,360 @@
+﻿@using ManteniWeb.DatosTablas
+@using ManteniWeb.App_GlobalResources;
+
+@model IEnumerable<ReposFranjaHoraria>
+
+@{
+    ViewBag.Title = "Franjas Horarias ";
+}
+
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    .modal-dialog {
+        top: 40%;
+        height: 100px;
+        background: #eee;
+    }
+</style>
+
+@* Cabecera del formulario *@
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25">
+        @* MENU LATERAL *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="NuevaFranja();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-plus visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Nueva franja</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="EdicionMultiple" style="display: none;">
+                        <a href="#" role="button" id="OptionButton_3" class="" onclick="EliminarFranja();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-trash-o visible-lg visible-md visible-xs dark-red-text" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Eliminar franja</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="EdicionSimple" style="display: none;">
+                        <a href="#" role="button" id="OptionButton_3" class="" onclick="EditarFranja();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-edit visible-lg visible-md visible-xs darkgreen-text" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Editar franja</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButton_16" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        @* FIN MENU LATERAL *@
+
+
+        @* FORMULARIO  *@
+        <div class="col-lg-8 col-md-8">
+            <div id="alertaFranjas" class="row rowSeparacion15 no-display">
+                <div class=" col-md-offset-2 col-md-6">
+                    <div id="panelFranjas" class="panel ">
+                        <div class="panel-heading">
+                            <span id="panelmensajefranjas"></span>
+                            <button type="button" class="close" data-target="#copyright-wrap" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @* MOSTRAR TABLA DE REPROGRAMACIONES *@
+            <div class='row rowSeparacion10'>
+                <table id="FranjasTable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="th"></th>
+                            <th class="th">Id</th>
+                            <th class="th">Nombre franja</th>
+                            <th class="th">Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ReposFranjaHoraria item in Model)
+                        {
+                            <tr id="tr_@item.IdRepositorio">
+                                <td>
+                                    <input type="checkbox" id="chk_@item.IdRepositorio" value="" />
+                                </td>
+                                <td class="td-click">
+                                    @Html.DisplayFor(modelItem => item.IdRepositorio)
+                                </td>
+                                <td class="td-click">
+                                    @Html.DisplayFor(modelItem => item.NombreFranja)
+                                </td>
+                                <td>
+                                    @*Tabla con las reprogramaciones del repositorio*@
+                                    <button type='button' class='btn btn-sm btn-mostrar' data-toggle='collapse' data-target='#ver_@item.IdRepositorio' style='float:right'>
+                                        <span class='fa fa-bars'> </span>
+                                    </button>
+                                    <div id="ver_@item.IdRepositorio" class="collapse">
+                                        <table class='table table-condensed' style="background-color:inherit;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Día</th>
+                                                    <th>Hora desde</th>
+                                                    <th>Hora hasta</th>
+                                                    <th>Siguiente día</th>
+                                                    <th>Siguiente hora</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="td-click">
+                                                @foreach (var detalle in item.DetalleFranjaHoraria)
+                                                {
+                                                    <tr>
+                                                        <td>@detalle.DiaDeLaSemana(detalle.Dia)</td>
+                                                        <td>@detalle.HoraDesde</td>
+                                                        <td>@detalle.HoraHasta</td>
+                                                        <td>@detalle.DiaDeLaSemana(detalle.DiaProximaLlamada)</td>
+                                                        <td>@detalle.HoraProximaLlamada</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/bootbox.min.js" type="text/javascript"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            tableop = $('#FranjasTable').DataTable({
+                "processing": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[15, 25, -1], [15, 25, "Todos"]],
+                'columnDefs': [{
+                    'targets': 0, /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#FranjasTable').css('display', 'table');
+
+            $("#FranjasTable").on("click", ".td-click", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.substr(3);
+                AvanzarPagina('FranjaHoraria/ObtenerFranjasHorarias', 'FranjaHoraria/MostrarFranja/' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#FranjasTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.substr(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+        function NuevaFranja() {
+            AvanzarPagina("FranjaHoraria/ObtenerFranjasHorarias", "FranjaHoraria/MostrarFranja/" + 0);
+        }
+
+        function EliminarFranja() {
+            // Obtener id seleccionado
+            let idselecc = $("#idsSeleccionados").val();
+
+
+            var dialog = bootbox.dialog({
+                title: '<b>Eliminar franja</b>',
+                message: "<p>Se va a eliminar la franja seleccionada. ¿Desea continuar?</p>",
+
+                buttons: {
+                    cancel: {
+                        label: "No",
+                        className: 'btn-default',
+                        callback: function () {
+                            console.log('Custom cancel clicked');
+                        }
+                    },
+                    ok: {
+                        label: "Si",
+                        className: 'btn-info',
+                        callback: function () {
+                            let seleccionado = $('#idsSeleccionados').val();
+                            let arrSeleccionados = [];
+                            arrSeleccionados = seleccionado.split(',');
+
+                            let urlFranja = getRutaAbsolutaMVC() + "/FranjaHoraria/RemoveFranja";
+                            let params = { "idsfranjas": arrSeleccionados };
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: urlFranja,
+                                data: JSON.stringify(params),
+                                contentType: "application/json; charset=utf-8",
+                                success: function (datos) {
+                                    let respuesta = JSON.parse(datos);
+                                    MostrarMensajeEliminacion(arrSeleccionados, respuesta);
+                                    arrSeleccionados = [];
+                                }, error: function (e) { console.log(e); }
+                            });
+
+                        }
+                    }
+                }
+            });
+        }
+
+        function EditarFranja() {
+            // Obtener id seleccionado
+            let id = $("#idsSeleccionados").val();
+
+            AvanzarPagina('FranjaHoraria/ObtenerFranjasHorarias', 'FranjaHoraria/MostrarFranja/' + id);
+        }
+
+        function MostrarMensajeEliminacion(arrSeleccionados, respuesta) {
+
+            const esOk = respuesta.substr(0, 2);
+            //muestro el mensaje de error o de que todo ha ido bien
+            if (esOk !== "OK") {
+                $("#panelFranjas").removeClass("myAlertSuccess");
+                $("#panelFranjas").addClass("panel-danger");
+
+                let codhtml = "<b><span class='fa fa-exclamation-triangle' style='font-size:26px;' >Error</span> </b><span class='mr-15'></span> " +
+                    "No se ha podido eliminar la franja seleccionada." + respuesta.substr(2);
+
+                $("#panelmensajefranjas").html(codhtml);
+            }
+            else {
+                $("#panelFranjas").addClass("myAlertSuccess");
+                $("#panelfrapanelFranjasnjas").removeClass("panel-danger");
+                $("#panelmensajefranjas").html("<b><span class='fa fa-check-square-o fondoAlert' > </span> </b><span class='mr-15'></span> La franja ha sido eliminada correctamente");
+                // Elimino el registro de la tabla
+                for (i = 0; i < arrSeleccionados.length; i++) {
+                    $("#tr_" + arrSeleccionados[i]).remove();
+                }
+            }
+
+            $('#alertaFranjas').css('display', 'block');
+            window.setTimeout(function () {
+                $('#alertaFranjas').css('display', 'none');
+            }, 4000);
+            // Quito los menús de seleccion
+            $('.EdicionMultiple').css('display', 'none');
+            $('.EdicionSimple').css('display', 'none');
+        }
+    </script>
+
+}
+
+

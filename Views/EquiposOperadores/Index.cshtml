@@ -1,0 +1,393 @@
+﻿@model IEnumerable<ManteniWeb.Models.DatosEquipoOperadores>
+@using ManteniWeb.Models
+@using Newtonsoft.Json;
+
+
+@{
+    ViewBag.Title = "Equipos de operadores";
+}
+
+<!--link href="~/Content/bootstrap-select.min.css" rel="stylesheet" /-->
+<link href='~/css/footable.core.css' rel='stylesheet' type='text/css' />
+<link href="~/footable/css/footable.core.bootstrap.min.css" rel="stylesheet" />
+<link href="~/footable/css/footable.core.standalone.css" rel="stylesheet" />
+<link href="~/css/footableManteniWeb.metro.css" rel="stylesheet" />
+
+
+<style>
+    tr:hover {
+        cursor: pointer;
+    }
+
+    .wrapper {
+        height: 100%;
+        width: 100%;
+    }
+
+    #mySearchInput {
+        background-image: url('../img/search-icon-32.png');
+        background-position: 2px 2px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 0px 10px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    .formLabel {
+        padding-left: 0px;
+        padding-top: 20px;
+    }
+
+
+
+    #myInput2 {
+        background-image: url('../../img/search-icon-32.png');
+        background-position: 2px 2px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 20px 10px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+        margin-top: 25px;
+    }
+
+    #myInput {
+        background-image: url('../../img/search-icon-32.png');
+        background-position: 2px 2px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 20px 10px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+        margin-top: 25px;
+    }
+
+    .myUlClass {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .myUlClass li {
+            margin-top: -1px; /* Prevent double borders */
+            text-decoration: none;
+            font-size: 13px;
+            color: black;
+            display: block;
+        }
+
+            .myUlClass li:hover:not(.header) {
+                background-color: #eee;
+            }
+
+    .list-group-item {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .panel-botom-0 {
+        margin-bottom: 0px !important;
+    }
+
+    .panel-group:hover {
+        border: 1px solid #6e8b75;
+        border-radius: 5px;
+    }
+
+    li span:hover {
+        cursor: pointer;
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+@Html.AntiForgeryToken();
+<div class="container-fluid">
+    <div class="row">
+        @* Panel izquierdo, donde se coloca el menú *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-1">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-11">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+        @* Panel central donde se muestra la tabla con los equipos*@
+        <div class="col-lg-8 col-md-8">
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <label class="control-label" for="mostraroperadores">
+                        <input type="checkbox" id="mostraroperadores" onclick="MostrarOcultarOperadores();" /> Mostrar operadores
+                    </label>
+                </div>
+                <div class="col-sm-8 col-lg-8 col-xs-8" style="float: right;">
+                    <input type="text" id="mySearchInput" onkeyup="SearchInTable()" placeholder="Buscar operadores.." title="Escribir un nombre">
+                </div>
+            </div>
+            <div class="row">
+                @foreach (var equipo in Model)
+                {
+                    int i = 0;
+                    <div class="panel-group panel-botom-0" id="panel_@equipo.Idequipo">
+                        <div class="panel panel-default panel-botom-0">
+                            <div class="panel-heading">
+                                <table style="width:100%;border:none !important;">
+                                    <tr>
+                                        <td class="col-md-3" style="padding-right:10px;">
+                                            <h5 class="panel-title" data-toggle="tooltip" title="@equipo.RutaOrganizacion">
+                                                <a data-toggle="collapse" href="#collapse_@equipo.Idequipo">
+                                                    <b> @equipo.Nombreequipo</b>
+                                                </a>
+                                            </h5>
+                                        </td>
+                                        <td class="col-md-7"><a data-toggle="collapse" href="#collapse_@equipo.Idequipo"><small>(@equipo.RutaOrganizacion) </small></a></td>
+                                        <td class="col-md-1"><span class="badge" style="background-color:gray;float:right;">@equipo.Operadores.Count</span></td>
+                                        <td class="col-md-1"><span class="fa fa-edit" style="float:right;color:green;" onclick="FilaPulsada('@equipo.Idequipo');"></span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="panel-collapse collapse" id="collapse_@equipo.Idequipo">
+                                <div class="wrapper">
+                                    <ul class="list-group panel-botom-0 myUlClass">
+                                        <li class="list-group-item OpEquipoOperador">
+                                            <table id="myOpTable_@equipo.Idequipo">
+                                                @while (i < equipo.Operadores.Count)
+                                                {
+                                                    <tr>
+                                                        @for (int j = 0; j < 3; j++)
+                                                        {
+                                                            if (i >= equipo.Operadores.Count)
+                                                            {
+                                                                break;
+                                                            }
+
+                                                            DatosOperador operador = equipo.Operadores[i];
+                                                            string idOperador = "eq_" + equipo.Idequipo + "_op_" + operador.idoperador;
+                                                            string estilo = "";
+                                                            if (operador.esCoordinador == 1)
+                                                            {
+                                                                estilo = "color:green";
+                                                            }
+
+                                                            <td style="padding-right:10px;">
+                                                                <span id='@idOperador' data-toggle="tooltip" title="@operador.alias" style='@estilo'> @operador.nombreoperador &nbsp; </span>
+                                                            </td>
+                                                            i++;
+                                                        }
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <br /><br />
+
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2">
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/footable/js/footable.core.min.js"></script>
+    <script>
+
+        var arrayEquipos = new Array();
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            @{
+                //serializer initializatio
+                string jsEquipos = JsonConvert.SerializeObject(Model);
+            }
+            arrayEquipos =  JSON.parse('@jsEquipos'.replace(/&quot;/g, '"'));
+        });
+
+        function SearchInTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("mySearchInput");
+            filter = input.value.toUpperCase();
+            filter = input.value.toUpperCase();
+            var totequipos = arrayEquipos.length;
+            var datoequipo;
+            var idq = 0;
+
+            for (j = 0; j < totequipos; j++) {
+                datoequipo = arrayEquipos[j];
+                var panelcollapse = document.getElementById("collapse_" + datoequipo.Idequipo);
+                var panel = document.getElementById("panel_" + datoequipo.Idequipo);
+                idq = "myOpTable_" + datoequipo.Idequipo;
+
+                table = document.getElementById(idq);
+                tr = table.getElementsByTagName("tr");
+                var totfilas = tr.length;
+                var cuentafilas = 0;
+
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            td.style.display = "";
+                            if (!$('#' + panelcollapse.id).hasClass("in"))
+                                $('#' + panelcollapse.id).addClass("in");
+                        }
+                        else {
+                            td.style.display = "none";
+                            cuentafilas++;
+                        }
+                    }
+                    td = tr[i].getElementsByTagName("td")[1];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            td.style.display = "";
+                            if (!$('#' + panelcollapse.id).hasClass("in"))
+                                $('#' + panelcollapse.id).addClass("in");
+                        }
+                        else {
+                            td.style.display = "none";
+                        }
+                    }
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            td.style.display = "";
+                            if (!$('#' + panelcollapse.id).hasClass("in"))
+                                $('#' + panelcollapse.id).addClass("in");
+                        }
+                        else {
+                            td.style.display = "none";
+                        }
+                    }
+
+                }
+
+                if (totfilas == cuentafilas) {
+                    panel.style.display = "none";
+                }
+                else {
+                    panel.style.display = "";
+                }
+            }
+        }
+
+        function MostrarOcultarOperadores() {
+            var mycheck = document.getElementById("mostraroperadores");
+             var totequipos = arrayEquipos.length;
+            if (mycheck.checked) {
+                for (j = 0; j < totequipos; j++) {
+                    var datoequipo = arrayEquipos[j];
+                    var panel = document.getElementById("collapse_" + datoequipo.Idequipo);
+                    if (!$('#' + panel.id).hasClass("in"))
+                        $('#' + panel.id).addClass("in");
+                }
+            }
+            else {
+                for (j = 0; j < totequipos; j++) {
+                    var datoequipo = arrayEquipos[j];
+                    var panel = document.getElementById("collapse_" + datoequipo.Idequipo);
+                    if ($('#' + panel.id).hasClass("in"))
+                        $('#' + panel.id).removeClass("in");
+                }
+            }
+        }
+
+
+        function FilaPulsada(id) {
+            var url = "/EquiposOperadores/Edit/" + id;  //
+            AvanzarPagina("/EquiposOperadores/Index", url);
+        }
+
+
+        /// LLama al controlador para cambiar al operador al nuevo equipo
+        function ChangeOperador(Operador,idequiponuevo)
+        {
+            // El dataOperador viene con formato eq_xx_op_zz  donde xx es el id de equipo que viene y zz es el código del operador
+            // quito la parte de eq_xx_op_
+            var dataOperador = Operador.substr(3);
+            var pos = dataOperador.indexOf('_');
+            //ahora optengo el código del operador
+            var dataOperador = dataOperador.substr(pos + 4);
+            // ahora obtengo el código del operador
+            var opcode = dataOperador;
+            // El nombre del equipo viene con formato eq_xxx. Quitamos eq_ y nos quedamos con el identificador
+            idequiponuevo = idequiponuevo.substr(3);
+
+            var OperadorEquipo = new Object();
+            OperadorEquipo.idequipo = idequiponuevo;
+            OperadorEquipo.idoperador = opcode;
+            OperadorEquipo.aliasoperador = $('#' + Operador).text();
+            OperadorEquipo.equiponame = $('#tdeq_' + idequiponuevo).text();
+            // Elimino los espacios de delante y detrás con los que viene
+            OperadorEquipo.aliasoperador = OperadorEquipo.aliasoperador.trim();
+            OperadorEquipo.equiponame = OperadorEquipo.equiponame.trim();
+          //  alert("equipo: " + idequiponuevo + "  operador " + opcode);
+
+            var url = getRutaAbsoluta() + "/EquiposOperadores/Actualiza";
+            var resultado = true;
+            $.ajax({
+                url: url,
+                type: 'PUT',
+                dataType: 'json',
+                data: OperadorEquipo,
+                success: function (data, textStatus, xhr) {
+                    if (data != "OK")
+                    {
+                        console.log(data);
+                        alert(data);
+                        resultado = false;
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error en llamada ajax a proceso de actualización de operador-equipo');
+                    alert('Error en llamada ajax a proceso de actualización de operador-equipo');
+                    resultado = false;
+                }
+            }).done(function () { });
+
+            return resultado;
+        }
+
+
+    </script>
+}
+
+
+
+
+
+
+

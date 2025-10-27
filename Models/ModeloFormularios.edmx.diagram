@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="15f2cb74aa4b458d8662044278781181" Name="Diagram1" ZoomLevel="142">
+        <EntityTypeShape EntityType="FormulariosModel.Formulario" Width="1.5" PointX="0.75" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.InputButton" Width="1.5" PointX="3" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.InputDate" Width="1.5" PointX="3" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.InputNumber" Width="1.5" PointX="3" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.InputRadio" Width="1.5" PointX="3" PointY="13.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.InputText" Width="1.5" PointX="3" PointY="17.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.Select" Width="1.5" PointX="3" PointY="21.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="FormulariosModel.SelectOption" Width="1.5" PointX="5.25" PointY="21.5" IsExpanded="true" />
+        <AssociationConnector Association="FormulariosModel.FK_InputButton_Formulario" ManuallyRouted="false" />
+        <AssociationConnector Association="FormulariosModel.FK_InputDate_Formulario" ManuallyRouted="false" />
+        <AssociationConnector Association="FormulariosModel.FK_InputNumber_Formulario" ManuallyRouted="false" />
+        <AssociationConnector Association="FormulariosModel.FK_InputRadio_Formulario" ManuallyRouted="false" />
+        <AssociationConnector Association="FormulariosModel.FK_InputText_Formulario" ManuallyRouted="false" />
+        <AssociationConnector Association="FormulariosModel.FK_Select_Formulario" ManuallyRouted="false" />
+        <AssociationConnector Association="FormulariosModel.FK_SelectOption_Select" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

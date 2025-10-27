@@ -1,0 +1,168 @@
+﻿<table>
+
+<general
+ 	DisplayName="VRU " 
+ 	Database="DBIVR"
+ 	TableName="IVR_ACD_GROUPS"
+  TableName2="IVR_CHANNELS"
+	CrossField2="ivr_id"
+  CrossField3="acd_group">
+</general>
+
+<panels>
+<panel
+	id="panelgenerales"
+  DisplayName="General Data">
+</panel>
+</panels>
+
+<fields>
+<field>
+<fattr 
+	FieldName="ivr_id" 
+	Panel="panelgenerales"
+	DisplayName="ID" 
+	IsKey="true"
+	EditionType="COPIA_ALTA" 
+  Visible="false"
+	ValidateAs="Integer"
+	TabOrder="1">
+</fattr>		
+</field>
+
+  <field>
+    <fattr
+      FieldName="acd_group"
+      Panel="panelgenerales"
+      DisplayName="Grupo ACD"
+      EditionType="Combo"
+      IsKey="true"
+      Mandatory="true"
+      ValidateAs="Integer"
+      ToolTip="Grupo ACD"
+      UpdateNeeded="false"
+      External="true"
+      TabOrder="2">
+    </fattr>
+    <external>
+      <type tipo="table"/>
+      <table
+        DatabaseName="TIPHONE"
+        DatabaseNameFilterUsed="DBIVR"
+        TableName="GRUPO_ACD"
+        TableNameFilterUsed="IVR_ACD_GROUPS"
+        CrossfieldUsed="GRUPO_ACD_ID"
+        CrossfieldUsed2="ACD_GROUP"
+        FieldKey="GRUPO_ACD_ID"
+        FieldValue="ALIAS"
+        DefaultKey="NULL"
+        DefaultValue="None"
+        FilterValuesTable="es_de_distribucion:0,0:int;"
+        FilterSubsistema="true"
+			  CampoSubsistema="subsistema"
+        NotUsed="true"
+        >
+      </table>
+    </external>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="script_id"
+      Panel="panelgenerales"
+      DisplayName="Script"
+      EditionType="Combo"
+      Mandatory="true"
+      ValidateAs="Alpha"
+      ToolTip="Script"
+      UpdateNeeded="true"
+      External="true"
+      TabOrder="2">
+    </fattr>
+    <external>
+      <type tipo="table"/>
+      <table
+        DatabaseName="DBIVR"
+        TableName="IVR_SCRIPTS"
+        FieldKey="SCRIPT_ID"
+        FieldValue="DESCRIPTION"
+        DefaultKey="NULL"
+        DefaultValue="Ninguno"
+        FilterSubsistema="true"
+			  CampoSubsistema="subsistema">
+      </table>
+    </external>
+  </field>
+
+  <field>
+    <fattr
+      FieldName="Canales"
+      Panel="panelgenerales"
+      DisplayName="Assigned Channels"
+      EditionType="Table"
+      Mandatory="false"
+      ToolTip="Assigned Channels"
+      External="true"
+      AuxTable="2"
+      UpdateNeeded="true"
+      TabOrder="4">
+    </fattr>
+    <external>
+      <type tipo="TABLEEDIT"/>
+      <additionalInfo
+       NewRegTitle="Assign Channel"
+       NewRegType="DosListas"/>
+      <table
+        DatabaseName="DBIVR"
+        TableName="IVR_CHANNELS"
+        TableName2="IVR_ACD_GROUPS"
+        FilterValueLocal="ivr_id"
+        FilterValueExternal="ivr_id"
+        FilterValueLocal2="acd_group"
+        FilterValueExternal2="acd_group">
+      
+      </table>
+      <fieldsTable>
+        <field2>
+          <fattr2
+            FieldName="channel#"
+            DisplayName="Channel"
+            EditionType="Combo"
+            Mandatory="true"
+            ValidateAs="Integer"
+            ReadOnly="false"
+            Visible="true"
+            IsKey="true"
+            External="true"
+            KeyViolationMessage="Channel already is assigned to VRU"
+            UpdateNeeded="true">
+          </fattr2>
+          <external2>
+            <type2 tipo="MaxFieldNumeric"/>
+             <table2
+              DatabaseName="DBIVR"
+              TableName="IVR_CHANNELS"
+              FilterValueLocalFilter="ivr_id"
+              FilterValueLocalFilter2="acd_group"
+              FilterValueExternalFilter="ivr_id"
+              FilterValueExternalFilter2="acd_group"
+              FieldKey="CHANNEL#"
+              FieldValue="CHANNEL#"
+              DefaultKey="NULL"
+              DefaultValue="Ninguno"
+              FilterValuesTable="acd_group:acd_group:int:copy;">
+            </table2>
+            <tableNum
+              DatabaseName="DBIVR"
+              TableName="IVR_GENERAL"
+              FieldKey="IVR_LINES"
+              FilterValuesTable="ivr_id:ivr_id:int:copy;">
+            </tableNum>
+          </external2>
+        </field2>
+      </fieldsTable>
+    </external>
+
+  </field>
+</fields>
+</table>

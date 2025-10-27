@@ -1,0 +1,38 @@
+﻿
+@model ManteniWeb.DatosTablas.ReposReprogramacion
+@using ManteniWeb.DatosTablas
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="PanelCambioDeGrupo" class="panel panel-primary panel-cambio-grupo no-display">
+            <div class="panel-heading">Cambiar de Grupo</div>
+            <div class="panel-body">
+                <div class="form-group con-scroll">
+                    <label for="SeleccionarGrupoRes">Seleccionar grupo de resultados</label>
+                    <select id="SeleccionarGrupoRes" title="Grupos de resultados" class="form-control">
+                        <option value="-1" selected="selected" disabled="disabled">Seleccione un grupo ...</option>
+                        @foreach (var resultado in Model.LsRsTelefonicos)
+                        {
+                            if (resultado.Id_grupo_resultado == null || resultado.Id_grupo_resultado == "")
+                            {
+                                <option value="@resultado.IdResultadoTelefonico">@resultado.NombreResultado</option>
+                            }
+                        }
+                    </select>
+                    <div class="rowSeparacion20">
+                        <div class="form-group">
+                            <label for="UlResultadosMarcados">Resultados seleccionados</label>
+                            <ul class="my-list-group" id="UlResultadosMarcados">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="floatRight">
+                    <button type="button" class="btn btn-default botonFicha" onclick="AplicarCambioResultdado('@Model.IdRepoFranjaHoraria')">Aplicar</button>
+                    <button type="button" class="btn btn-default botonFicha" onclick="CerrarPanelCambioResultados()">Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

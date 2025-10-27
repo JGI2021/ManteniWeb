@@ -1,0 +1,272 @@
+﻿
+@using ManteniWeb.ClasesDeDatos;
+
+@model List<MarcacionesGrupoANI>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css" />
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+
+<style>
+    th {
+        background: #778899 !important;
+        color: white !important;
+        font-weight: 300 !important;
+    }
+</style>
+
+
+@{
+    string title = "Grupos de Teléfonos";
+
+    List<MarcacionesGrupo> gruposPrefijosReglas = ViewBag.GrupoPrefijosReglas as List<MarcacionesGrupo>;
+}
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+<div class="jumbotron fix-panel">
+    <div class="container">
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@title</span>
+        </h2>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row rowSeparacion25">
+
+        <div class="col-lg-2 col-md-2">
+            @Html.Partial("MenuRegistros")
+        </div>
+
+        <div class="col-lg-8 col-md-8">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.Partial("_MensajesError")
+
+                <div id="alerta" class="alert" style="display:none">
+                    <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                    <p id="alert-mensaje"></p>
+                </div>
+
+                <table id="GruposANITable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="no-sort"></th>
+                            <th>Id grupo</th>
+                            <th>Nombre</th>
+                            <th>Máx. días trabajo</th>
+                            <th>ANIs</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    @foreach (var item in Model)
+                    {
+                        string strani = string.Empty;
+
+                        <tr id="tr_@item.aniGroupId">
+                            <td id="td_@item.aniGroupId">
+                                <input type="checkbox" id="chk_@item.aniGroupId" />
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.aniGroupId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.descripcion)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.maxDiasTrabajo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StrANIs)
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+
+                </table>
+
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script src="~/Content/DataTables/datatables.min.js" type="text/javascript"></script>
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/js/sweetalert2/dist/sweetalert2.all.min.js" type="text/javascript"></script>
+
+    <script>
+        $(function () {
+            tableop = $('#GruposANITable').DataTable({
+                "order": [[1, "asc"]],
+                "processing": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "Sin registros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Sin registros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "Todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#GruposANITable').css('display', 'table');
+
+            $("#GruposANITable").on("click", "td:not(:last-child)", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+
+                AvanzarPagina('LlamadaSaliente/GruposDeANIS', 'LlamadaSaliente/EditaGrupoANI/' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#GruposANITable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+        function NuevoRegistro() {
+            AvanzarPagina("LlamadaSaliente/GruposDeANIS", "LlamadaSaliente/EditaGrupoANI/0");
+        }
+
+        function EditarRegistro() {
+            let idSeleccionado = $("#idsSeleccionados").val();
+            AvanzarPagina('LlamadaSaliente/GruposDeANIS', 'LlamadaSaliente/EditaGrupoANI/' + idSeleccionado);
+        }
+
+        function EliminarRegistro() {
+            Swal.fire({
+                title: 'Eliminar grupo de Teléfonos',
+                text: "Se eliminarán los grupos de ANI seleccionados. ¿Desear continuar? !",
+                icon: 'warning',
+                heightAuto: false,
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Eliminado'
+                    );
+
+                    let ids = $('#idsSeleccionados').val();
+
+                    const jsonData = { "ids": ids };
+                    $.post(getRutaAbsoluta() + "/LlamadaSaliente/EliminarGrupoANI", jsonData, function (resultado) {
+                        if (resultado !== null) {
+
+                            let respuesta = JSON.parse(resultado);
+                            if (respuesta.Error === "N") {
+                                EliminaFilasTabla();
+                            }
+                            MostrarMensajeRespuesta(respuesta);
+                        }
+                    });
+                }
+            });
+        }
+
+        function EliminaFilasTabla() {
+            let idsSeleccionados = $("#idsSeleccionados").val();
+            let arrIds = idsSeleccionados.split(",");
+
+            for (let i = 0; i <= arrIds.length; i++) {
+                let id = arrIds[i];
+                $("#tr_" + id).remove();
+            }
+        }
+
+        function MostrarMensajeRespuesta(respuesta) {
+            console.log("Respuesta guardar datos: " + respuesta.Mensaje);
+            let pnlMessage = "";
+
+            if (respuesta) {
+                if (respuesta.Error === "S") {
+                    $('#MensajeAlertError').html(respuesta.Mensaje);
+                    pnlMessage = "alerterror";
+                }
+                else if (respuesta.Error === "N") {
+                    /// Mostramos mensaje de que todo se ha actualizado perfectamente
+                    $('#MensajeAlertSuccess').html(respuesta.Mensaje);
+                    pnlMessage = "alertsuccess";
+                }
+            }
+            else {
+                console.log("No se puede hacer un parse de la respuesta de errores al actualizar los datos, llega vacío.")
+            }
+
+
+            $('#' + pnlMessage).css('display', 'block');
+            // Se mantien por 6 segundos, luego se quita
+            setTimeout(function () {
+                $('#' + pnlMessage).css('display', 'none');
+                // Si se ha pulsado guardar y salir
+            }, 4000);
+        }
+    </script>
+}

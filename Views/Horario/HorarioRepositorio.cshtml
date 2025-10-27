@@ -1,0 +1,151 @@
+﻿
+@using ManteniWeb.Code
+
+@model Horario
+
+
+@{
+    ViewBag.Title = "Horario " + Model.Descripcion;
+    string nombreCalendarioSubsistema = ViewBag.NombreCalendarioSubsistema;
+}
+
+<style>
+    .marginBottom10 {
+        margin-bottom: 10px;
+    }
+
+    .marginTop20 {
+        margin-top: 20px;
+    }
+
+    .marginTop30 {
+        margin-top: 30px;
+    }
+
+    .marginLeftRight15 {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .marginLeft50 {
+        margin-left: 50px;
+    }
+
+    .noMostrarPanel {
+        display: none;
+    }
+
+    .floatRight {
+        float: right;
+    }
+
+    .marginRight5 {
+        margin-right: 5px;
+    }
+
+    .panelSeleccionHorario {
+        position: absolute;
+        width: 450px;
+        left: 61%;
+        min-height: 15%;
+        margin-top: 45px;
+        z-index: 10;
+    }
+
+    .marginTop22 {
+        margin-top: 22px;
+    }
+
+    .miHr {
+        border-top: 1px solid #333937;
+        margin-top: 10px;
+        margin-left: 60px
+    }
+</style>
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+
+<input type='hidden' id='hidd_nombreidsubsistema' value='@nombreCalendarioSubsistema' />
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL IZQUIERDO *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>    @* Fin menú lateral izquierdo *@
+
+        @* FORMULARIO DE HORARIO *@
+        <div class="col-lg-7 col-md-7 marginTop30">
+
+            @* Mensaje de alerta *@
+            <div id="alerta" class="alert col-ms-8" style="display:none">
+                <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                <p id="alert-mensaje"></p>
+            </div>
+
+            @* SELECCION DE HORARIO *@
+            @Html.Partial("AsignarHorarioDia")
+
+
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active">
+                    <a href="#TabHorario" aria-controls="TabHorario" role="tab" data-toggle="tab">Horario</a>
+                </li>
+                <li role="presentation">
+                    <a href="#TabCalendarios" aria-controls="TabCalendarios" role="tab" data-toggle="tab" onclick="CerrarFormulario();">Calendarios</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="TabHorario" class="tab-pane fade in active">
+                    @Html.Partial("PanelHorario")
+                </div>
+
+                <div id="TabCalendarios" class="tab-pane fade">
+                    @Html.Partial("AsociaCalendarioHorario")
+                </div>
+            </div>
+
+        </div>
+    </div>  @* Fin formulario de horario *@
+</div>
+
+
+
+
+
+
+@section scripts {
+    <script src="~/js/HorarioRepositorio.js"></script>
+    <script src="~/js/HorarioCalendarioAsociar.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            semana = @Html.Raw(Json.Encode(Model));
+        });
+    </script>
+}

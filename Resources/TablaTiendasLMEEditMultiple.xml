@@ -1,0 +1,279 @@
+﻿<table>
+  <general
+    DisplayName="Centros Leroy Merlin"
+    Database="TIPHONE"
+    TableName="RCO_CENTROS_LMES">
+  </general>
+
+  <panels>
+    <panel
+      id="panelgenerales"
+      DisplayName="Datos tienda">
+    </panel>
+  </panels>
+
+  <fields>
+    <field>
+      <fattr
+        FieldName="skill"
+        Panel="panelgenerales"
+        DisplayName="Skill"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Skill asociado al centro"
+        External="true"
+        Linea="uno"
+        UpdateNeeded="true"
+        TabOrder="9">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="TIPHONE"
+          TableName="SKILLSETS"
+          FieldKey="SKILLSET_ID"
+          FieldValue="NOMBRE"
+          DefaultKey="NULL"
+          DefaultValue="">
+        </table>
+      </external>
+    </field>
+
+ 
+    <field>
+      <fattr
+        FieldName="codigohorario"
+        Panel="panelgenerales"
+        DisplayName="Horario"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Horario asociado al centro"
+        External="true"
+        Linea="uno"
+        UpdateNeeded="true"
+        PosColumna="6"
+        TabOrder="11">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="TIPHONE"
+          TableName="RCO_CENTROS_LMES_HORARIOS"
+          FieldKey="CODIGOHORARIO"
+          FieldValue="ALIAS"
+          DefaultKey="NULL"
+          DefaultValue="">
+        </table>
+      </external>
+    </field>
+
+
+    <field>
+      <fattr
+        FieldName="rco"
+        Panel="panelgenerales"
+        DisplayName="RCO"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Centro asociado al RCO"
+        External="true"
+        Linea="sexta"
+        PosColumna="3"
+        UpdateNeeded="true"
+        TabOrder="12">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+             key="2"
+             value="  ">
+          </collectionitem>
+          <collectionitem
+             key="1"
+             value="Si">
+          </collectionitem>
+          <collectionitem
+             key="0"
+             value="No">
+          </collectionitem>
+        </collection>
+      </external>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="catalan"
+        Panel="panelgenerales"
+        DisplayName="Catalán"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Indica si el centro oferta el servicio en catalán"
+        External="true"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="3"
+        TabOrder="13">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+             key="2"
+             value="  ">
+          </collectionitem>
+          <collectionitem
+             key="1"
+             value="Si">
+          </collectionitem>
+          <collectionitem
+             key="0"
+             value="No">
+          </collectionitem>
+        </collection>
+      </external>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="urban"
+        Panel="panelgenerales"
+        DisplayName="Urban"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Indica si se trata de un centro urbano"
+        External="true"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="3"
+        DefaultValue="2"
+        TabOrder="14">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+             key="2"
+             value="  ">
+          </collectionitem>
+          <collectionitem
+             key="1"
+             value="Si">
+          </collectionitem>
+          <collectionitem
+             key="0"
+             value="No">
+          </collectionitem>
+        </collection>
+      </external>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="ServicioRCO"
+        Panel="panelgenerales"
+        DisplayName="Servicio"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip="Indica si se le da servicio al centro o no"
+        External="true"
+        Linea="sexta"
+        UpdateNeeded="true"
+        PosColumna="3"
+        TabOrder="15">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+             key="2"
+             value="  ">
+          </collectionitem>
+          <collectionitem
+             key="1"
+             value="Si">
+          </collectionitem>
+          <collectionitem
+             key="0"
+             value="No">
+          </collectionitem>
+        </collection>
+      </external>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="FieldServices"
+        Panel="panelgenerales"
+        DisplayName="CIC"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Boolean"
+        ToolTip=""
+        External="true"
+        Linea="sept"
+        UpdateNeeded="true"
+        PosColumna="3"
+        TabOrder="16">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+             key="2"
+             value="  ">
+          </collectionitem>
+          <collectionitem
+             key="1"
+             value="Si">
+          </collectionitem>
+          <collectionitem
+             key="0"
+             value="No">
+          </collectionitem>
+        </collection>
+      </external>
+    </field>
+
+  <field>
+    <fattr
+      FieldName="Avisos"
+      Panel="panelgenerales"
+      DisplayName="Avisos"
+      EditionType="Combo"
+      Mandatory="false"
+      ValidateAs="Boolean"
+      ToolTip=""
+      External="true"
+      Linea="sept"
+      UpdateNeeded="true"
+      PosColumna="3"
+      TabOrder="16">
+    </fattr>
+    <external>
+      <type tipo="collection"/>
+      <collection>
+        <collectionitem
+           key="2"
+           value="  ">
+        </collectionitem>
+        <collectionitem
+           key="1"
+           value="Si">
+        </collectionitem>
+        <collectionitem
+           key="0"
+           value="No">
+        </collectionitem>
+      </collection>
+    </external>
+  </field>
+  </fields>
+
+</table>

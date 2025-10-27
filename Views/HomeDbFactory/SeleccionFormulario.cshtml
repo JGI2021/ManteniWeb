@@ -1,0 +1,237 @@
+﻿
+@{
+    ViewBag.Title = "Editar Formulario";
+    ViewBag.Formulario = "--";
+}
+
+<link href="~/css/jquery-ui.css" rel="stylesheet" />
+
+
+@{
+    Html.RenderPartial("_Jumbotron");
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-offset-1 col-sm-10">
+            <form class="form-horizontal" method="post">
+                <fieldset>
+
+                    <!-- Form Name -->
+                    <legend class="text-info">Seleccione el Formulario que quiere editar</legend>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="txtNombre">Nombre</label>
+                        <div class="col-md-5">
+                            <input id="txtNombre" name="txtNombre" type="text" placeholder="Nombre en BBDD" class="form-control input-md" required="">
+
+                        </div>
+                    </div>                   
+
+                </fieldset>
+            </form>
+        </div>
+    </div>@*<div class="row">*@
+
+
+    <div class="row">
+        <table class="table table-hover table-striped table-bordered" id="tablaFormularios"></table>
+    </div>@*<div class="row">*@ 
+
+
+    <div class="row">
+
+        <div class="col-sm-6">
+            <form class="form-horizontal" id="formulario"></form>
+        </div>
+
+        <div class="col-sm-6">
+            <form class="form-horizontal" id="formulario2"></form>
+        </div>
+
+    </div>@*<div class="row">*@
+
+
+    <div class="row">
+        <div id="mensajes"></div>
+    </div>
+
+    <div class="modal fade" id="modal-formulario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-info">
+                    Formulario Modal
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="modal-body-formulario"></form>
+                </div>
+                <div class="modal-footer">                   
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Modal de borrado*@
+
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Confirmar eliminación
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            @*<img src="~/Content/images/warning.png" style="height:50px;width:50px" />*@
+                        </div>
+                        <div class="col-xs-offset-4 col-xs-6">
+                            El formulario seleccionado y todos sus elementos <b>serán borrados.</b><br>¿Continuar?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-danger btn-ok" id="botonConfirmacionBorrado"><span class="glyphicon glyphicon-warning-sign"></span> Borrar</a>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Cancelar</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@section scripts{
+    <script src="~/Scripts/jquery-ui-1.13.3.min.js"></script>
+    <script src="~/Scripts/jquery.formulario.js"></script>
+    <script>
+        $(document).ready(function () {
+            //No quiero que lea de cache, quiero que repita la llamada asíncrona
+            $.ajaxSetup({ cache: false });
+
+            //Variables
+
+            var tablaFormularios = $("#tablaFormularios");
+
+            //Funciones
+
+            var mostrarDatosFormulario = function (event) {
+                var form = $(event.currentTarget);
+                var id = form.data("idFormulario");
+                var dataArray = form.serializeArray();
+                var datos = {
+                    idFormulario: id,
+                    datosFormulario: JSON.stringify(dataArray)
+                };
+                console.log(JSON.stringify(dataArray));
+                $("#mensajes").append("<p>Formulario: " + id + "<br/> Datos: " + JSON.stringify(dataArray) + "</p>");
+                return false;
+            };
+
+            var enviarDatosFormulario = function () {
+                var form = $(event.currentTarget);
+                var id = form.data("idFormulario");
+                var dataArray = form.serializeArray();
+                var datos = {
+                    idFormulario: id,
+                    datosFormulario: JSON.stringify(dataArray)
+                };
+                $.post("/HomeDbFactory/MetodoGestorFormulario", datos, function (respuesta) {
+                    //Hacer algo con la respuesta
+                });                                
+                return false;
+            };
+
+
+            //Eventos
+            
+            tablaFormularios.on('click', '.editar', function (event) {
+                var formId = $(event.currentTarget).data("formid");//event.target podría ser el span                
+                window.location.href = '/HomeDbFactory/CreacionFormulario/' + formId;
+            });
+
+            tablaFormularios.on('click', '.ver', function (event) {
+                var formId = $(event.currentTarget).data("formid");//event.target podría ser el span 
+                $("#formulario").empty();
+                $("#formulario2").empty();
+                $("#formulario").formulario({ idFormulario: formId, onSubmit: mostrarDatosFormulario});
+                $("#formulario2").formulario({ idFormulario: formId, onSubmit: enviarDatosFormulario});
+            });
+
+            tablaFormularios.on('click', '.verModal', function (event) {
+                var formId = $(event.currentTarget).data("formid");//event.target podría ser el span
+                $("#modal-body-formulario").empty();
+                $("#modal-body-formulario").formulario({ idFormulario: formId, onSubmit: mostrarDatosFormulario});
+                $("#modal-formulario").modal('show');
+            });
+
+            tablaFormularios.on('click', '.eliminar', function (event) {
+                var formid = $(event.currentTarget).data("formid");//event.target podría ser el span
+                // Guardamos el id del formulario en el modal de confirmación de borrado
+                $("#confirm-delete").data("formid", formid);
+                //data-toggle="modal" data-target="#confirm-delete"                
+                $("#confirm-delete").modal('show');                
+                //window.location.href = '/HomeDbFactory/EliminarFormulario/' + formId;
+            });
+
+            $("#botonConfirmacionBorrado").on('click', function () {
+                // El usuario ha confirmado que quiere borrar el formulario
+                var formId = $("#confirm-delete").data("formid");
+                var datos = { idFormulario: formId };
+                $("#confirm-delete").modal('hide');                
+                $.post("/HomeDbFactory/EliminarFormulario", datos, function (data) {
+                    console.log(data);
+                    // Provoco de nuevo la búsqueda para que cargue la tabla actualizada.
+                    // $("#txtNombre").keyup();
+                    // También podría simplemente eliminar la fila correspondiente al formulario  
+                    var filaAEliminar = tablaFormularios.find("[data-formid='" + formId + "']").first().closest("tr");
+                    filaAEliminar.remove();
+                    
+                });
+            });
+
+            $("#txtNombre").on('keyup', function () {
+                var nombre = $(this).val();
+                $("#formulario").empty();
+                $("#formulario2").empty();
+                $.get("/HomeDbFactory/FormulariosPorNombre?nombreFormulario=" + nombre, function (data) {
+                    //Devuelve una lista de formularios (array)
+                    tablaFormularios.empty();
+                    var headers = "<tr class='info'><th style='text-align:center'>Nombre</th><th style='text-align:center'>Id</th><th style='text-align:center'>Nº de componentes</th><th style='text-align:center'>Ir a edición</th></tr>";
+                    if (data.length > 0) {
+                        tablaFormularios.append(headers);
+                        $.each(data, function (index, value) {
+                            var nombre = value.Nombre;
+                            var formId = value.FormularioId;
+                            var numComponentes = value.NumComponentes;
+                            var enlace = '<a href="#" class="editar btn btn-info" data-formid="' + formId + '"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+                            var verFormulario = '<a href="#" class="ver btn btn-warning" data-formid="' + formId + '"><span class="glyphicon glyphicon-eye-open"></span> Ver</a>';
+                            var eliminarFormulario = '<a href="#" class="eliminar btn btn-danger" data-formid="' + formId + '"><span class="glyphicon glyphicon-trash"></span> Eliminar</a>';
+                            var verFormularioModal = '<a href="#" class="verModal btn btn-success" data-formid="' + formId + '"><span class="glyphicon glyphicon-new-window"></span> Ver en Modal</a>';
+                            var nuevaFila = "<tr><td style='text-align:center'>" + nombre + "</td><td style='text-align:center'>" + formId + "</td><td style='text-align:center'>" + numComponentes + "</td><td style='text-align:center'>" + enlace + " " + eliminarFormulario + " " + verFormularioModal + "</td></tr>";
+                            tablaFormularios.append(nuevaFila);
+                        });
+                    }
+                    
+                    
+                });               
+
+            });
+
+
+            //Instrucciones
+
+            $("#txtNombre").focus();
+
+
+
+
+        });
+    </script> 
+}
+
+
+          

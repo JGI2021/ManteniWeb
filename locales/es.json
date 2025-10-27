@@ -1,0 +1,56 @@
+﻿{
+  "Buscador": {
+    "Buscar": "Buscador",
+    "NoTocados": "No tocado",
+    "Reprogramados": "Reprogramado",
+    "Finalizados": "Finalizados",
+    "Cancelados": "Cancelados",
+    "Anulados": "Anulados",
+    "Supervisión": "Supervisión",
+    "Inconsistente": "Inconsistente",
+    "SeleccCampo": "Selecciones campo",
+    "Activo": "Acvtive",
+    "Eliminado": "Deleted",
+    "Cancelado": "Canceled",
+    "ErrObtenerPrefijo": "Se ha producido un error al recuperar el nombre del prefijo de la tabla de telemarketer ",
+    "ErrComboListas": "Se ha producido un error al recuperar las listas de la campaña",
+    "Todos": "Todos",
+    "ErrResultados": "Se ha producido un error al cargar los resultados de negocio de la campaña",
+    "EdicionRegistro": "Edición del registro",
+    "EdicionMultiple": "Edición múltiple registros",
+    "ErrFomMultipleEdit": "No se ha podido abrir el formulario de edición de múltiples registros",
+    "DatosSalvadosOk": "Los datos se han copiado correctamente",
+    "DatosSalvadosKO": "Ha fallado la copia de los datos",
+    "CopiaPortapapelesOK": "Los registros se han copiado correctamente al portapapeles",
+    "CopiaPortapapelesKO": "Ha fallado la copia de registros al portapapeles"
+  },
+  "RegistrosMarcador": {
+    "fecha": "Fecha",
+    "fechaDesde": "Fecha desde"
+  },
+  "Comun": {
+    "sinRegistros": "Sin registros"
+  },
+  "Operadores": {
+    "procesando": "Cargando...",
+    "lengthMenu": "_MENU_ records per page",
+    "resteContrasenaOk": "La nueva contraseña <strong>NewPwdUser@1</strong>",
+    "errResetContrasena": "No se ha podido resetear la contraseña. Problema en llamada a servidor de seguridad",
+    "msgDesactivaAgentes": "Se van a desactivar los agentes seleccionados. Se marcaránn como inactivos y no se podrán seleccionar en grupos, campañas o listas.  ¿Desea continuar? ",
+    "msgEliminarAgentes": "Se van a eliminar los agentes seleccionados marcados como inactivos. Serán borrados de las tablas y no se podrán recuperar.  ¿Desea continuar?",
+    "msgActivarAgentes": "Se van a activar los agentes marcados como inactivos.  ¿Desea continuar?",
+    "msgErrorConexionRest": "No se ha podido resetear la contraseña. Error al llamar al servidor",
+    "msgActivarOperador": "Se va a activar el operador. Desea continuar?",
+    "tipoDeAsesor": "Tipo de asesor",
+    "msgErrorComunicacion": "Problema de conexión con el servidor",
+    "fechaMayorQue": "La fecha ''desde'' no puede ser mayor que la fecha ''hasta''",
+    "seleccionarPeriodoFecha": "Debe seleccionar un periodo de fechas"
+  },
+  "Grabaciones": {
+    "CopiaGrabacionesClipboardOK": "Los registros se han copiado correctamente al portapapeles",
+    "CopiaGrabacionesClipboardKO": "Ha fallado la copia de registros al portapapeles",
+    "BusquedaPorId": "Grabaciones buscar por Id",
+    "BusquedaAvanzada": "Grabaciones búsqueda avanzada"
+  }
+
+}

@@ -1,0 +1,443 @@
+﻿@model ManteniWeb.Models.Organizacion
+@using ManteniWeb.Models;
+
+
+@{
+    int administrarOrganizacion = 0;
+    string listaoperadores = "";
+    string EliminadosOperadores = "";
+    List<string> nombresOperadores = null;
+    string nivelOrganizacion = "0";
+
+    try
+    {
+        administrarOrganizacion = (int)ViewBag.AdministraOrganizacion;
+        listaoperadores = ViewBag.ListaOperadores;
+        EliminadosOperadores = ViewBag.EliminadosOperadores;
+        // Si viniese a null, que no debería, por lo menos que no casque
+        if (listaoperadores == null)
+        {
+            listaoperadores = "";
+        }
+
+        nombresOperadores = (List<string>)ViewBag.NombresOperadores;
+    }
+    catch
+    {
+
+    }
+
+    bool hayError = Model.HayError;
+}
+
+
+<link href="~/css/MyTreeView.css" rel="stylesheet" />
+<link href="~/css/Organizacion.css" rel="stylesheet" />
+<link href="~/css/AsignarOrganizacion.css" rel="stylesheet" />
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+
+    hr {
+        margin-top: 15px !important;
+        border-top: 1px solid #c2c2c2 !important;
+    }
+
+    nav.navbar {
+        position: fixed !important;
+        width: 100% !important;
+    }
+
+    .margin70 {
+        margin-top: 70px;
+    }
+</style>
+
+@*<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+        <div class='container'>
+            <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+                <i class='fa fa-th' aria-hidden="true"></i>
+                <span style='margin-left: 1em;'>Asignar nivel jerárquico</span>
+            </h2>
+        </div>
+    </div>*@
+
+
+<input type='hidden' id='operadores' value='@listaoperadores' />
+
+<!-- SE MUESTRA LA ORGANIZACION -->
+<div style="height:70px;"></div>
+<div class="container-fluid" style="overflow-y: auto; height: 85vh;">
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="panelMenuFijar">
+                <h4>
+                    <i class='fa fa-th' aria-hidden="true"></i>
+                    <b><span style='margin-left: 1em;'>Asignar nivel jerárquico</span></b>
+                </h4>
+                <hr />
+                <div class="visible-lg visible-md ">
+                    <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro"
+                        style="padding-left: 0px !important; padding-right: 0px !important;">
+                        <li></li>
+                        <li class="RowAccionesSiempreVisibles" style="">
+                            <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-1">
+                                        <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-11">Volver</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+            @{
+                string nodisplay = "no-display";
+                string paneldanger = "";
+                if (hayError)
+                {
+                    nodisplay = "";
+                    paneldanger = "panel-danger";
+                }
+            }
+            <div class="row rowSeparacion15 errorpanel @nodisplay">
+                <div class="col col-lg-7">
+                    <div id="msgpanel" class="panel @paneldanger">
+                        <div id="panelmeesage" class="panel-heading"><h3>ATENCIÓN</h3><h4> @Model.Message </h4></div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!hayError)
+            {
+                <div class="row">
+                    <div class="tree">
+                        @Html.Raw(Display(Model, administrarOrganizacion, ref nivelOrganizacion))
+                    </div>
+                </div>
+            }
+        </div>
+
+
+        <div class="col-lg-3 col-md-3" style="position:fixed;left: 65%; max-height: 75vh;">
+            <h4><strong>Operadores seleccionados:</strong></h4>
+            <ul class="list-group">
+                @foreach (string nombre in nombresOperadores)
+                {
+                    <li class="list-group-item">@nombre</li>
+                }
+            </ul>
+            <div class="row rowSeparacion25">
+                <button type="button" class="btn btn-primary botonFicha"
+                        onclick="AsignaNivelJerarquico();"
+                        style="float:right; margin-bottom: 15px;">
+                    Asignar
+                </button>
+            </div>
+
+        </div>
+        <div class="col-lg-1 col-md-1"> </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+@functions {
+
+    public string DisplaySubOrganizaciones(List<ManteniWeb.Models.Organizacion> lsorganiz, int i, bool seleccionadopadre,
+                                           bool MostrarNodosHijos, ref string nivelOrganizacion)
+    {
+        string s = "";
+
+        s += "<ul>";
+
+        i++;
+        string color = "ColorNormal";
+
+        foreach (ManteniWeb.Models.Organizacion suborgorg in lsorganiz)
+        {
+            bool continuarseleccion = false;
+            if (suborgorg.MostrarNodo == false)
+            {
+                continue;
+            }
+
+            string disabled = "";
+            string marcado = "";
+
+            if (suborgorg.Nombrenivel == "ASESORES")
+            {
+                continue;
+            }
+            else
+            {
+                if (MostrarNodosHijos)
+                {
+                    s += "<li class='parent_li' >";
+                }
+                else
+                {
+                    s += "<li class='parent_li' style='display:none' >";
+                }
+
+                color = "ColorNormal";
+                // Miramos si hay que activar el check  o no
+                if (!suborgorg.ActivarCheck)
+                {
+                    disabled = " disabled ";   // desactivará el checkbox porque no pertenece a su nodo de trabajo
+                }
+
+                if (suborgorg.Seleccionado || seleccionadopadre)
+                {
+                    if (suborgorg.Seleccionado && !seleccionadopadre)
+                    {
+                        color = " NodoJerarquico";
+                        nivelOrganizacion = suborgorg.Idorganizacion;
+                    }
+                    MostrarNodosHijos = true;
+                    if (disabled == "")
+                    {
+                        color += " ColorSelected";
+                    }
+                    if (suborgorg.Seleccionado)
+                    {
+                        marcado = " checked ";
+                    }
+                    continuarseleccion = true;
+
+                }
+
+                s += "<div id='div_" + suborgorg.Idorganizacion + "' > </div> ";   // Para poder buscar el nivel al pulsar un <a> en coordinadores
+
+                s += "<input type='checkbox' class='tree-checkbox parent' id='" + suborgorg.Idorganizacion + "' " + disabled + " " + marcado + " />";
+
+
+                s += "<span class='tree-padre " + color + "'>";
+                s += "    <i class='glyphicon glyphicon-menu-down' ></i>";
+                s += suborgorg.Nombre;
+                s += "    <label id='nivel'" + suborgorg.Nivel + "' class='ColorBlue'>(" + suborgorg.Nombrenivel + ")";
+
+                s += "    </label>   ";
+
+                s += "</span> ";
+            }
+
+            if (suborgorg.SubOrganizacion.Count > 0)
+                s += DisplaySubOrganizaciones(suborgorg.SubOrganizacion, i, continuarseleccion,
+                                              MostrarNodosHijos, ref nivelOrganizacion);
+
+            s += "</li>";
+
+        }
+
+        s += "</ul>";
+        return s;
+    }
+
+
+    public string Display(ManteniWeb.Models.Organizacion organiz, int administrarOrganizacion, ref string nivelOrganizacion)
+    {
+        string s = "<ul style='padding-left: 0px;'>";
+        string color = "ColorNormal";
+        string disabled = "";
+        string marcado = "";
+
+        s += "<li class='parent_li'> ";
+
+        // Mira si hay que desactivar el checkbox
+        if (!organiz.ActivarCheck)
+        {
+            disabled = " disabled ";
+        }
+
+        if (organiz.Seleccionado)
+        {
+            color = "NodoJerarquico";
+            nivelOrganizacion = organiz.Idorganizacion;
+            if (disabled == "")
+            {
+                marcado = " checked ";
+            }
+        }
+
+        s += "<input type='checkbox' class='tree-checkbox parent ' id='" + organiz.Idorganizacion + "' " + disabled + " " + marcado + "/>";
+
+        s += "<span class='tree-padre " + color + "'>";
+        s += "<i class='glyphicon glyphicon-menu-down'></i>";
+        s += organiz.Nombre;
+        s += "  <label class='ColorBlue'>(" + organiz.Nombrenivel + ")</label> ";
+
+        s += "</span> ";
+
+
+        int i = 0;
+
+        if (organiz.SubOrganizacion.Count > 0)
+            s += DisplaySubOrganizaciones(organiz.SubOrganizacion, i, organiz.Seleccionado, true, ref nivelOrganizacion);
+
+        s += "</li>";
+        s += "</ul>";
+
+        return s;
+    }
+}
+
+
+@section scripts {
+    <script>
+        let nodoMarcado = @nivelOrganizacion;
+         $(document).ready(function () {
+            // Indicará el ndo marcado
+            nodoMarcado = @nivelOrganizacion;
+        });
+
+
+        $(function () {
+            $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Colapsar');
+
+            $(document).on('click', '.tree li  input[type="checkbox"]', function () {
+                // Obtengo el nodo de tipo checkbox
+                var nodo = $(this).closest('input[type="checkbox"]');
+
+                if (nodo != null && nodo.length > 0) {
+                    // Busco el checkbox anterior al que hemos marcado, es decir, al padre.
+                    var nodoant = $('#' + nodo[0].id).closest('ul').closest('li').find('input').first();
+                    // Miro si se ha encontrado y si el padre está marcado no permito hacer nada, sino se marcan todos los descendentes
+                    if (nodoant == null || nodoant.length == 0 || (nodoant != null && nodoant.length > 0 && !nodoant[0].checked)) {
+
+                        /// Miro si es diferente al marcado anterormente, en ese caso desmarco los de antes
+                        if (nodoMarcado !== '' && nodoMarcado !== nodo[0].id) {
+                            // desmarco los nodos del anterior
+                            DesmarcoChecksArbol();
+                        }
+
+                        $(this).closest('li').find('span').removeClass('ColorSelected');
+                        $(this).closest('li').find('span').removeClass('ColorNormal');
+
+                        if (nodo[0].checked) {
+                            $(this).closest('li').find('span').addClass('ColorSelected');
+                        }
+                        else {
+                            $(this).closest('li').find('span').addClass('ColorNormal');
+                        }
+
+                        if (nodo[0].checked) {
+                            // Graba el registro en base de datos
+                            nodoMarcado = nodo[0].id;
+                        }
+                        else {
+                            // Desmarca el registro en base de datos
+                            nodoMarcado = '';
+                        }
+                    }
+                    else {
+                        if (nodoant[0].checked) {
+                            nodoant[0].checked = false;
+                            nodoant.closest('li').find('span').removeClass('ColorSelected');
+                            nodoant.closest('li').find('span').addClass('ColorNormal');
+                        }
+                        nodo[0].checked = true;
+                        nodoMarcado = nodo[0].id
+                        nodo.closest('li').find('span').removeClass('ColorNormal');
+                        if (!nodo.closest('li').find('span').hasClass('ColorSelected')) {
+                            $(this).closest('li').find('span').addClass('ColorSelected');
+                        }
+                    }
+                }
+                else {
+
+                }
+            });
+
+            $('.tree li.parent_li > span').on('click', function (e) {
+                var children = $(this).parent('li.parent_li').find(' > ul > li');
+                if (children.is(":visible")) {
+                    children.hide('fast');
+                    $(this).attr('title', 'Expandir').find(' > i').addClass('glyphicon-menu-up').removeClass('glyphicon-menu-down');
+                } else {
+                    children.show('fast');
+                    $(this).attr('title', 'Colapsar').find(' > i').addClass('glyphicon-menu-down').removeClass('glyphicon-menu-up');
+                }
+                e.stopPropagation();
+            });
+        });
+
+        function DesmarcoChecksArbol() {
+            // Obtengo el nodo de tipo checkbox
+            const nodo = $('#' + nodoMarcado);
+            if (nodo != null && nodo.length > 0) {
+                // Marca o desmarca todos los checkbox como marcados (todos los descendentes)
+                $(nodo).closest('li').find('ul input[type="checkbox"]').prop('checked', false);
+                $(nodo).closest('li').find('span').removeClass('ColorSelected');
+                $(nodo).closest('li').find('span').addClass('ColorNormal');
+                nodo[0].checked = false;
+                $(nodo).closest('li').find('span').addClass('ColorNormal');
+                // Quita el nodo de la lista de seleccionados
+                nodoMarcado = '';
+            }
+        }
+
+        ///
+        /// Se ha seleccionado un nodo. Se grabará en base de datos y se asignará como nivel organizativo
+        /// perteneciente a todos los operadores que se hayan asignado
+        /// param idnodo: es el identificador del nodo que se ha seleccionado.
+        function AsignaNivelJerarquico() {
+            if (nodoMarcado === 0) {
+                MuestraMensaje('ATENCION Se debe seleccionar al menos un nodo para poder asignar un nivel jerárquico', false);
+                CierraPanelDeMensaje();
+                return;
+            }
+
+            const operadores = $('#operadores').val();
+            datos = { "id": nodoMarcado, "listaoperadores": operadores };
+            var url = getRutaAbsoluta();
+            $.post(url + "/Organizacion/AsignarNivelJerarquico", datos, function (resultado) {
+                if (resultado.substring(0, 2) === 'OK') {
+                    MuestraMensaje('OK ' + resultado , true);
+                }
+                else {
+                    MuestraMensaje('Error ' + resultado, false);
+                }
+                CierraPanelDeMensaje();
+            });
+        }
+
+
+        function MuestraMensaje(mensaje, esSuccess) {
+            if (!esSuccess) {
+                $('#panelmeesage').html('<p>' + mensaje + '</p>');
+                $('#msgpanel').removeClass('panel-success');
+                $('#msgpanel').addClass('panel-danger');
+                $('.errorpanel').css('display', 'block');
+            }
+            else {
+                $('#panelmeesage').html('<p>OK Los operadores han sido asignados a nivel jerárquico seleccinado </p>');
+                $('#msgpanel').addClass('panel-success');
+                $('#msgpanel').removeClass('panel-danger');
+                $('.errorpanel').css('display', 'block');
+            }
+            
+        }
+
+
+        function CierraPanelDeMensaje() {
+            window.setTimeout(function () {
+                $('.errorpanel').css('display', 'none');
+            }, 5000);
+        }
+
+    </script>
+}
+

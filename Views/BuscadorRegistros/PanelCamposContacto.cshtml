@@ -1,0 +1,123 @@
+﻿
+@using ManteniWeb.DatosTablas
+
+
+@{
+    List<TDatosRdoNegocio> lsResultados = (List<TDatosRdoNegocio>)ViewBag.ResultadosNegocio;
+    List<TDatosOperador> operadores = ViewBag.Operadores as List<TDatosOperador>;
+}
+
+
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="nombre">Nombre</label>
+        <input type="text" class="form-control" id="nombre" value="" onchange="CambiaCampo('nombre')" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="direccion">Direccion</label>
+        <input type="text" class="form-control" id="direccion" value="" onchange="CambiaCampo('direccion')" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="codigoPostal">Código postal</label>
+        <input type="text" class="form-control" id="poblacion" value="" onchange="CambiaCampo('codigopostal')" />
+    </div>
+</div>
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="poblacion">Población</label>
+        <input type="text" class="form-control" id="poblacion" value="" onchange="CambiaCampo('poblacion')" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="provincia">Provincia</label>
+        <input type="text" class="form-control" id="provincia" value="" onchange="CambiaCampo('provincia')" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="pais">País</label>
+        <input type="text" class="form-control" id="pais" value="" onchange="CambiaCampo('pais')" />
+    </div>
+</div>
+
+
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="estado">Estado regitro</label>
+        <select class="form-control" id="estado" value="" onchange="CambiaCampo('estado')">
+            <option value="0"></option>
+            <option value="N">No tocado</option>
+            <option value="R">Reprogramado</option>
+            <option value="F">Finalizado</option>
+            <option value="C">Cancelado</option>
+            <option value="S">Supervisión</option>
+            <option value="A">Anulado</option>
+            <option value="I">Inconsistente</option>
+        </select>
+    </div>
+
+    <div class="col-lg-2 col-md-2">
+        <label for="prioridad">Prioridad</label>
+        <input type="number" class="form-control" id="prioridad" value="" onchange="CambiaCampo('prioridad')" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="peso">Peso</label>
+        <input type="number" class="form-control" id="peso" value="" onchange="CambiaCampo('peso')" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="valor1">Valor 1</label>
+        <input type="number" class="form-control" id="valor1" value="" onchange="CambiaCampo('valor1')" />
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <label for="valor2">Valor 2</label>
+        <input type="number" class="form-control" id="valor2" value="" onchange="CambiaCampo('valor2')" />
+    </div>
+</div>
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="literal1">Literal 1</label>
+        <input type="text" class="form-control" id="literal1" value="" onchange="CambiaCampo('literal1')" />
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <label for="literal2">Literal 2</label>
+        <input type="text" class="form-control" id="literal2" value="" onchange="CambiaCampo('literal2')" />
+    </div>
+</div>
+
+
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="resultados">Resultados de negocio</label>
+        <select class="form-control" id="resultados" value="" onchange="CambiaCampo('resultados')">
+            <option value="0"></option>
+            @foreach (TDatosRdoNegocio resultado in lsResultados)
+            {
+                <option value="@resultado.Codigo">@resultado.Descripcion</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-lg-4 col-md-4">
+        <label for="resultados">Operador preferido</label>
+        <select class="form-control" id="operadorPreferido" value="" onchange="CambiaCampo('operadorPreferido')">
+            <option value="0"></option>
+            @foreach (TDatosOperador operador in operadores)
+            {
+                <option value="@operador.Codigo">@operador.Nombre</option>
+            }
+        </select>
+    </div>
+</div>
+ 
+<div class="row rowSeparacion25">
+    <div class="col-lg-4 col-md-4">
+        <label for="cancelados">Reactivar cancelados</label>
+        <input type="checkbox" id="cancelados" value="" style="margin-left: 10px;" onchange="CambiaCampo('cancelados')" />
+    </div>
+
+    <div class="col-lg-4 col-md-4">
+        <label for="contadores">Reiniciar contadores</label>
+        <input type="checkbox" id="contadores" value="" style="margin-left: 10px;" onchange="CambiaCampo('contadores')" />
+    </div>
+</div>

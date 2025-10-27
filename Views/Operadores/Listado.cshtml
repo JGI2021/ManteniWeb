@@ -1,0 +1,530 @@
+﻿@using ManteniWeb.DatosTablas;
+@using ManteniWeb.Models
+@using ManteniWeb.Code;
+@using ManteniWeb.App_GlobalResources;
+
+@model IEnumerable<ManteniWeb.DatosTablas.TDatosOperador>
+
+@{
+    ViewBag.Title = ComunResources.operadores;
+    TPermisosUsuario permisos = (TPermisosUsuario)ViewBag.Permisos;
+    bool aplicarModeloOrganizativo = (bool)ViewBag.AplicarModeloOrganizativo;
+    bool usarOperadorExtendido = WebConfigParams.UsarOperadorExtendido;
+    List<ManteniWeb.ClasesDeDatos.NivelesOperador> nivelesOperador = ViewBag.NivelesDeOperador as List<ManteniWeb.ClasesDeDatos.NivelesOperador>;
+    bool hayConjuntoOperadores = (bool)ViewBag.HayConjuntoOperadores;
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/Operadores.css" rel="stylesheet" />
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+<input type="hidden" id="idsSeleccionados" value="" />
+<input type="hidden" id="accionBorrado" value="" />
+<input type="hidden" id="usarOperadorExtendido" value="@usarOperadorExtendido" />
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+
+                    @if (permisos.AdminOperadores)
+                    {
+
+                        <li class="RowAccionesSiempreVisibles" style="">
+                            <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="Nuevo();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-plus visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.btn_nuevo</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="EdicionSimple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_3" class="" onclick="EditarFilas();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-edit visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.btn_editar</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="EdicionMultiple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_4" class="" onclick="ElimiminacionFilas('D');">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-circle-thin visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.chk_inactivo</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="EdicionMultiple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_5" class="" onclick="ElimiminacionFilas('A');">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-circle visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.chk_activo</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="EdicionMultiple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_6" class="" onclick="ElimiminacionFilas('E');">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-trash-o visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.btn_eliminar</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="EdicionSimple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_8" class="" onclick="Permisos();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-key visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.permisos</div>
+                                </div>
+                            </a>
+                        </li>
+
+
+                    }
+
+
+                    @if (permisos.GruposSupervisados.Count > 0)
+                    {
+                        <li class="EdicionMultiple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_9" class="" onclick="Grupos();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-users visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.pr_grupos</div>
+                                </div>
+                            </a>
+                        </li>
+
+                    }
+
+                    @if (permisos.ListasSupervisadas.Count > 0)
+                    {
+                        <li class="EdicionMultiple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_10" class="" onclick="Listas();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-bookmark-o visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.listas</div>
+                                </div>
+                            </a>
+                        </li>
+
+                    }
+
+
+                    @*@if (aplicarModeloOrganizativo)
+                        {
+                            <li class="RowAccionesSiempreVisibles" style="">
+                                <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="EquiposOperadores();">
+                                    <div class="row">
+                                        <div class="col-lg-2 col-sm-2">
+                                            <span class="fa fa-th visible-lg visible-md visible-xs"></span>
+                                        </div>
+                                        <div class="col-lg-10 col-sm-10">Equipos</div>
+                                    </div>
+                                </a>
+                            </li>
+                        }*@
+
+                    @if (aplicarModeloOrganizativo)
+                    {
+                        <li class="EdicionMultiple" style="display: none;">
+                            <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="Organizacion();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-th visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.op_asignarNivel</div>
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="RowAccionesSiempreVisibles" style="">
+                            <a href="#" role="button" id="OptionButtonVP_2" class="" onclick="ConjuntoDeOperadores();">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <span class="fa fa-users visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="col-lg-10 col-sm-10">@ComunResources.op_conjuntoOperadores</div>
+                                </div>
+                            </a>
+                        </li>
+                    }
+
+
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">@ComunResources.btn_volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        @* FIN MENU LATERAL *@
+
+
+        @* FORMULARIO OPERADORES *@
+        <div class="col-lg-9 col-md-9">
+
+            <div class='row rowSeparacion10'>
+                <div class='col-lg-4 col-md-4 col-sm-4' style='margin-bottom:10px;'>
+                    <label class='radio-inline' style='margin-left:4px;'>
+                        <input type='checkbox' class='radioclass' name='radiosA' value='A' id='MostrarActivos' checked onclick='OptionsChecked()' /><b>  @ComunResources.chk_activo&nbsp;&nbsp; </b>
+                    </label>
+                    <label class='radio-inline Separa20Izquierda'>
+                        <input type='checkbox' class='radioclass' name='radiosI' value='I' id='MostrarNoActivos' onclick='OptionsChecked()' /><b> @ComunResources.chk_inactivo</b>
+                    </label>
+                </div>
+            </div>
+
+            <div id="alerta" class="alert" style="display:none">
+                <a href="#" onclick="CloseAlert();" style="float: right;"><strong> X </strong></a>
+                <p id="alert-mensaje"></p>
+            </div>
+
+            <div class="row rowSeparacion10">
+                <table id="OpTable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                    <thead>
+                        <tr>
+                            <th class="no-sort"></th>
+                            <th>@ComunResources.identificador</th>
+                            <th>@ComunResources.alias</th>
+                            <th>@ComunResources.lb_nombre</th>
+                            <th>@ComunResources.Tipo</th>
+                            <th>@ComunResources.estado</th>
+                            @if (hayConjuntoOperadores)
+                            {
+                                <th>@ComunResources.op_conjuntoOperadores</th>
+                            }
+                            @*<th>foto</th>*@
+
+                            @if (aplicarModeloOrganizativo)
+                            {
+                                <th>@ComunResources.nivelOrganizacion</th>
+                                <th>@ComunResources.equiposOrganizacion</th>
+                            }
+
+                        </tr>
+                    </thead>
+
+                    @foreach (var item in Model)
+                    {
+                        if (item.MostrarOperador == false)
+                        {
+                            continue;
+                        }
+
+                        bool opActivo = (item.Activo == "1" || item.Activo == "2") ? true : false;
+                        string estadooperador = "opActivo";
+                        if (!opActivo)
+                        {
+                            estadooperador = "opInactivo";
+                        }
+
+                        <tr id="tr_@item.Codigo" class="@estadooperador">
+                            <td id="td_@item.Codigo">
+                                <input type="checkbox" id="chk_@item.Codigo" />
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Codigo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Alias)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Nombre)
+                            </td>
+                            <td>
+                                @Html.Raw(NombreNivelOperador(item.OpLevel, nivelesOperador))
+                            </td>
+                            <td>
+                                @if ((item.Activo == "1" || item.Activo == "2"))
+                                {
+                                    <span class="caja-estado-activo" title="Activo" id="SPAN_@item.Codigo"> A </span>
+                                }
+                                else
+                                {
+                                    <span class="caja-estado-inactivo" title="Inactivo" id="SPAN_@item.Codigo"> I </span>
+                                }
+                            </td>
+                            @*@if (WebConfigParams.UsarOperadorExtendido == 1)
+                                    {
+                                        <td><img src="@item.DatosOperadorExtendidos." height="32" width="32" class="img-circle" alt="@item.Alias" style="border:1px solid #778899"/></td>
+                                }*@
+                            @if (hayConjuntoOperadores)
+                            {
+                                <td> @Html.Raw(GetConjuntoOperadores(item.ConjuntoOperadores))</td>
+                            }
+
+                            @if (aplicarModeloOrganizativo)
+                            {
+                                string niveljerarquico = item.NombreOrganizacionJerarquia;
+
+                                string nivelOrganizacion = "";
+                                if (!string.IsNullOrEmpty(niveljerarquico) && niveljerarquico != Comun.OPERADOR_SIN_JERARQUIA)
+                                {
+                                    nivelOrganizacion = " ( " + item.NombreNivelOrganizacion.Substring(0, 3) + " )";
+                                }
+                                <td>
+                                    @niveljerarquico  <span style='font-size: 12px;color:blue;font-size:10px;'>@nivelOrganizacion</span>
+                                </td>
+                                <td>
+                                    @if (item.EsCoordinador == 1)
+                                    {
+                                        @Html.Raw(ObtenerEquipos(item))
+                                    }
+                                    else
+                                    {
+                                        @item.ServicioAsignado;
+                                    }
+
+                                </td>
+                            }
+                        </tr>
+                    }
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_MiModal", new MiModelDlg());
+
+
+@functions {
+
+    public string ObtenerEquipos(TDatosOperador datosOperador)
+    {
+        string htm;
+        if (datosOperador.ServicioAsignado == null)
+        {
+            return "";
+        }
+
+        string[] equipos = datosOperador.ServicioAsignado.Split(',');
+
+        if (equipos.Length <= 3)
+            htm = datosOperador.ServicioAsignado.Replace(",", " - ");
+        else
+        {
+            htm = " <div class='tooltip-wrap'> " +
+                     "  <span class='badge badge-light'> " + equipos.Length.ToString() + "</span> " +
+                     "  <div class='tooltip-content'> " + datosOperador.ServicioAsignado.Replace(",", " - ") + " </div> " +
+                     " </div>  ";
+        }
+
+        return htm;
+    }
+
+    public string NombreNivelOperador(int idnivel, List<ManteniWeb.ClasesDeDatos.NivelesOperador> nivelesOperador)
+    {
+        string nameLevel = "";
+
+        var nivel = nivelesOperador.Find(o => o.idNivel == idnivel);
+        if (nivel != null)
+        {
+            nameLevel = nivel.tipoOperador;
+        }
+
+        return nameLevel;
+    }
+
+    public string GetConjuntoOperadores(List<TDatosConjuntoOperadores> grupos)
+    {
+        string strConjuntos = string.Empty;
+
+        if (grupos != null)
+        {
+            foreach (TDatosConjuntoOperadores datosConjunto in grupos)
+            {
+                if (strConjuntos == string.Empty)
+                    strConjuntos = datosConjunto.Nombre;
+                else
+                    strConjuntos += ", " + datosConjunto.Nombre;
+            }
+        }
+
+        if (strConjuntos == string.Empty)
+            return ComunResources.grupoNoAsignado;
+
+
+        return strConjuntos;
+    }
+    }
+
+
+    @section scripts {
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.3.1/i18nextHttpBackend.min.js"></script>
+    <script src="~/js/i18next/i18next.min.js" type="text/javascript"></script>
+    <script src="~/js/OperadoresListado.js"></script>
+
+    <script>
+
+        //const { default: i18next } = require("../../node_modules/i18next/index");
+        var tableop;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+            var language = '@WebConfigParams.AppLanguage';
+
+            i18next.use(i18nextHttpBackend).init({
+
+            lng: language,
+                debug: true,
+                fallbackLng: "en",
+                backend: {
+                loadPath: '../locales/{{lng}}.json'
+                }
+            });
+
+            tableop = $('#OpTable').DataTable({
+                "order": [[3, "asc"]],
+                "processing": true,
+                "info": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "@CampanaResources.bs_loadingRecords",
+                    "lengthMenu": "@CampanaResources.bs_lengthMenu",
+                    "zeroRecords": "@CampanaResources.bs_zeroRecords",
+                    "info": "@CampanaResources.bs_info",
+                    "infoEmpty": "@CampanaResources.bs_sinRegistros",
+                    "infoFiltered": "",
+                    "search": "@CampanaResources.bs_buscar",
+                    "paginate": {
+                        "first": "@CampanaResources.bs_primero",
+                        "next": "@CampanaResources.bs_siguiente",
+                        "previous": "@CampanaResources.bs_anterior",
+                        "last": "@CampanaResources.bs_ultimo"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "Todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+            $('#OpTable').css('display', 'table');
+
+            $("#OpTable").on("click", "td", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.slice(3);
+                let usarOperadorEstendido = $("#usarOperadorExtendido").val();
+                //                if (usarOperadorEstendido == "1") {
+                AvanzarPagina('Operadores/listado', 'Operadores/Operador/' + id);
+                //                }
+                //                else {
+                //                    AvanzarPagina('Operadores/listado', 'Operador.aspx?id=' + id);
+                //                }
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#OpTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.slice(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+
+                if (element.checked) {
+                        if (seleccionado === '') {
+                            seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                        }
+                        else {
+                            seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                        }
+                    $('#idsSeleccionados').val(seleccionado);
+                    }
+                else { // desmarcamos check
+                       // los paso a un array
+                        arrSeleccionados = seleccionado.split(',');
+                        // lo elimino del array
+                        const index = arrSeleccionados.indexOf(id);
+                        if (index > -1) {
+                            arrSeleccionados.splice(index, 1);
+                        }
+                        // lo paso todo a cadena
+                        seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                        if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                        }
+                        else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                        }
+                    }
+                    });
+            });
+
+        $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                var activas = document.getElementById('MostrarActivos');
+                var inactivas = document.getElementById('MostrarNoActivos');
+
+                if ((activas.checked && data[5] === ' A ') ||
+                    (inactivas.checked && data[5] === ' I ')) {
+                        return true;
+                    }
+                    return false;
+                    }
+        );
+
+
+    </script>
+
+}

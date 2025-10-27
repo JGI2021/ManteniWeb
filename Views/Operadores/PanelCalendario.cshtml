@@ -1,0 +1,117 @@
+﻿
+@using ManteniWeb.ClasesDeDatos
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources
+
+@{
+    List<Calendario> listaCalendarios = ViewBag.ListaCalendarios as List<Calendario>;
+}
+
+<style>
+    .th-limited {
+        word-wrap: break-word;
+        max-width: 100px;
+    }
+
+    .th {
+        background: #778899 !important;
+        color: white !important;
+        font-weight: 300 !important;
+    }
+
+    .table-size {
+        max-height: 400px;
+        overflow-y: scroll;
+    }
+</style>
+
+<div id="calendario" class="tab-pane">
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-4 col-md-4">
+            <label for="slcalendario">Calendario</label>
+            <select id="slcalendario" class="form-control" name="DatosOperadorExtendidos.CalendarioId"
+                    value="@Model.DatosOperadorExtendidos.CalendarioId" onchange="RellenaDatosCalendarioTablas()">
+                @{
+                    var calendarioSistema = listaCalendarios.Find(cal => cal.EsCalendarioSubsistema);
+                }
+                <option value="">@ComunResources.calendarioSistema: @calendarioSistema.NombreCalendario</option>
+                @foreach (Calendario item in listaCalendarios)
+                {
+                    if (item.IdCalendario == Model.DatosOperadorExtendidos.CalendarioId)
+                    {
+                        <option value="@item.IdCalendario" selected="selected">@item.NombreCalendario</option>
+                    }
+                    else
+                    {
+                        <option value="@item.IdCalendario">@item.NombreCalendario</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row rowSeparacion20">
+        <div class="col-lg-5 col-md-5">
+            <h4><strong>@ComunResources.st_horario</strong></h4>
+            <table id='horarioTable' class='display'>
+                <thead>
+                    <tr>
+                        <th class='th'>@ComunResources.dia</th>
+                        <th class='th'>@ComunResources.st_horario</th>
+                    </tr>
+                </thead>
+                <tbody id='bodyHorarioTable'>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-lg-7 col-md-7" style="max-height: 370px;overflow-y:auto">
+            <h4><strong>@ComunResources.cal_diasEspeciales</strong></h4>
+            <table id='diasEspecialesTable' class='display table-size'>
+                <thead>
+                    <tr>
+                        <th class='th'>@ComunResources.dia</th>
+                        <th class='th'>@ComunResources.periodico </th>
+                        <th class='th'>@ComunResources.lb_nombre</th>
+                        <th class='th'>@ComunResources.st_horario</th>
+                        <th class='th'>Mensaje fuera hora</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyDiasEspecialesTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row rowSeparacion20">
+        <div class="col-lg-12 col-md-12"  style="max-height: 500px;overflow-y:auto">
+            <h4><strong>@ComunResources.vacaciones</strong>
+                <button type="button" class="my-btn-small btn-primary" onclick="AltaPeriodoVacaciones()"><span class="fa fa-plus"></span></button>
+            </h4>
+            <table id='horarioVacaciones' class='display'>
+                <thead>
+                    <tr>
+                        <th class='th'>@ComunResources.diasVacaciones</th>
+                        <th class='th'>@ComunResources.observaciones</th>
+                        <th class='th'>@ComunResources.estado</th>
+                        <th class='th'>@ComunResources.totaldias  </th>
+                        <th class='th'>                            
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id='bodyVacacionesTable'>
+                </tbody>
+            </table>
+        </div>        
+    </div>
+
+
+</div>
+
+
+
+
+
+
+
+

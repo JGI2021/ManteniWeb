@@ -1,0 +1,409 @@
+﻿@using ManteniWeb.DatosTablas
+@using ManteniWeb.Code
+@using ManteniWeb.App_GlobalResources;
+
+@model IEnumerable<ReposReprogramacion>
+
+
+@{
+    ViewBag.Title = "Reprogramaciones";
+}
+
+<link href="~/Content/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/DataTables-1.12.1/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    tbody tr:hover {
+        cursor: pointer;
+    }
+</style>
+
+
+<div class="jumbotron" style="padding:0px;margin-bottom:0px">
+    <div class='container'>
+        <h2 class='tituloGrande visible-lg visible-md' style="font-family: inherit;">
+            <i class='fa fa-th' aria-hidden="true"></i>
+            <span style='margin-left: 1em;'>@ViewBag.Title</span>
+        </h2>
+    </div>
+</div>
+
+<input type="hidden" id="idsSeleccionados" value="" />
+
+<div class="container-fluid">
+    <div class="row">
+        @* MENU LATERAL *@
+        <div class="col-lg-2 col-md-2 col-sm-2" style='text-align:left;' collapse width show" id="LeftPanel">
+            <div class="visible-lg visible-md ">
+                <ul id="VerticalPill_opciones" class="nav nav-pills nav-stacked VerticalPillMenuRegistro">
+                    <li></li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="MostrarFranjasHorarias();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-clock-o" visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Franjas horarias</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="NuevaReprogramacion();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-plus visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Nueva reprogramación</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="EdicionSimple" style="display: none;">
+                        <a href="#" role="button" id="OptionButton_3" class="" onclick="EliminarReprogramacion();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-trash-o visible-lg visible-md visible-xs dark-red-text" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Eliminar reprogramación</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="EdicionSimple" style="display: none;">
+                        <a href="#" role="button" id="OptionButton_3" class="" onclick="EditarReprogramacion();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-edit visible-lg visible-md visible-xs darkgreen-text" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Editar reprogramación</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="RowAccionesSiempreVisibles" style="">
+                        <a href="#" role="button" id="OptionButtonVP_15" class="" onclick="RetrocederPaginaMVC();">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-2">
+                                    <span class="fa fa-arrow-left visible-lg visible-md visible-xs" aria-hidden="true"></span>
+                                </div>
+                                <div class="col-lg-10 col-sm-10">Volver</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        @* FIN MENU LATERAL *@
+
+
+        @* FORMULARIO  *@
+    <div class="col-lg-8 col-md-8">
+
+        @* Panel de errores *@
+        <div id="alertaResultado" class="row rowSeparacion15 no-display">
+            <div class="col-lg-offset-1 col-md-10">
+                <div id="panelResultado" class="panel">
+                    <div class="panel-heading">
+                        <span id="panelmensajeResultado"></span>
+                        <button type="button" class="close" data-target="#copyright-wrap" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        @* MOSTRAR TABLA DE REPROGRAMACIONES *@
+        <div class='row rowSeparacion10'>
+            <table id="ReprogramacionesTable" class="display" style="width:100%; margin-bottom:20px;display:none;">
+                <thead>
+                    <tr>
+                        <th class="th"></th>
+                        <th class="th">@Html.DisplayNameFor(model => model.Idrepositorio)</th>
+                        <th class="th">@Html.DisplayNameFor(model => model.Nombre)</th>
+                        <th class="th">Reprogramaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ReposReprogramacion item in Model)
+                    {
+                        string clase = "";
+                        if (item.EsDeSubsistema)
+                        {
+                            clase = "texto-negrita";
+                        }
+                        <tr id="tr_@item.Idrepositorio" class="@clase">
+                            <td>
+                                <input type="checkbox" id="chk_@item.Idrepositorio" value="" />
+                            </td>
+                            <td class="@clase td-click">
+                                @Html.DisplayFor(modelItem => item.Idrepositorio)
+                            </td>
+                            <td class="@clase td-click">
+                                @Html.DisplayFor(modelItem => item.Nombre)
+                            </td>
+                            <td>
+                                @*Tabla con las reprogramaciones del repositorio*@
+                                <button type='button' class='btn btn-sm btn-mostrar' data-toggle='collapse' data-target='#ver_@item.Idrepositorio' style='float:right'>
+                                    <span class='fa fa-bars'> </span>
+                                </button>
+                                <div id='ver_@item.Idrepositorio' class='collapse td-click'>
+                                    <div class="form-inline">
+                                        <label for="totalRes"> Número máximo de llamadas con resutado negativo</label>
+                                        <text id="totalRes">@Html.DisplayFor(modelItem => item.MaxLlamadasResultadoNegativo)</text>
+                                    </div>
+                                    <table class='table table-condensed'>
+                                        <thead>
+                                            <tr>
+                                                <th>Resultado</th>
+                                                <th>Reprogramación</th>
+                                                <th>Peso</th>
+                                                <th>Llamadas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var resultado in item.LsRsTelefonicos)
+                                            {
+                                                if (resultado.Id_grupo_resultado == null || resultado.Id_grupo_resultado == "")
+                                                {
+                                                    <tr>
+                                                        <td>@resultado.NombreResultado</td>
+                                                        <td>@GetStrTiempoReprogramacion(resultado.Tiempo_rellamada)</td>
+                                                        <td>@resultado.Nuevo_peso_telefono</td>
+                                                        <td>@resultado.Max_llamadas</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStrTiempoReprogramacion(DateTime tiempoespera)
+    {
+        DateTime dateTimeBase = Convert.ToDateTime(Estaticos.VarFechaVaciaReprogramaciones());
+
+        DateTime date = new DateTime(tiempoespera.Year, tiempoespera.Month, tiempoespera.Day, 0, 0, 0);
+
+        TimeSpan numeroDiasS = tiempoespera.Subtract(dateTimeBase);
+        int numeroDias = numeroDiasS.Days;
+
+        string hora = "";
+        if (tiempoespera.Hour < 10)
+            hora = "0";
+        hora += tiempoespera.Hour;
+
+        string min = "";
+        if (tiempoespera.Minute < 10)
+            min = "0";
+        min += tiempoespera.Minute;
+
+        string sec = "";
+        if (tiempoespera.Second < 10)
+            sec = "0";
+        sec += tiempoespera.Second;
+        string FValue = numeroDias + hora + min + sec;
+
+        return numeroDias + " días. " + hora + ":" + min + ":" + sec + " horas.";
+    }
+}
+
+
+@section scripts {
+
+    <script src="~/Content/DataTables/DataTables-1.12.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/bootbox.min.js" type="text/javascript"></script>
+
+    <script>
+        var tableop;
+
+        $(document).ready(function () {
+            tableop = $('#ReprogramacionesTable').DataTable({
+                "order": [[1, "asc"]],
+                "processing": true,
+                "language": {
+                    "loadingRecords": "&nbsp;",
+                    "processing": "Loading...",
+                    "lengthMenu": "Registros _MENU_ por página",
+                    "zeroRecords": "@ComunResources.sinRegistros",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "@ComunResources.sinRegistros",
+                    "infoFiltered": "",
+                    "search": "Buscar",
+                    "paginate": {
+                        "first": "Primera",
+                        "next": "Siguiente",
+                        "previous": "Previo",
+                        "last": "Última"
+                    }
+                },
+                "lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "Todos"]],
+                'columnDefs': [{
+                    'targets': [0], /* column index */
+                    'orderable': false, /* true or false */
+                }]
+            });
+
+            $('#ReprogramacionesTable').css('display', 'table');
+
+            $("#ReprogramacionesTable").on("click", ".td-click", function () {
+                // Si es la primera columna no hago nada
+                const idtd = $(this).attr('id')
+                if (idtd) {
+                    return;
+                }
+
+                let id = $(this).parent().attr('id');
+                id = id.substr(3);
+                AvanzarPagina('Reprogramaciones/index', 'Reprogramaciones/Details/' + id);
+            });
+
+            //// PULSAMOS EL CHECK DE SELECCION DE LA FILA DENTRO DE LA TABLA
+            $("#ReprogramacionesTable").on("click", "input", function () {
+                let id = $(this).attr('id');
+                // Obtengo el input
+                const element = document.getElementById(id);
+
+                let seleccionado = $('#idsSeleccionados').val();
+                id = id.substr(4); // elimino la parte chk_ que precede al id
+                let arrSeleccionados = [];
+
+                if (element.checked) {
+                    if (seleccionado === '') {
+                        seleccionado = id;
+                        $('.EdicionSimple').css('display', 'block');
+                        $('.EdicionMultiple').css('display', 'block');
+                    }
+                    else {
+                        seleccionado += ',' + id;
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    $('#idsSeleccionados').val(seleccionado);
+                }
+                else { // desmarcamos check
+                    // los paso a un array
+                    arrSeleccionados = seleccionado.split(',');
+                    // lo elimino del array
+                    const index = arrSeleccionados.indexOf(id);
+                    if (index > -1) {
+                        arrSeleccionados.splice(index, 1);
+                    }
+                    // lo paso todo a cadena
+                    seleccionado = arrSeleccionados.join();
+                    // lo guardo
+                    $('#idsSeleccionados').val(seleccionado);
+                    if (arrSeleccionados === 0 || seleccionado === '') {
+                        $('.EdicionMultiple').css('display', 'none');
+                        $('.EdicionSimple').css('display', 'none');
+                    }
+                    else if (arrSeleccionados.length === 1) {
+                        $('.EdicionSimple').css('display', 'block');
+                    }
+                }
+            });
+
+        });
+
+
+        function OptionsChecked() {
+            tableop.draw();
+        }
+
+        function MostrarFranjasHorarias() {
+            AvanzarPagina("Reprogramaciones/index", "FranjaHoraria/ObtenerFranjasHorarias")
+        }
+
+
+        function NuevaReprogramacion() {
+            AvanzarPagina("Reprogramaciones/index", "Reprogramaciones/AddReprogramacion");
+        }
+
+
+        function EliminarReprogramacion() {
+            // Obtener id seleccionado
+            let idselecc = $("#idsSeleccionados").val();
+            // Lo paso a entero que es lo que espera el controlador
+            let intId = parseInt(idselecc);
+
+            var dialog = bootbox.dialog({
+                title: '<b>Eliminar franja</b>',
+                message: "<p>Se va a eliminar la reprogramación seleccionada. Si está asociada a alguna campaña o lista estas tomarán la reprogramación por defecto del sistema. <br> ¿Desea continuar?</p>",
+
+                buttons: {
+                    cancel: {
+                        label: "No",
+                        className: 'btn-default',
+                        callback: function () {
+                            console.log('Custom cancel clicked');
+                        }
+                    },
+                    ok: {
+                        label: "Si",
+                        className: 'btn-info',
+                        callback: function () {
+
+                            let urlFranja = getRutaAbsolutaMVC() + "/Reprogramaciones/RemoveReprogramacion";
+                            let params = { "idReprogramacion": intId };
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlFranja,
+                                data: JSON.stringify(params),
+                                contentType: "application/json; charset=utf-8",
+                                success: function (datos) {
+                                    let respuesta = JSON.parse(datos);
+                                    MostrarMensajeEliminacion(idselecc, respuesta);
+
+                                }, error: function (e) { console.log(e); }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function EditarReprogramacion() {
+            // Obtener id seleccionado
+            let id = $("#idsSeleccionados").val();
+
+            AvanzarPagina('Reprogramaciones', 'Reprogramaciones/Details/' + id);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// Muestra un mensaje si todo ha ido bien o si ha fallado
+        /// ------------------------------------------------------------------------------------
+        function MostrarMensajeEliminacion(idselecc, respuesta) {
+            //muestro el mensaje de error o de que todo ha ido bien
+            if (respuesta.Error === "S") {
+                $("#panelResultado").removeClass("myAlertSuccess");
+                $("#panelResultado").addClass("panel-danger");
+                $("#panelmensajeResultado").html("<b><span class='fa fa-exclamation-triangle' style='font-size:26px;'> Error</span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+            }
+            else {
+                $("#panelResultado").addClass("myAlertSuccess");
+                $("#panelResultado").removeClass("panel-danger");
+                $("#panelmensajeResultado").html("<b> <span class='fa fa-check-square-o fondoAlert' > </span> </b><span class='mr-15'></span>" + respuesta.Mensaje);
+                // Elimino el registro de la tabla
+                $("#tr_" + idselecc).remove();
+            }
+
+            $('#alertaResultado').css('display', 'block');
+            window.setTimeout(function () {
+                $('#alertaResultado').css('display', 'none');
+            }, 4000);
+        }
+
+    </script>
+
+}

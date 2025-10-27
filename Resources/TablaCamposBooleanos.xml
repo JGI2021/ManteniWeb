@@ -1,0 +1,142 @@
+﻿<table>
+<fields>
+<field
+	nombre="A.CLIENTE_ID"
+  tipo="String"
+  valor="">
+</field>
+  <field
+    nombre="A.ESTADO_REGISTRO"
+    tipo="String"
+    valor="">
+  </field>
+  <field
+	nombre="A.NOMBRE"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+	nombre="A.DIRECCION"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+	nombre="A.CIUDAD"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+	nombre="A.PROVINCIA"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+    nombre="A.CODIGO_POSTAL"
+    tipo="String"
+    valor="">
+  </field>
+  <field
+	nombre="A.PAIS"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+	nombre="A.VALOR1"
+  tipo="Integer"
+  valor="">
+  </field>
+  <field
+	nombre="A.VALOR2"
+  tipo="Integer"
+  valor="">
+  </field>
+  <field
+	nombre="A.LITERAL1"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+    nombre="A.LITERAL2"
+    tipo="String"
+    valor="">
+  </field>
+  <field
+	nombre="A.OPERADOR_PREFERIDO"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="A.PRIORIDAD"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="A.TOTAL_LLAMADAS"
+  tipo="Integer"
+  valor="1">
+  </field>
+  
+    <field
+	nombre="B.NUMERO_TELEFONO"
+  tipo="String"
+  valor="">
+  </field>
+  <field
+	nombre="B.FECHAHORA_INICIO"
+  tipo="DateTime"
+  valor="2015/04/29 13:37:00">
+  </field>
+  <field
+    nombre="B.FECHAHORA_FIN"
+    tipo="DateTime"
+    valor="2015/04/29 13:37:00">
+  </field>
+  <field
+	nombre="B.FECHAHORA_PROXIMA_LLAMADA"
+  tipo="DateTime"
+  valor="2015/04/29 13:37:00">
+  </field>
+  <field
+	nombre="B.FECHAHORA_ULTIMA_LLAMADA"
+  tipo="DateTime"
+  valor="2015/04/29 13:37:00">
+  </field>
+  <field
+	nombre="B.PRIORIDAD"
+  tipo="Integer"
+  valor="1">
+  </field>
+
+
+  <field
+  nombre="B.PESO"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="B.VALOR1"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="B.VALOR2"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="B.LLAMADAS_ACUMULADAS"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="B.ULTIMO_RESULTADO_LLAMADA"
+  tipo="Integer"
+  valor="1">
+  </field>
+  <field
+	nombre="B.LLAMADAS_CON_ULTIMO_RESULTADO"
+  tipo="Integer"
+  valor="1">
+  </field>
+</fields>
+</table>

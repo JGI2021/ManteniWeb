@@ -1,0 +1,102 @@
+﻿
+@model ManteniWeb.DatosTablas.ReposFranjaHoraria
+@using ManteniWeb.DatosTablas
+
+
+<link href="~/css/Reprogramaciones.css" rel="stylesheet" />
+
+<style>
+    .panel-franjas {
+        top: 20px;
+        position: relative;
+        padding: 5px 25px;
+        border: 1px solid #ccc;
+        margin-left: 8%;
+        width: 85%;
+    }
+
+    .boton-cerrar {
+        cursor: pointer;
+        top: 5px;
+        padding: 5px 7px;
+        font-weight: 600;
+    }
+
+    .boton-cerrar:hover {
+        background-color: #ccc;
+        font-size: 17px;
+        color: darkblue;
+        font-weight: 300;
+    }
+</style>
+
+<div id='panelFranjas' class='row  collapse'>
+    <div class="col-md-11 panel-franjas">
+        @if (Model != null && Model.IdRepositorio != 0)
+        {
+        <div class="row rowSeparacion10 ">
+            <div class="col-md-10">
+                <h5><b>Franja horaria</b> <span class="ml-15">@Model.NombreFranja</span></h5>
+            </div>
+            <div class="col-md-2">
+                <span class="boton-cerrar floatRight" onclick="CerrarPanelFranjas()">X</span>
+            </div>
+        </div>
+            <div class="row rowSeparacion10 ">
+                <div class="col-md-12 form-inline">
+                    <label>Número de reintentos</label>
+                    <span class="ml-15">@Model.NumeroReintentos</span>
+                </div>
+            </div>
+            <table id="FranjaDetalle" class="table table-condensed table-border" style="margin-bottom:20px;">
+                <thead>
+                    <tr>
+                        <th class="th">Día</th>
+                        <th class="th">Hora desde</th>
+                        <th class="th">Hora hasta</th>
+                        <th class="th">Día próxima llamada</th>
+                        <th class="th">Hora próxima llamada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ReposDetalleFranjaHoraria detalle in @Model.DetalleFranjaHoraria)
+                    {
+                        <tr>
+                            <td>@DiaToStr(detalle.Dia)</td>
+                            <td>@detalle.HoraDesde</td>
+                            <td>@detalle.HoraHasta</td>
+                            <td>@DiaToStr(detalle.DiaProximaLlamada)</td>
+                            <td>@detalle.HoraProximaLlamada</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+
+            @functions {
+                public string DiaToStr(int dia)
+                {
+                    switch (dia)
+                    {
+                        case 0:
+                            return "Domingo";
+                        case 1:
+                            return "Lunes";
+                        case 2:
+                            return "Martes";
+                        case 3:
+                            return "Miércoles";
+                        case 4:
+                            return "Jueves";
+                        case 5:
+                            return "Viernes";
+                        case 6:
+                            return "Sábado";
+                        default:
+                            return "";
+                    }
+                }
+            }

@@ -1,0 +1,222 @@
+﻿<table>
+
+  <general
+      DisplayName="Registros de la campaña"
+      Database="TELEMARKETER"
+      TableName="*PREFIJOTABLA*_CLIENTE"
+      TableName2="*PREFIJOTABLA*_TELEFONO"
+      CrossField2="CLIENTE_ID"
+      RelationType="1-N"
+>
+  </general>
+
+  <panels>
+    <panel
+      id="panelDatosGenerales"
+      DisplayName="Datos Generales">
+    </panel>
+
+  </panels>
+
+  <fields>
+    
+    <field>
+      <fattr
+        FieldName="prioridad"
+        Panel="panelDatosGenerales"
+        DisplayName="Prioridad"		   
+        Visible="true"
+        EditionType="Edit"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        ValidateAs="Integer"
+        ToolTip="Prioridad."
+        External="false"
+        dependencies="false"
+        Linea="Linea3"
+        TabOrder="2">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="peso"
+        Panel="panelDatosGenerales"
+        DisplayName="Peso"			 
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Peso."
+        External="false"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        Linea="Linea3"
+        TabOrder="3">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="valor1"
+        Panel="panelDatosGenerales"
+        DisplayName="Valor 1"	 
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Valor 1."
+        External="false"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        Linea="Linea4"
+        TabOrder="4">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="valor2"
+        Panel="panelDatosGenerales"
+        DisplayName="Valor 2"
+        Visible="true"
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Valor 2"
+        External="false"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false"                 
+        Linea="Linea4"
+        TabOrder="5">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="literal1"
+        Panel="panelDatosGenerales"
+        DisplayName="Literal 1"
+       
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Alpha"
+        ToolTip="Litera 1."
+        External="false"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        MaxLen="50"
+        Linea="Linea5"
+        TabOrder="6">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="literal2"
+        Panel="panelDatosGenerales"
+        DisplayName="Literal 2"       
+        EditionType="Edit"
+        Mandatory="false"
+        ValidateAs="Alpha"
+        ToolTip="Literal 2."
+        External="false"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        MaxLen="50"
+        Linea="Linea5"
+        TabOrder="7">
+      </fattr>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="estado_registro"
+        Panel="panelDatosGenerales"
+        DisplayName="Estado"
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Combo"
+        ToolTip="Estado del registro"
+        External="true"
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        Linea="Linea6"
+        TabOrder="9">
+      </fattr>
+      <external>
+        <type tipo="collection"/>
+        <collection>
+          <collectionitem
+           key=""
+           value="">
+          </collectionitem>
+          <collectionitem
+           key="A"
+           value="Anulado">
+          </collectionitem>
+          <collectionitem
+             key="C"
+             value="Cancelado">
+          </collectionitem>
+          <collectionitem
+             key="R"
+             value="Reprogramado">
+          </collectionitem>
+          <collectionitem
+             key="S"
+             value="Para supervisión">
+          </collectionitem>
+          <collectionitem
+             key="F"
+             value="Finalizado">
+          </collectionitem>
+          <collectionitem
+			   key="N"
+			   value="No tocado">
+          </collectionitem>
+        </collection>
+      </external>
+    </field>
+
+    <field>
+      <fattr
+        FieldName="resultado_negocio"
+        Panel="panelDatosGenerales"
+        DisplayName="Resultado negocio" 
+        EditionType="Combo"
+        Mandatory="false"
+        ValidateAs="Integer"
+        ToolTip="Resultado negocio."
+        External="true"	  
+        UpdateNeeded="false"
+        InsertedNeeded="false"
+	      ExisteColumna="false" 
+        Linea="Linea6"
+        DefaultValue=""
+        dependencies="false"
+        TabOrder="10">
+      </fattr>
+      <external>
+        <type tipo="table"/>
+        <table
+          DatabaseName="TELEMARKETER"
+          TableName="*PREFIJOTABLA*_RESULTADO_NEGOCIO"
+          FieldKey="resultado_negocio"
+          FieldValue="descripcion"
+          DefaultKey="NULL"
+          DefaultValue=""
+        >
+        </table>
+      </external>
+    </field>
+
+  </fields>
+
+
+</table>

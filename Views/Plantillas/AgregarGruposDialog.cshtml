@@ -1,0 +1,99 @@
+﻿
+@using ManteniWeb.DatosTablas;
+@using ManteniWeb.App_GlobalResources;
+@using ManteniWeb.ClasesDeDatos;
+
+@model DatosPlantillasGrupos
+
+@{
+    List<RegistroNombreId> lsGruposACD = ViewBag.LsGruposACD as List<RegistroNombreId>;
+}
+
+
+<div class="modal fade modal-center" id="ModalAsignaGrupos" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 950px; top: 50px;">
+        <div class="modal-content">
+            <div class="modal-header" id="miModalHeader">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="miModalTitle">@ConfigResources.asignagrupos</h4>
+            </div>
+            <div class="modal-body" id="miModalBody">
+                <div class='row rowSeparacion25'>
+                    <div class='col-md-5 col-sm-5'>
+                        <div class='row'>
+                            <div class='col-lg-2 col-md-2 form-check' style=" top: 8px; position: relative;">
+                                <input type='checkbox' value='' id='IdCheckNoAsignados' class='PosCheckBoxTodos' onclick='CheckTodosCaja(this.id, "ul_noasociados");' />
+                            </div>
+                            <div class='col-md-10 col-lg-10'>
+                                <h5><b> @ConfigResources.msg_gruposNoAsignados </b></h5>
+                                <input type='text' id='myInputGroupNo' class='form-control' onkeyup='BuscaGruposEnLista("ul_noasociados","myInputGroupNo")' placeholder='Buscar grupos ...' title='Escribir un nombre ' />
+                            </div>
+                        </div>
+                        <div class='CajaElementos200px'>
+                            <ul id='ul_noasociados' class='list-group'>
+                                @foreach (RegistroNombreId grupo in lsGruposACD)
+                                {
+                                    string mostrar = "display: none;";
+                                    if (!grupo.Pertenece && !string.IsNullOrEmpty(Model.ServicioExternoId) && Model.ServicioExternoId == grupo.AuxValue1)
+                                    {
+                                        mostrar = "display: block;";
+                                    }
+                                    else if (Model.Identificador == "0")
+                                    {
+                                        mostrar = "display: block;";
+                                    }
+
+                                    <li id='lia_@grupo.Id' class='list-group-item noSeleccionados' style='@mostrar' ondblclick="AsignaGrupo(@grupo.Id,'@grupo.Nombre')">
+                                        <input type='checkbox' id='chk_@grupo.Id' name='chk_@grupo.Id' onclick='CheckLiNoAsociado(this.id);' />
+                                        &nbsp;&nbsp;<span id='spn_@grupo.Id'><b>  @grupo.Nombre (@grupo.AuxValue1)</b></span>
+                                        <input type="hidden" id="servicio_@grupo.Id" value="@grupo.AuxValue1" />
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class='col-md-2 CajaElementos250pxSinScroll'>
+                        <div class='center'>
+                            <button type='button' class='btn btn-default' style='width:100%;' onclick='AsignaSeleccionados();'>
+                                Asignar &nbsp; <span class='fa fa-angle-double-right'> </span>
+                            </button>
+                            <button type='button' class='btn btn-default' style='width:100%; top:55%; position: absolute;' onclick='DesasignaSeleccionados();'>
+                                <span class='fa fa-angle-double-left'> &nbsp; Desasignar</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class='col-md-5 col-sm-5'>
+                        <div class='row'>
+                            <div class='col-lg-2 col-md-2 form-check' style=" top: 8px; position: relative;">
+                                <input type='checkbox' value='' class='PosCheckBoxTodos' id='IdCheckSiAsignados' onclick='CheckTodosCaja(this.id, "ul_siasociados");' />
+                            </div>
+                            <div class='col-md-10 col-lg-10'>
+                                <h5><b> @ConfigResources.msg_gruposAsignados </b></h5>
+                                <input type='text' id='myInputGroupSi' class='form-control' onkeyup='BuscaGruposEnLista("ul_siasociados","myInputGroupSi")' placeholder='Buscar grupos ...' title='Escribir un nombre '>
+                            </div>
+                        </div>
+                        <div class='CajaElementos200px'>
+                            <ul id='ul_siasociados' class='list-group'>
+                                @foreach (RegistroNombreId grupo in lsGruposACD)
+                                {
+                                    if (grupo.Pertenece)
+                                    {
+                                        <li id='liu_@grupo.Id' class='list-group-item' ondblclick="DesasignaGrupo(@grupo.Id,'@grupo.Nombre')">
+                                            <input type='checkbox' id='chk_@grupo.Id' name='chk_@grupo.Id' onclick='CheckLiAsociado(this.id);' />
+                                            &nbsp;&nbsp;<span id='spn_@grupo.Id'><b>  @grupo.Nombre</b></span>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="miModalFooter">
+                <button type="button" class="btn btn-info" id="MiModalBotonAceptar" onclick="ModalAceptar()">@ComunResources.btn_aceptar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@ComunResources.btn_cancelar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
