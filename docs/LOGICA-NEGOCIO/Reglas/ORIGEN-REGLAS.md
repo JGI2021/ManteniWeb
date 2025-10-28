@@ -15,10 +15,11 @@ Cada regla de negocio está clasificada según su origen:
 - **Ubicación**: `/ManualMD/Tiphone_Admin_Supervision_Part*.md`
 
 ### 💻 CÓDIGO - Del Código Fuente
-- **Fuente**: Archivos .aspx, .js, Web.config, estructura de BD
+- **Fuente**: Archivos .aspx, .js, Web.config, código C# decompilado
 - **Confiabilidad**: MUY ALTA (es lo que hace realmente el sistema)
-- **Ejemplos**: Validaciones JavaScript, queries SQL, configuraciones
-- **Limitación**: Código compilado en DLLs no accesible directamente
+- **Ejemplos**: Validaciones JavaScript, queries SQL, configuraciones, lógica de negocio C#
+- **✅ ACTUALIZACIÓN 2025-10-28**: Código C# decompilado con ILSpy (957 archivos, 9.5MB)
+- **Ubicación código decompilado**: `/decompiled/`
 
 ### 🧠 INFERIDA - Lógica Deducida
 - **Fuente**: Inferencia basada en contexto, mejores prácticas, estándares
@@ -36,12 +37,12 @@ Cada regla de negocio está clasificada según su origen:
 
 | Regla | Origen | Referencia |
 |-------|--------|------------|
-| **Nombre tipificación primaria máx 100 caracteres** | 📘 MANUAL | Part7, pág 15: "Tiene una longitud máxima de 100 caracteres alfanuméricos" |
-| **No se puede eliminar tipificación si está asociada a perfil** | 📘 MANUAL | Part7, pág 15: "Como restricción, no podremos eliminar una tipificación primaria si está asociada a algún perfil" |
-| **Debe existir al menos un perfil en el sistema** | 📘 MANUAL | Part7, pág 17: "Debe de existir al menos un perfil en el sistema" |
-| **Un perfil debe ser marcado como "Por defecto"** | 📘 MANUAL | Part7, pág 17: "uno debe de ser el perfil 'Por defecto'" |
-| **No se puede eliminar perfil asignado a grupo** | 📘 MANUAL | Part7, pág 17: "Como restricción, no podemos eliminar un perfil que esté asignado a un grupo" |
-| **Si grupo no tiene perfil, usa el por defecto** | 📘 MANUAL | Part7, pág 18: "Si no tiene ninguno asociado, se usará el que está indicado como 'Por defecto'" |
+| **Nombre tipificación primaria máx 100 caracteres** | 📘💻 MANUAL + CÓDIGO | **Manual**: Part7, pág 15: "Tiene una longitud máxima de 100 caracteres alfanuméricos"<br>**Código**: `decompiled/ManteniWeb/PerfilDeTipificaciones.cs:247` → `maxlength='100'` ✅ |
+| **No se puede eliminar tipificación si está asociada a perfil** | 📘 MANUAL | Part7, pág 15: "Como restricción, no podremos eliminar una tipificación primaria si está asociada a algún perfil"<br>⚠️ Pendiente verificar en handler `ELIMINAR_PERFILES` |
+| **Debe existir al menos un perfil en el sistema** | 📘 MANUAL | Part7, pág 17: "Debe de existir al menos un perfil en el sistema"<br>⚠️ Pendiente verificar restricción en código |
+| **Un perfil debe ser marcado como "Por defecto"** | 📘💻 MANUAL + CÓDIGO | **Manual**: Part7, pág 17: "uno debe de ser el perfil 'Por defecto'"<br>**Código**: `decompiled/ManteniWeb/PerfilDeTipificaciones.cs:79,252,296` → Campo `BPorDefecto` + función `FMarcarPorDefecto()` ✅ |
+| **No se puede eliminar perfil asignado a grupo** | 📘 MANUAL | Part7, pág 17: "Como restricción, no podemos eliminar un perfil que esté asignado a un grupo"<br>⚠️ Pendiente verificar restricción en código |
+| **Si grupo no tiene perfil, usa el por defecto** | 📘 MANUAL | Part7, pág 18: "Si no tiene ninguno asociado, se usará el que está indicado como 'Por defecto'"<br>⚠️ Pendiente verificar lógica de asignación |
 
 #### Condiciones
 
@@ -105,6 +106,26 @@ Cada regla de negocio está clasificada según su origen:
 | **URL Recordings API** | 💻 CÓDIGO | Web.config: `https://vpcpre.adlantia.com/tiphoneRecords/api/recordings/` |
 | **Security Center** | 💻 CÓDIGO | Web.config: `UsarSecurityToken=N` (no activo) |
 
+#### C# Decompilado - Restricciones de Eliminación
+
+**Archivo clave**: `decompiled/ManteniWeb.Code/EliminarObjetosDeBBDD.cs`
+
+| Regla | Origen | Referencia |
+|-------|--------|------------|
+| **No eliminar campaña activa** | 💻 CÓDIGO | `EliminarObjetosDeBBDD.cs:76` → `if (datosCampanaById.Activo == 1)` ✅ |
+| **No eliminar campaña del planificador** | 💻 CÓDIGO | `EliminarObjetosDeBBDD.cs:83` → `if (datosCampanaById.EsCampanaDePlanificador)` ✅<br>⚠️ **NO documentada en manual** |
+| **No eliminar reprogramación del subsistema** | 💻 CÓDIGO | `EliminarObjetosDeBBDD.cs:38` → `ObtenerIdReprogramacionSubsistema()` ✅<br>⚠️ **NO documentada en manual** |
+| **No eliminar calendario del subsistema** | 💻 CÓDIGO | `EliminarObjetosDeBBDD.cs:197` → `if (item.EsCalendarioSubsistema)` ✅<br>⚠️ **NO documentada en manual** |
+| **No eliminar horario con centros asignados** | 💻 CÓDIGO | `EliminarObjetosDeBBDD.cs:166` → Verifica si hay centros con ese horario ✅<br>⚠️ **NO documentada en manual** |
+
+#### C# Decompilado - Validaciones de Tipificaciones
+
+| Regla | Origen | Referencia |
+|-------|--------|------------|
+| **Perfil tipificación con campo POR_DEFECTO** | 💻 CÓDIGO | `PerfilDeTipificaciones.cs:327` → `INSERT INTO SF_TIPIFICACION (por_defecto)` ✅ |
+| **Función marcar perfil por defecto** | 💻 CÓDIGO | `PerfilDeTipificaciones.cs:296` → `FMarcarPorDefecto()` ✅ |
+| **Formulario eliminar perfil existe** | 💻 CÓDIGO | `PerfilDeTipificaciones.cs:287` → `FEliminar()` ✅ |
+
 ---
 
 ### 🧠 Reglas INFERIDAS
@@ -113,11 +134,13 @@ Cada regla de negocio está clasificada según su origen:
 
 | Regla | Origen | Justificación |
 |-------|--------|---------------|
-| **Estado inicial = Pausada** | 🧠 INFERIDA | Lógica estándar: permite configurar antes de activar |
-| **Fecha fin > Fecha inicio** | 🧠 INFERIDA | Validación lógica universal |
-| **Alias único por cuenta** | 🧠 INFERIDA | Evitar confusión, estándar de sistemas |
-| **Máximo 50 listas activas** | 🧠 INFERIDA | Limitación razonable basada en sistemas similares |
-| **Transiciones de estado Pausada ↔ Activa ↔ Finalizada** | 🧠 INFERIDA | Flujo lógico de ciclo de vida |
+| **No eliminar campaña activa** | 💻 CÓDIGO VERIFICADO | `EliminarObjetosDeBBDD.cs:76` → `if (Activo == 1)` ✅ |
+| **No eliminar campaña del planificador** | 💻 CÓDIGO VERIFICADO | `EliminarObjetosDeBBDD.cs:83` → Restricción implementada ✅ |
+| **Estado inicial = Pausada** | 🧠 INFERIDA | Lógica estándar: permite configurar antes de activar<br>⚠️ Pendiente verificar en código |
+| **Fecha fin > Fecha inicio** | 🧠 INFERIDA | Validación lógica universal<br>⚠️ Pendiente verificar en código |
+| **Alias único por cuenta** | 🧠 INFERIDA | Evitar confusión, estándar de sistemas<br>⚠️ Pendiente verificar constraint BD |
+| **Máximo 50 listas activas** | 🧠 INFERIDA | Limitación razonable basada en sistemas similares<br>⚠️ Pendiente verificar en código |
+| **Transiciones de estado Pausada ↔ Activa ↔ Finalizada** | 🧠 INFERIDA | Flujo lógico de ciclo de vida<br>⚠️ Pendiente verificar máquina de estados |
 
 #### Operadores
 

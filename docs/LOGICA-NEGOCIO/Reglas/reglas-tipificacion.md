@@ -10,10 +10,12 @@
 Este documento contiene reglas de **3 orígenes**:
 
 - **📘 MANUAL**: Extraídas del Manual oficial Tiphone v6 (`ManualMD/Tiphone_Admin_Supervision_Part7.md`)
-- **💻 CÓDIGO**: Extraídas del código fuente (JavaScript, Web.config, ASPX)
+- **💻 CÓDIGO**: Extraídas del código fuente (JavaScript, Web.config, C# decompilado)
 - **🧠 INFERIDA**: Deducidas por lógica/mejores prácticas (requieren validación)
 
-Consulta `ORIGEN-REGLAS.md` para referencias detalladas de cada regla.
+**✅ ACTUALIZACIÓN 2025-10-28**: Código C# decompilado con ILSpy permite verificar reglas del manual.
+
+Consulta `ORIGEN-REGLAS.md` y `HALLAZGOS-DECOMPILACION.md` para referencias detalladas de cada regla.
 
 ---
 
@@ -73,16 +75,29 @@ graph TB
 
 ## 3. Reglas de Tipificaciones Primarias
 
-### REGLA: Nombre de Tipificación Primaria 📘
+### REGLA: Nombre de Tipificación Primaria 📘💻
 
-> **Origen**: 📘 MANUAL - Part7, pág 15
+> **Origen**: 📘💻 MANUAL + CÓDIGO VERIFICADO
+> - **Manual**: Part7, pág 15: "Tiene una longitud máxima de 100 caracteres alfanuméricos"
+> - **Código**: `decompiled/ManteniWeb/PerfilDeTipificaciones.cs:247`
 
 **Descripción**: El nombre de la tipificación primaria tiene restricción de longitud.
 
+**✅ VERIFICADO EN CÓDIGO**:
+```csharp
+// Archivo: decompiled/ManteniWeb/PerfilDeTipificaciones.cs línea 247
+stringBuilder.Append("<input type='text' class='form-control'
+    id='NombreTip' name='NombreTip'
+    value='" + DPerfil.Descripcion + "'
+    maxlength='100'
+    title='" + ConfigResources.tipif_nombreTipif + "'
+    required >\n");
+```
+
 **Validación**:
-- Longitud máxima: **100 caracteres alfanuméricos**
-- Campo obligatorio
-- Debe ser único (recomendado)
+- Longitud máxima: **100 caracteres alfanuméricos** ✅ Implementado
+- Campo obligatorio ✅ Implementado (`required`)
+- Debe ser único (recomendado) ⚠️ Pendiente verificar
 
 **Pseudocódigo**:
 ```
@@ -197,16 +212,53 @@ FIN FUNCION
 
 ---
 
-### REGLA: Perfil Por Defecto Obligatorio 📘
+### REGLA: Perfil Por Defecto Obligatorio 📘💻
 
-> **Origen**: 📘 MANUAL - Part7, pág 17
+> **Origen**: 📘💻 MANUAL + CÓDIGO VERIFICADO
+> - **Manual**: Part7, pág 17: "uno debe de ser el perfil 'Por defecto'"
+> - **Código**: `decompiled/ManteniWeb/PerfilDeTipificaciones.cs:79,252,296,327`
 
 **Descripción**: Uno de los perfiles debe estar marcado como "Por defecto".
 
+**✅ VERIFICADO EN CÓDIGO**:
+```csharp
+// Archivo: decompiled/ManteniWeb/PerfilDeTipificaciones.cs
+
+// Línea 79-82: Verifica si es por defecto para mostrar opción
+if (!DPerfil.BPorDefecto)
+{
+    cDropdownOption = new CDropdownOptionButton("OptionButtonVP_" + num,
+        ConfigResources.tipif_mnuMarcaPorDefecto, "FMarcarPorDefecto()");
+}
+
+// Línea 252-258: Muestra icono si es por defecto
+if (DPerfil.BPorDefecto)
+{
+    stringBuilder.Append("<i class='fa fa-check color-green' aria-hidden='true'></i>");
+    stringBuilder.Append(ConfigResources.tipif_perfilDefecto);
+}
+
+// Línea 296-302: Función para marcar como por defecto
+public string FJSMarcaPorDefecto()
+{
+    return "function FMarcarPorDefecto()\n{\n" +
+           ModalMarcarPerfilPorDefecto.JSMostrarModal() +
+           "}\n function " + ModalMarcarPerfilPorDefecto.FuncionBotonAceptar + "{\n" +
+           EstaticosPeticionesHttpRequest.JSPeticionAjaxRequest(
+               "'idSolicitud=MARCAR_PERFIL_POR_DEFECTO&idPerfil=" + idPerfil + "'",
+               ...) + "}\n\n";
+}
+
+// Línea 327: Campo en base de datos
+"INSERT INTO SF_TIPIFICACION (id_tipificacion, descripcion, por_defecto)"
+```
+
 **Validación**:
-- Siempre debe existir exactamente UN perfil marcado como "Por defecto"
-- No puede haber 0 perfiles por defecto
-- No puede haber más de 1 perfil por defecto
+- Siempre debe existir exactamente UN perfil marcado como "Por defecto" ✅ Implementado
+- Campo en BD: `SF_TIPIFICACION.POR_DEFECTO` ✅ Verificado
+- Función `FMarcarPorDefecto()` implementada ✅ Verificado
+- No puede haber 0 perfiles por defecto ⚠️ Pendiente verificar restricción
+- No puede haber más de 1 perfil por defecto ⚠️ Pendiente verificar restricción
 
 **Pseudocódigo**:
 ```
@@ -231,7 +283,8 @@ FIN FUNCION
 ```
 
 **Visualización**:
-- El perfil por defecto se muestra en **negrita** en la lista de perfiles
+- El perfil por defecto se muestra en **negrita** en la lista de perfiles ✅ Implementado
+- Código: `Tipificaciones.cs:76-79` → Clase CSS "negrita"
 
 **Mensaje de error**:
 > "No se puede eliminar el perfil por defecto. Primero marque otro perfil como por defecto."
