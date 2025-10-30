@@ -13,7 +13,7 @@ flowchart TD
     Error403 --> End([Fin])
 
     CheckPerm -->|Sí| FormCampana[Abrir formulario<br/>nueva campaña]
-    FormCampana --> InputDatos[Ingresar datos básicos:<br/>- Nombre/Alias<br/>- Descripción<br/>- Tipo de operación]
+    FormCampana --> InputDatos["Ingresar datos básicos:<br/>- Nombre/Alias<br/>- Descripción<br/>- Tipo de operación"]
 
     InputDatos --> SelectCalendario[Seleccionar calendario]
     SelectCalendario --> SelectPrediccion{Usa<br/>predicción?}
@@ -78,7 +78,7 @@ flowchart TD
     CheckIntentos -->|Sí| ShowCliente[Mostrar datos del cliente<br/>en pantalla]
     ShowCliente --> TipoMarcacion{Tipo de<br/>marcación}
 
-    TipoMarcacion -->|Manual| WaitOperador[Esperar que operador<br/>pulse "Llamar"]
+    TipoMarcacion -->|Manual| WaitOperador["Esperar que operador<br/>pulse 'Llamar'"]
     TipoMarcacion -->|Predictiva| AutoDial[Marcar automáticamente]
 
     WaitOperador --> Dial[Iniciar llamada]
@@ -136,13 +136,13 @@ flowchart TD
 flowchart TD
     Start([Inicio]) --> SelectGrupo[Seleccionar grupo]
     SelectGrupo --> ViewGrupo[Ver detalle del grupo]
-    ViewGrupo --> ClickAsignar[Click "Asignar operador"]
+    ViewGrupo --> ClickAsignar["Click 'Asignar operador'"]
 
     ClickAsignar --> OpenModal[Abrir modal selección]
     OpenModal --> LoadOperadores[Cargar operadores disponibles]
     LoadOperadores --> CheckOperadores{Hay operadores<br/>disponibles?}
 
-    CheckOperadores -->|No| NoOperadores[Mostrar mensaje:<br/>"No hay operadores disponibles"]
+    CheckOperadores -->|No| NoOperadores["Mostrar mensaje:<br/>'No hay operadores disponibles'"]
     NoOperadores --> End([Fin])
 
     CheckOperadores -->|Sí| ShowList[Mostrar lista de operadores]
@@ -162,7 +162,7 @@ flowchart TD
     ValidatePrioridad -->|No| ErrorPrioridad[Error: prioridad inválida]
     ErrorPrioridad --> SetPrioridad
 
-    ValidatePrioridad -->|Sí| ConfirmAsignar[Click "Asignar"]
+    ValidatePrioridad -->|Sí| ConfirmAsignar["Click 'Asignar'"]
     ConfirmAsignar --> SaveAsignacion[Guardar en BD:<br/>OperadorGrupo]
 
     SaveAsignacion --> CheckSave{Guardado<br/>exitoso?}
@@ -189,7 +189,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     Start([Cliente inicia chat]) --> ShowPreChat[Mostrar formulario pre-chat]
-    ShowPreChat --> FillForm[Cliente completa:<br/>- Nombre<br/>- Email<br/>- Motivo]
+    ShowPreChat --> FillForm["Cliente completa:<br/>- Nombre<br/>- Email<br/>- Motivo"]
 
     FillForm --> SubmitForm[Enviar formulario]
     SubmitForm --> ValidateForm{Formulario<br/>válido?}
@@ -199,7 +199,7 @@ flowchart TD
 
     ValidateForm -->|Sí| CreateGestion[Crear GestionChat en BD]
     CreateGestion --> AddToQueue[Agregar a cola de espera]
-    AddToQueue --> ShowWaiting[Mostrar: "Espere su turno"<br/>Posición en cola: X]
+    AddToQueue --> ShowWaiting["Mostrar: 'Espere su turno'<br/>Posición en cola: X"]
 
     ShowWaiting --> CheckOperador{Operador<br/>disponible?}
     CheckOperador -->|No| UpdatePosition[Actualizar posición en cola]
@@ -214,7 +214,7 @@ flowchart TD
     ReassignQueue --> CheckOperador
 
     OperadorAccept -->|Sí| StartChat[Iniciar chat]
-    StartChat --> ShowConnected[Mostrar: "Conectado con<br/>operador: Juan"]
+    StartChat --> ShowConnected["Mostrar: 'Conectado con<br/>operador: Juan'"]
 
     ShowConnected --> ChatLoop[Loop de mensajes]
     ChatLoop --> WaitMessage{Esperar<br/>mensaje}
@@ -339,7 +339,7 @@ flowchart TD
     CheckPerm -->|Sí| SelectCampana[Seleccionar campaña]
     SelectCampana --> LoadInitial[Cargar datos iniciales]
     LoadInitial --> ConnectWS[Conectar WebSocket/SignalR]
-    ConnectWS --> JoinRoom[Join room: campana-{id}]
+    ConnectWS --> JoinRoom["Join room: campana-{id}"]
     JoinRoom --> ShowDashboard[Mostrar dashboard]
 
     ShowDashboard --> Subscribe[Suscribirse a eventos]
@@ -403,12 +403,12 @@ flowchart TD
     ErrorFilters --> ConfigFilters
     ValidateFilters -->|Sí| SelectFormat
 
-    SetFilters -->|No| SelectFormat[Seleccionar formato:<br/>- Todos los datos<br/>- Solo visibles<br/>- Selección]
+    SetFilters -->|No| SelectFormat["Seleccionar formato:<br/>- Todos los datos<br/>- Solo visibles<br/>- Selección"]
 
     SelectFormat --> CheckCount[Consultar cantidad de registros]
     CheckCount --> CountResult{Cantidad}
 
-    CountResult -->|> 50,000| ShowWarning[Advertencia:<br/>"Muchos registros"]
+    CountResult -->|> 50,000| ShowWarning["Advertencia:<br/>'Muchos registros'"]
     ShowWarning --> ConfirmLarge{Continuar?}
     ConfirmLarge -->|No| End([Fin])
     ConfirmLarge -->|Sí| StartExport
